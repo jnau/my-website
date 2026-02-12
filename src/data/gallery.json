@@ -1,18 +1,17 @@
-{
+
+  {
   "categories": [
-    { "name": "Watercolor", "color": "#c9a96e", "tags": ["#watercolor", "#painting", "#art"] },
-    { "name": "Gardening", "color": "#88b89a", "tags": ["#succulents", "#garden", "#jalapeños", "#plants"] },
-    { "name": "Travel", "color": "#a990c0", "tags": ["#hawaii", "#travel", "#adventure", "#roadtrip"] },
-    { "name": "Community", "color": "#c98e8e", "tags": ["#iceskating", "#community", "#friends", "#gamenight"] },
-    { "name": "DIY", "color": "#78aec8", "tags": ["#diy", "#homeprojects", "#woodwork"] },
-    { "name": "Cooking", "color": "#c4b55e", "tags": ["#cooking", "#spicy", "#homegrown", "#baking"] }
-  ],
+    { "name": "Crafting", "color": "#c9a96e", "tags": ["#watercolor", "#painting", "#art", "crafts", "crochet", "toys"] },
+    { "name": "Planting", "color": "#88b89a", "tags": ["#succulents", "#garden", "#jalapeños", "#plants", "flowers"] },
+    { "name": "Travel", "color": "#a990c0", "tags": ["#skiing", "#travel", "#adventure", "#roadtrip"] },
+    { "name": "Other", "color": "#78aec8", "tags": ["#other", "#pets", "#bestdog", "womansbestfriend", "#experiences"] }
+   ],
   "items": [
-    { "src": null, "caption": "Painting icons, landscapes, and the occasional protein structure.", "tags": ["#watercolor", "#painting", "#art"] },
-    { "src": null, "caption": "Succulents, jalapeño contests, and watching things grow.", "tags": ["#succulents", "#garden", "#jalapeños"] },
-    { "src": null, "caption": "Hawaii, road trips, and finding the best local food.", "tags": ["#hawaii", "#travel", "#adventure"] },
-    { "src": null, "caption": "Ice skating nights, game nights, getting people together.", "tags": ["#iceskating", "#community", "#friends"] },
-    { "src": null, "caption": "DIY renovations and the quest for the perfect shelf.", "tags": ["#diy", "#homeprojects", "#woodwork"] },
-    { "src": null, "caption": "Homegrown jalapeños in every recipe I can.", "tags": ["#cooking", "#spicy", "#homegrown"] }
+    { "src": "/images/logo/image_01.png", "caption": "Painting succulents and maybe the occasional protein structure if I feel like it.", "tags": ["#watercolor", "#painting", "#art"] },
+    { "src": "/images/gallery/IMG_4234.JPG", "caption": "My favorite flowers - watching things grow from seed is a different feeling", "tags": ["#flowers", "#garden"] },
+    { "src": "/images/gallery/Attach0 7.JPG", "caption": "What's life without some fun in the snow?", "tags": ["#skiing", "#travel", "#adventure"] },
+    { "src": "/images/gallery/IMG_9740.png", "caption": "My beloved dog, Sparky", "tags": ["#pets", "#bestdog", "womansbestfriend"] },
+    { "src": "/images/gallery/IMG_1018.JPG", "caption": "Crocheting has been my longest hobby. My toy shop opens every Winter for my little cousins and friends!", "tags": ["#crafts", "#toys", "crochet"] },
+    { "src": "/images/gallery/16a20d32b71a45fadd6af9184ca7036f.JPEG", "caption": "Trying new things even though I'm so scared of heights... :sweat_smile:", "tags": ["#experiences"] }
   ]
 }

@@ -5,7 +5,7 @@ import EXPERIENCES from "../data/experiences.json";
 
 export function Experience({ mobile, screenW, pad }) {
   return (
-    <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 60 : 80}px 0` }}>
+    <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 40 : 50}px 0` }}>
       <div style={{ padding: `0 ${pad}px` }}>
         <SecHead num="02" title="Experience" mobile={mobile} />
       </div>

@@ -13,20 +13,25 @@ function NavLogo({ scrolled }) {
     return imgs[Math.floor(Math.random() * imgs.length)];
   });
 
+  const size = scrolled ? 36 : 72;
+  const radius = scrolled ? "50%" : "16px";
+
   if (src) {
     return (
       <div
         onMouseEnter={() => setHov(true)}
         onMouseLeave={() => setHov(false)}
         style={{
-          width: 36, height: 36, borderRadius: "50%", overflow: "hidden",
+          width: size, height: size, borderRadius: radius, overflow: "hidden",
           border: `2px solid ${hov ? C.accent : scrolled ? C.border : "transparent"}`,
-          transition: "all .35s ease",
-          transform: hov ? "scale(1.1)" : "scale(1)",
-          boxShadow: hov ? `0 0 16px ${C.accentDim}` : "none",
+          transition: "all .45s cubic-bezier(.22,1,.36,1)",
+          transform: hov ? "scale(1.08)" : "scale(1)",
+          boxShadow: hov
+            ? `0 0 20px ${C.accentDim}`
+            : scrolled ? "none" : "0 4px 24px rgba(0,0,0,0.3)",
         }}
       >
-        <img src={src} alt="JC" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        <img src={src} alt="JA" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       </div>
     );
   }
@@ -36,12 +41,10 @@ function NavLogo({ scrolled }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        fontFamily: "'Cormorant Garamond'", fontSize: 20, fontWeight: 600,
-        color: hov ? C.accent : C.heading, transition: "color .3s",
+        fontFamily: "'Cormorant Garamond'", fontSize: scrolled ? 20 : 32, fontWeight: 600,
+        color: hov ? C.accent : C.heading, transition: "all .45s cubic-bezier(.22,1,.36,1)",
       }}
-    >
-      JC
-    </span>
+    >JA</span>
   );
 }
 
@@ -68,7 +71,7 @@ export function TopNav({ active, onNav, mobile }) {
         style={{
           position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: mobile ? "0 20px" : "0 48px", height: mobile ? 54 : 60,
+          padding: mobile ? "0 20px" : "0 48px", height: scrolled ? (mobile ? 54 : 60) : (mobile ? 80 : 96),
           background: scrolled || menuOpen ? "rgba(8,13,24,0.92)" : "transparent",
           backdropFilter: scrolled || menuOpen ? "blur(16px) saturate(1.4)" : "none",
           WebkitBackdropFilter: scrolled || menuOpen ? "blur(16px) saturate(1.4)" : "none",

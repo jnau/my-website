@@ -1,15 +1,41 @@
 {
   "featured": [
-    { "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types.", "tags": ["Python", "SigProfiler", "Genomics"], "year": "2024", "demo": "sigbars" },
-    { "title": "mSigLit-AI", "desc": "AI literature curation with automated extraction and classification.", "tags": ["NLP", "LLMs", "Curation"], "year": "2025", "demo": "pipeline" },
-    { "title": "Interactive HD Dashboards", "desc": "Web exploration tools for signature analysis across TCGA and PCAWG.", "tags": ["D3.js", "HTML", "Viz"], "year": "2025", "demo": null }
+    { "title": "Recipe Book AI",
+      "desc": "Personal recipe database with AI search. Upload text, photos, or URLs — then ask what you can cook with what's in the fridge.",
+      "tags": ["Personal", "LLMs", "RAG", "Python"],
+      "year": "2026",
+      "demo": "comingsoon"
+    },
+    { "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", 
+      "desc": "Reference set from 50,000+ WGS across multiple cancer types.", 
+      "tags": ["Python", "Research", "ML", "Statistics"], 
+      "year": "2023-present", 
+      "demo": "sigbars" },
+
+    { "title": "mSigLit-AI", 
+      "desc": "AI literature curation with automated extraction and classification.", 
+      "tags": ["Python", "Research", "NLP", "LLMs"], 
+      "year": "2025-present", 
+      "demo": "pipeline" },
+
+    { "title": "Interactive HD Dashboards", 
+      "desc": "Web exploration tools for HD Signature analysis", 
+      "tags": ["Research", "AWS", "HTML/CSS", "JavaScript", "Plotly"], 
+      "year": "2025-present", 
+      "demo": "dashboard" },
+
+    { "title": "ENCODEd Database", 
+      "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", 
+      "tags": ["Professional", "AWS", "GCP", "Python", "Database"], 
+      "year": "2019-2021", 
+      "demo": "dots" }
   ],
   "archived": [
-    { "year": "2023", "title": "VCF Processing Toolkit", "tags": ["Python", "VCF"] },
-    { "year": "2022", "title": "Signature Stability Analysis", "tags": ["Statistics", "R"] },
-    { "year": "2022", "title": "TCGA Reanalysis Pipeline", "tags": ["WGS", "Snakemake"] },
-    { "year": "2021", "title": "RNA-seq Expression Dashboard", "tags": ["Shiny", "R"] },
-    { "year": "2021", "title": "Autograding Tool for CSE", "tags": ["Python", "Teaching"] },
-    { "year": "2020", "title": "Gene Expression Classifier", "tags": ["ML", "scikit-learn"] }
+    { "year": "2019-2021", "title": "Checkfiles", "tags": ["Professional", "Python", "Automated file handler", "CI/CD", "Bioinformatics"] },
+    { "year": "2025", "title": "Mutational signture inference", "tags": ["Research", "Statistics", "Python", "Big-data"] },
+    { "year": "2017-2019", "title": "Investigating Ca2+ spark formation", "tags": ["Research", "C/C++", "SLURM", "HPC", "Biophysics"] },
+    { "year": "2017", "title": "Synchronization of Mechanical Fireflies", "tags": ["Research", "Python", "Matlab", "Hardware"] },
+    { "year": "2021", "title": "Cardiac arrhythmias in relation to nonlinear dynamics", "tags": ["Research", "Matlab", "C/C++", "Mathematics"] },
+    { "year": "2017", "title": "DNA Topology: effects on confinement affecting DNA structure", "tags": ["Reserch", "Python", "R", "Mathematics", "Biology"] }
   ]
 }

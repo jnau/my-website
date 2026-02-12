@@ -152,15 +152,48 @@ function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mob
 
   const arrowBtn = (side, onClick) => (
     <button
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      style={{ position: "absolute", [side]: mobile ? 8 : 24, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,0.08)", border: "none", borderRadius: "50%", width: 44, height: 44, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "background .2s", zIndex: 210 }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
+      aria-label="Close lightbox"
+      style={{
+        position: "absolute",
+        top: mobile ? 14 : 24,
+        right: mobile ? 14 : 24,
+
+        width: mobile ? 44 : 36,          // larger tap target
+        height: mobile ? 44 : 36,
+
+        borderRadius: "50%",
+        border: "none",
+        cursor: "pointer",
+
+        background: "rgba(255,255,255,0.08)",
+        backdropFilter: "blur(10px)",
+
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+
+        zIndex: 220,
+        WebkitTapHighlightColor: "transparent",
+      }}
     >
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d={side === "left" ? "M12 4l-6 6 6 6" : "M8 4l6 6-6 6"} stroke={C.bright} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M18 6L6 18M6 6l12 12"
+          stroke={C.bright}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
       </svg>
     </button>
+
   );
 
   return (
@@ -237,7 +270,7 @@ export function Gallery({ mobile, innerStyle }) {
         <SecHead num="05" title="Beyond the Lab" mobile={mobile} />
         <Reveal delay={0.05}>
           <p style={{ fontFamily: "'Caveat'", fontSize: mobile ? 17 : 20, color: C.muted, textAlign: "center", marginBottom: mobile ? 16 : 24, lineHeight: 1.5, maxWidth: 420, marginLeft: "auto", marginRight: "auto" }}>
-            Paintings, peppers, and everything in between — a few things that keep me grounded outside the lab.
+            Paintings, plants, and everything in between — a few things that keep me grounded outside work.
           </p>
         </Reveal>
 

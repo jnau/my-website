@@ -33,7 +33,7 @@ function GenomeDotsDemo() {
 }
 
 function PipelineDemo() {
-  const steps = ["VCF", "→", "Filter", "→", "Extract", "→", "Classify"];
+  const steps = ["Search", "→", "Classify", "→", "Extract", "→", "Chat"];
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans'", fontSize: 11 }}>
       {steps.map((s, i) =>
@@ -47,7 +47,32 @@ function PipelineDemo() {
   );
 }
 
-const DEMO_MAP = { sigbars: SigBarsDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo };
+function DashboardDemo() {
+  const rows = [0.7, 0.45, 0.9, 0.6, 0.35];
+  const cols = ["#6db89f", "#78aec8", "#c9a96e", "#a990c0", "#c98e8e"];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      {rows.map((w, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: cols[i], opacity: 0.8 }} />
+          <div style={{ height: 6, borderRadius: 3, background: `${cols[i]}44`, flex: 1, position: "relative", overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${w * 100}%`, borderRadius: 3, background: cols[i], opacity: 0.7, animation: `sigP 2.5s ease-in-out ${i * 0.2}s infinite alternate` }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ComingSoonDemo() {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 36, fontFamily: "'Caveat'", fontSize: 15, color: C.accent, letterSpacing: 1.5, opacity: 0.7, animation: "sigP 2s ease-in-out infinite alternate" }}>
+      coming soon ✨
+    </div>
+  );
+}
+
+const DEMO_MAP = { sigbars: SigBarsDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, dashboard: DashboardDemo, comingsoon: ComingSoonDemo };
 
 /* ─── Project Card ─── */
 function ProjectCard({ proj, index, mobile }) {
@@ -96,7 +121,7 @@ export function Projects({ mobile, pad }) {
   const [showArchive, setShowArchive] = useState(false);
 
   return (
-    <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 60 : 80}px 0` }}>
+    <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 40 : 50}px 0` }}>
       <div style={{ padding: `0 ${pad}px` }}>
         <SecHead num="03" title="Projects" mobile={mobile} />
       </div>

@@ -19,7 +19,7 @@ export default function App() {
 
   const pad = mobile ? 20 : 60;
   const sectionStyle = {
-    minHeight: "100vh",
+    minHeight: "85vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
