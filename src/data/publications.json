@@ -1,9 +1,9 @@
 {
   "items": [
-    { "title": "High-definition mutational signature reference from 40,000+ whole-genome sequences", "authors": "Cervantes, J., et al.", "journal": "In preparation", "year": "2026" },
-    { "title": "Robustness of mutational signature inference across variant calling approaches", "authors": "Cervantes, J., Alexandrov, L.B.", "journal": "Manuscript in preparation", "year": "2025" },
-    { "title": "COSMIC Mutational Signatures Database v4", "authors": "Tate, J., ... Cervantes, J., ... Alexandrov, L.B.", "journal": "Nucleic Acids Research", "year": "2025" },
-    { "title": "Consensus variant calling for cancer genomics", "authors": "Cervantes, J., Alexandrov, L.B.", "journal": "In preparation", "year": "2026" }
+    { "title": "The Impact of Variant Calling on Substitution Mutational Signature Inference", "authors": "Zichen Jiang & Jessica N Au et al.", "journal": "Biorxiv", "year": "2025" },
+    { "title": "Data navigation on the ENCODE portal", "authors": "Meenakshi S Kagda, Bonita Lam, ..., Jessica Au  et al.", "journal": "Nature Communications", "year": "2025" },
+    { "title": "Germline modifiers of the tumor immune microenvironment implicate drivers of cancer risk and immunotherapy response", "authors": "Meghana Pagadala, Timothy J Sears, ... , Jessica Au  et al.", "journal": "Nature Communications", "year": "2023" },
+    { "title": "Evolution of stickleback spines through independent cis-regulatory changes at HOXDB", "authors": "Julia I Wucherpfennig, Timothy R Howes, Jessica N Au, Eric H Au, et al.", "journal": "Nature Ecology and Evolution", "year": "2022" }
   ],
-  "scholarUrl": "https://scholar.google.com/your-profile"
+  "scholarUrl": "https://scholar.google.com/citations?user=V5wCP-0AAAAJ&hl=en"
 }

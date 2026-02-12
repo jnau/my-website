@@ -1,13 +1,8 @@
 {
   "featured": [
-    { "title": "HD Mutational Signatures", "desc": "Reference set from 40,000+ WGS across multiple cancer types.", "tags": ["Python", "SigProfiler", "Genomics"], "year": "2024", "demo": "sigbars" },
+    { "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types.", "tags": ["Python", "SigProfiler", "Genomics"], "year": "2024", "demo": "sigbars" },
     { "title": "mSigLit-AI", "desc": "AI literature curation with automated extraction and classification.", "tags": ["NLP", "LLMs", "Curation"], "year": "2025", "demo": "pipeline" },
-    { "title": "Consensus Variant Calling", "desc": "Multi-caller consensus to eliminate artifacts, preserve biological signal.", "tags": ["VCF", "Bioinformatics", "QC"], "year": "2024", "demo": "dots" },
-    { "title": "Interactive HD Dashboards", "desc": "Web exploration tools for signature analysis across TCGA and PCAWG.", "tags": ["D3.js", "HTML", "Viz"], "year": "2025", "demo": null },
-    { "title": "SigProfiler Workflows", "desc": "Automated end-to-end pipelines for extraction, decomposition, and assignment.", "tags": ["Python", "Automation"], "year": "2023", "demo": null },
-    { "title": "Multi-species Signatures", "desc": "Signature analysis extended to non-human genomes and model systems.", "tags": ["Genomics", "Comparative"], "year": "2023", "demo": null },
-    { "title": "Signature Clustering", "desc": "Novel clustering algorithms for grouping signatures across studies.", "tags": ["ML", "Clustering"], "year": "2024", "demo": null },
-    { "title": "COSMIC Data Pipeline", "desc": "Processing and QC infrastructure for COSMIC database releases.", "tags": ["Databases", "QC", "ETL"], "year": "2024", "demo": null }
+    { "title": "Interactive HD Dashboards", "desc": "Web exploration tools for signature analysis across TCGA and PCAWG.", "tags": ["D3.js", "HTML", "Viz"], "year": "2025", "demo": null }
   ],
   "archived": [
     { "year": "2023", "title": "VCF Processing Toolkit", "tags": ["Python", "VCF"] },
