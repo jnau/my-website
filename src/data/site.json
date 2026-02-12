@@ -1,0 +1,28 @@
+{
+  "name": "Jessica N. Au",
+  "greeting": "HI, MY NAME IS",
+  "tagline": "I decode the signatures mutagenesis leaves behind in cancer.",
+  "intro": "Currently a PhD researcher in <strong>bioinformatics & systems biology</strong> at UC San Diego, building tools to understand how mutations shape disease.",
+  "links": {
+    "GitHub": "https://github.com/your-username",
+    "Scholar": "https://scholar.google.com/your-profile",
+    "Email": "mailto:your@email.com"
+  },
+  "logoImages": [
+    "/images/logo/edited_signature.png",
+    "/images/logo/IMG_9460.jpg"
+  ],
+  "navSections": ["Intro", "About", "Experience", "Projects", "Publications", "Beyond the Lab"],
+  "about": {
+    "paragraphs": [
+      "I'm a PhD student in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the Alexandrov Lab. My research sits at the intersection of genomics, machine learning, and data visualization.",
+      "I develop high-definition mutational signature references using <strong>40,000+ whole-genome sequences</strong>, build AI-powered curation systems, and create interactive tools for exploring genomic data.",
+      "When I'm not analyzing mutations, I'm painting watercolors, growing jalapeños, or tending to a succulent collection that has gotten slightly out of hand."
+    ],
+    "photoPlaceholder": "your photo"
+  },
+  "footer": {
+    "credit": "Designed & built by Jessica, with the help of Claude",
+    "sub": "Good science, good design, and a lot of coffee."
+  }
+}

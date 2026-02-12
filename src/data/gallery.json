@@ -1,0 +1,18 @@
+{
+  "categories": [
+    { "name": "Watercolor", "color": "#c9a96e", "tags": ["#watercolor", "#painting", "#art"] },
+    { "name": "Gardening", "color": "#88b89a", "tags": ["#succulents", "#garden", "#jalapeños", "#plants"] },
+    { "name": "Travel", "color": "#a990c0", "tags": ["#hawaii", "#travel", "#adventure", "#roadtrip"] },
+    { "name": "Community", "color": "#c98e8e", "tags": ["#iceskating", "#community", "#friends", "#gamenight"] },
+    { "name": "DIY", "color": "#78aec8", "tags": ["#diy", "#homeprojects", "#woodwork"] },
+    { "name": "Cooking", "color": "#c4b55e", "tags": ["#cooking", "#spicy", "#homegrown", "#baking"] }
+  ],
+  "items": [
+    { "src": null, "caption": "Painting icons, landscapes, and the occasional protein structure.", "tags": ["#watercolor", "#painting", "#art"] },
+    { "src": null, "caption": "Succulents, jalapeño contests, and watching things grow.", "tags": ["#succulents", "#garden", "#jalapeños"] },
+    { "src": null, "caption": "Hawaii, road trips, and finding the best local food.", "tags": ["#hawaii", "#travel", "#adventure"] },
+    { "src": null, "caption": "Ice skating nights, game nights, getting people together.", "tags": ["#iceskating", "#community", "#friends"] },
+    { "src": null, "caption": "DIY renovations and the quest for the perfect shelf.", "tags": ["#diy", "#homeprojects", "#woodwork"] },
+    { "src": null, "caption": "Homegrown jalapeños in every recipe I can.", "tags": ["#cooking", "#spicy", "#homegrown"] }
+  ]
+}
