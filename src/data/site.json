@@ -1,28 +1,29 @@
 {
   "name": "Jessica N. Au",
   "greeting": "HI, MY NAME IS",
-  "tagline": "I decode the signatures mutagenesis leaves behind in cancer.",
+  "tagline": "I decode the patterns mutagenesis leaves behind in your DNA",
   "intro": "Currently a PhD researcher in <strong>bioinformatics & systems biology</strong> at UC San Diego, building tools to understand how mutations shape disease.",
   "links": {
-    "GitHub": "https://github.com/your-username",
-    "Scholar": "https://scholar.google.com/your-profile",
-    "Email": "mailto:your@email.com"
+    "GitHub": "https://github.com/jnau",
+    "Scholar": "https://scholar.google.com/citations?user=V5wCP-0AAAAJ&hl=en",
+    "Email": "mailto:jessica.au10@gmail.com"
   },
   "logoImages": [
-    "/images/logo/edited_signature.png",
-    "/images/logo/IMG_9460.jpg"
+    "/images/logo/image_01.png",
+    "/images/logo/image_02.jpg",
+    "/images/logo/image_03.jpg"
   ],
   "navSections": ["Intro", "About", "Experience", "Projects", "Publications", "Beyond the Lab"],
   "about": {
     "paragraphs": [
-      "I'm a PhD student in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the Alexandrov Lab. My research sits at the intersection of genomics, machine learning, and data visualization.",
-      "I develop high-definition mutational signature references using <strong>40,000+ whole-genome sequences</strong>, build AI-powered curation systems, and create interactive tools for exploring genomic data.",
+      "I'm a Ph.D. student in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the Alexandrov Lab. My research sits at the intersection of biology and computer science to study precision oncology",
+      "I develop high-definition mutational signature references using <strong>50,000+ whole-genome sequences</strong>, build AI-powered curation systems, and create interactive tools for exploring genomic data.",
       "When I'm not analyzing mutations, I'm painting watercolors, growing jalapeños, or tending to a succulent collection that has gotten slightly out of hand."
     ],
-    "photoPlaceholder": "your photo"
+    "photoPlaceholder": "/images/profile/profile_picture_01.JPEG"
   },
   "footer": {
     "credit": "Designed & built by Jessica, with the help of Claude",
-    "sub": "Good science, good design, and a lot of coffee."
+    "sub": "Good science, good design, and a little too much coffee."
   }
 }
