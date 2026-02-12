@@ -33,9 +33,9 @@
   "archived": [
     { "year": "2019-2021", "title": "Checkfiles", "tags": ["Professional", "Python", "Automated file handler", "CI/CD", "Bioinformatics"] },
     { "year": "2025", "title": "Mutational signture inference", "tags": ["Research", "Statistics", "Python", "Big-data"] },
-    { "year": "2017-2019", "title": "Investigating Ca2+ spark formation", "tags": ["Research", "C/C++", "SLURM", "HPC", "Biophysics"] },
+    { "year": "2018-2019", "title": "Investigating Ca2+ spark formation", "tags": ["Research", "C/C++", "SLURM", "HPC", "Biophysics"] },
     { "year": "2017", "title": "Synchronization of Mechanical Fireflies", "tags": ["Research", "Python", "Matlab", "Hardware"] },
-    { "year": "2021", "title": "Cardiac arrhythmias in relation to nonlinear dynamics", "tags": ["Research", "Matlab", "C/C++", "Mathematics"] },
+    { "year": "2017", "title": "Cardiac arrhythmias in relation to nonlinear dynamics", "tags": ["Research", "Matlab", "C/C++", "Mathematics"] },
     { "year": "2017", "title": "DNA Topology: effects on confinement affecting DNA structure", "tags": ["Reserch", "Python", "R", "Mathematics", "Biology"] }
   ]
 }

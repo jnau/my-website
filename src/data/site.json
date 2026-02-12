@@ -16,9 +16,9 @@
   "navSections": ["Intro", "About", "Experience", "Projects", "Publications", "Beyond the Lab"],
   "about": {
     "paragraphs": [
-      "I'm a Ph.D. Candidate in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the Alexandrov Lab. My research sits at the intersection of biology and computer science to study precision oncology",
-      "I'm currently developing a high-definition mutational signature reference using <strong>50,000+ whole-genome sequences</strong>, build AI-powered curation systems, and create interactive tools for exploring them",
-      "When I'm not analyzing mutations, I'm painting watercolors, growing jalapeños, or tending to a succulent collection that has gotten slightly out of hand."
+      "I'm a Ph.D. Candidate in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the Alexandrov Lab. My research sits at the intersection of biology and computer science to study precision oncology.",
+      "I'm currently developing a high-definition mutational signature reference using <strong>50,000+ whole-genome sequences</strong>, build AI-powered curation systems, and create interactive tools for exploring them.",
+      "When I'm not analyzing mutations, I'm painting watercolors, out fishing, or tending to a succulent collection that has gotten slightly out of hand."
     ],
     "photo": "images/profile/profile_picture_01.png"
   },

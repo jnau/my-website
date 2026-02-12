@@ -134,7 +134,7 @@ export function Projects({ mobile, pad }) {
           ))}
         </div>
       </div>
-
+    
       {/* archive */}
       <div style={{ padding: `0 ${pad}px`, marginTop: 16 }}>
         <button
@@ -174,6 +174,7 @@ export function Projects({ mobile, pad }) {
             </table>
           </div>
         )}
+        
       </div>
     </div>
   );

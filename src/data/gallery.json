@@ -8,10 +8,13 @@
    ],
   "items": [
     { "src": "/images/logo/image_01.png", "caption": "Painting succulents and maybe the occasional protein structure if I feel like it.", "tags": ["#watercolor", "#painting", "#art"] },
+    { "src": "/images/logo/image_02.jpg", "caption": "More plants - you may have noticed some of these in the icons.", "tags": ["#watercolor", "#painting", "#art"] },
     { "src": "/images/gallery/IMG_4234.JPG", "caption": "My favorite flowers - watching things grow from seed is a different feeling", "tags": ["#flowers", "#garden"] },
     { "src": "/images/gallery/Attach0 7.JPG", "caption": "What's life without some fun in the snow?", "tags": ["#skiing", "#travel", "#adventure"] },
     { "src": "/images/gallery/IMG_9740.png", "caption": "My beloved dog, Sparky", "tags": ["#pets", "#bestdog", "womansbestfriend"] },
     { "src": "/images/gallery/IMG_1018.JPG", "caption": "Crocheting has been my longest hobby. My toy shop opens every Winter for my little cousins and friends!", "tags": ["#crafts", "#toys", "crochet"] },
-    { "src": "/images/gallery/16a20d32b71a45fadd6af9184ca7036f.JPEG", "caption": "Trying new things even though I'm so scared of heights... :sweat_smile:", "tags": ["#experiences"] }
+    { "src": "/images/gallery/16a20d32b71a45fadd6af9184ca7036f.JPEG", "caption": "After researching fish and owning some pet fish, catching them has become a hobby.", "tags": ["#experiences"] },
+    { "src": "/images/gallery/IMG_0343.JPG", "caption": "When I dreamed of an Iris filled garden and being a plant hybridizer", "tags": ["#flowers", "#garden"] },
+    { "src": "/images/gallery/IMG_9735.JPG", "caption": "Trying new things even though I'm so scared of heights... life's about experiences no?", "tags": ["#experiences"] }
   ]
 }
