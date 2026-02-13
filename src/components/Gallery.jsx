@@ -9,6 +9,7 @@ import galleryData from "../data/gallery.json";
 
 const CATEGORIES = galleryData.categories;
 const ITEMS = galleryData.items;
+const INITIAL_COUNT = 9;
 
 /* ─── color lookups ─── */
 const TAG_COLOR_MAP = {};
@@ -132,9 +133,38 @@ function GalleryImage({ item, index, onClick, mobile, activeTag }) {
   );
 }
 
+/* ─── Show More pill ─── */
+function ShowMoreBtn({ remaining, expanded, onClick, mobile }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginTop: mobile ? 12 : 16 }}>
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        style={{
+          fontFamily: "'DM Sans'", fontSize: mobile ? 13 : 14, fontWeight: 500,
+          color: hov ? C.bright : C.muted,
+          background: hov ? "rgba(255,255,255,0.06)" : "transparent",
+          border: `1px solid ${hov ? "rgba(255,255,255,0.15)" : C.border}`,
+          borderRadius: 20, padding: mobile ? "8px 20px" : "10px 24px",
+          cursor: "pointer", transition: "all .3s ease",
+          display: "flex", alignItems: "center", gap: 6,
+        }}
+      >
+        {expanded ? "Show less" : `Show more (${remaining})`}
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transition: "transform .3s", transform: expanded ? "rotate(180deg)" : "none" }}>
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 /* ─── Lightbox ─── */
 function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mobile }) {
   const item = items[activeIndex];
+  const [closeHov, setCloseHov] = useState(false);
 
   useEffect(() => {
     const handler = (e) => {
@@ -150,61 +180,71 @@ function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mob
   const imgStyle = { display: "block", maxWidth: mobile ? "88vw" : "min(720px, 80vw)", maxHeight: mobile ? "52vh" : "58vh", width: "auto", height: "auto", objectFit: "contain" };
   const primaryColor = getTagColor(item.tags[0]);
 
+  /* ── navigation arrow ── */
   const arrowBtn = (side, onClick) => (
     <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onClose();
-      }}
-      onTouchStart={(e) => {
-        e.stopPropagation();
-        onClose();
-      }}
-      aria-label="Close lightbox"
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      aria-label={side === "left" ? "Previous image" : "Next image"}
       style={{
-        position: "absolute",
-        top: mobile ? 14 : 24,
-        right: mobile ? 14 : 24,
-
-        width: mobile ? 44 : 36,          // larger tap target
-        height: mobile ? 44 : 36,
-
+        position: "absolute", top: "50%", transform: "translateY(-50%)",
+        [side]: mobile ? 8 : 20,
+        width: mobile ? 44 : 40, height: mobile ? 44 : 40,
         borderRadius: "50%",
-        border: "none",
+        border: "1.5px solid rgba(255,255,255,0.15)",
         cursor: "pointer",
-
-        background: "rgba(255,255,255,0.08)",
-        backdropFilter: "blur(10px)",
-
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-
-        zIndex: 220,
-        WebkitTapHighlightColor: "transparent",
+        background: "rgba(255,255,255,0.10)",
+        backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        zIndex: 10010, WebkitTapHighlightColor: "transparent",
+        transition: "background .2s ease",
       }}
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M18 6L6 18M6 6l12 12"
-          stroke={C.bright}
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        {side === "left"
+          ? <path d="M15 18l-6-6 6-6" stroke={C.bright} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          : <path d="M9 6l6 6-6 6" stroke={C.bright} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        }
       </svg>
     </button>
-
   );
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(4,6,12,0.92)", backdropFilter: "blur(20px)", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp .25s ease both" }}>
-      <button onClick={onClose} style={{ position: "absolute", top: mobile ? 16 : 24, right: mobile ? 16 : 24, background: "none", border: "none", cursor: "pointer", zIndex: 210, padding: 8 }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke={C.bright} strokeWidth="2" strokeLinecap="round" /></svg>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(4,6,12,0.92)", backdropFilter: "blur(20px)", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp .25s ease both" }}>
+
+      {/* ── Close button ── positioned below header ── */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
+        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+        onMouseEnter={() => setCloseHov(true)}
+        onMouseLeave={() => setCloseHov(false)}
+        aria-label="Close lightbox"
+        style={{
+          position: "fixed",
+          top: mobile ? 70 : 80,
+          right: mobile ? 16 : 28,
+          width: mobile ? 48 : 40, height: mobile ? 48 : 40,
+          borderRadius: "50%",
+          border: `1.5px solid rgba(255,255,255,${closeHov ? 0.35 : 0.2})`,
+          cursor: "pointer",
+          background: closeHov ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.12)",
+          backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 10010,
+          WebkitTapHighlightColor: "transparent",
+          transition: "background .2s ease, border-color .2s ease",
+          padding: 0,
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6l12 12" stroke={C.bright} strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
       </button>
 
+      {/* ── Prev / Next arrows ── */}
       {activeIndex > 0 && arrowBtn("left", onPrev)}
       {activeIndex < items.length - 1 && arrowBtn("right", onNext)}
 
+      {/* ── Content ── */}
       <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: mobile ? 12 : 0 }}>
         <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,.5)" }}>
           {item.src ? (
@@ -239,6 +279,10 @@ export function Gallery({ mobile, innerStyle }) {
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeTag, setActiveTag] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+
+  /* reset expand when filters change */
+  useEffect(() => { setExpanded(false); }, [activeCategory, activeTag]);
 
   const filteredGallery = (() => {
     if (!activeCategory) return ITEMS;
@@ -248,6 +292,10 @@ export function Gallery({ mobile, innerStyle }) {
     if (!activeTag) return catItems;
     return catItems.filter((item) => item.tags.includes(activeTag));
   })();
+
+  const initialCount = mobile ? 6 : INITIAL_COUNT;
+  const visibleItems = expanded ? filteredGallery : filteredGallery.slice(0, initialCount);
+  const remaining = filteredGallery.length - initialCount;
 
   const handleCategorySelect = (name) => {
     setActiveCategory((prev) => (prev === name ? null : name));
@@ -278,11 +326,22 @@ export function Gallery({ mobile, innerStyle }) {
         <HashtagRow activeCategory={activeCategory} activeTag={activeTag} onTagClick={handleTagClick} mobile={mobile} />
 
         <div style={{ marginTop: mobile ? 20 : 28 }} />
+
+        {/* ─── Masonry grid (capped at 9, expandable) ─── */}
         <div key={`${activeCategory}-${activeTag}`} style={{ columnCount: mobile ? 2 : 3, columnGap: mobile ? 10 : 16 }}>
-          {filteredGallery.map((item, i) => (
+          {visibleItems.map((item, i) => (
             <GalleryImage key={item.caption} item={item} index={i} mobile={mobile} activeTag={activeTag} onClick={(idx) => setLightboxIdx(idx)} />
           ))}
         </div>
+
+        {remaining > 0 && (
+          <ShowMoreBtn
+            remaining={remaining}
+            expanded={expanded}
+            onClick={() => setExpanded((p) => !p)}
+            mobile={mobile}
+          />
+        )}
 
         {filteredGallery.length === 0 && (
           <p style={{ fontFamily: "'DM Sans'", fontSize: 14, color: C.muted, textAlign: "center", padding: "40px 0" }}>
@@ -298,14 +357,14 @@ export function Gallery({ mobile, innerStyle }) {
         )}
       </div>
 
-      {lightboxIdx !== null && filteredGallery[lightboxIdx] && (
+      {lightboxIdx !== null && visibleItems[lightboxIdx] && (
         <Lightbox
-          items={filteredGallery}
+          items={visibleItems}
           activeIndex={lightboxIdx}
           mobile={mobile}
           onClose={() => setLightboxIdx(null)}
           onPrev={() => setLightboxIdx((p) => Math.max(0, p - 1))}
-          onNext={() => setLightboxIdx((p) => Math.min(filteredGallery.length - 1, p + 1))}
+          onNext={() => setLightboxIdx((p) => Math.min(visibleItems.length - 1, p + 1))}
           onTagClick={handleTagClick}
         />
       )}
