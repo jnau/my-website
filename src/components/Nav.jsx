@@ -40,7 +40,7 @@ function NavLogo({ scrolled }) {
           fontSize: scrolled ? 12 : 20,
           fontWeight: 700,
           color: "rgba(0,0,0,0.75)",
-          textShadow: "0 1px 4px rgba(0, 0, 0, 0.2)",
+          textShadow: "0 1px 4px rgba(255, 255, 255, 0.2)",
           WebkitTextStroke: "1px rgba(2, 2, 2, 0.3)",
           letterSpacing: 1,
           transition: "font-size .45s cubic-bezier(.22,1,.36,1)",
