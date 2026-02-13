@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { C } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
 import { useReveal } from "../hooks/useReveal";
@@ -6,6 +6,28 @@ import projectsData from "../data/projects.json";
 
 const PROJECTS = projectsData.featured;
 const ARCHIVE = projectsData.archived;
+const ALL_PROJECTS = [...PROJECTS, ...ARCHIVE].sort((a, b) => (b.year || "0").localeCompare(a.year || "0"));
+
+/* ─── Type colors ─── */
+const TYPE_COLORS = {
+  Research: "#78aec8",
+  Professional: "#6db89f",
+  Personal: "#c9a96e",
+};
+const getTypeColor = (type) => TYPE_COLORS[type] || C.accent;
+
+/* ─── Topic colors ─── */
+const TOPIC_COLORS = {
+  "Computational Biology": "#6db89f",
+  Engineering: "#78aec8",
+  Mathematics: "#c9a96e",
+  "Data Science": "#a990c0",
+  Bioinformatics: "#78c8b4",
+  Biophysics: "#c98e8e",
+  Physics: "#d4a574",
+  Design: "#c98e8e",
+};
+const getTopicColor = (topic) => TOPIC_COLORS[topic] || C.accent;
 
 /* ─── Mini Demos ─── */
 function SigBarsDemo() {
@@ -74,6 +96,33 @@ function ComingSoonDemo() {
 
 const DEMO_MAP = { sigbars: SigBarsDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, dashboard: DashboardDemo, comingsoon: ComingSoonDemo };
 
+/* ─── Filter Pill ─── */
+function FilterPill({ label, color, active, onClick, mobile }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        fontFamily: "'DM Sans'",
+        fontSize: mobile ? 10 : 11,
+        fontWeight: 500,
+        color: active ? color : hov ? C.bright : C.muted,
+        background: active ? `${color}18` : "transparent",
+        border: `1px solid ${active ? `${color}44` : hov ? C.border : "transparent"}`,
+        borderRadius: 14,
+        padding: mobile ? "3px 9px" : "4px 11px",
+        cursor: "pointer",
+        transition: "all .25s ease",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 /* ─── Project Card ─── */
 function ProjectCard({ proj, index, mobile }) {
   const [h, setH] = useState(false);
@@ -111,6 +160,141 @@ function ProjectCard({ proj, index, mobile }) {
             <span key={t} style={{ fontFamily: "'DM Sans'", fontSize: 11, fontWeight: 500, color: C.accent, background: C.accentDim, borderRadius: 20, padding: "3px 9px" }}>{t}</span>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Archive Table ─── */
+function ArchiveTable({ mobile }) {
+  const [typeFilter, setTypeFilter] = useState(null);
+  const [topicFilter, setTopicFilter] = useState(null);
+
+  /* derive unique types & topics from data */
+  const allTypes = useMemo(() => {
+    const set = new Set();
+    ALL_PROJECTS.forEach((p) => { if (p.type) set.add(p.type); });
+    return [...set].sort();
+  }, []);
+
+  const allTopics = useMemo(() => {
+    const set = new Set();
+    ALL_PROJECTS.forEach((p) => { (p.topics || []).forEach((t) => set.add(t)); });
+    return [...set].sort();
+  }, []);
+
+  /* filtered list */
+  const filtered = useMemo(() => {
+    return ALL_PROJECTS.filter((p) => {
+      if (typeFilter && p.type !== typeFilter) return false;
+      if (topicFilter && !(p.topics || []).includes(topicFilter)) return false;
+      return true;
+    });
+  }, [typeFilter, topicFilter]);
+
+  return (
+    <div style={{ animation: "fadeUp .4s ease both" }}>
+      {/* ── Filter row ── */}
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: mobile ? 6 : 8, marginBottom: mobile ? 12 : 16 }}>
+        {/* type filters */}
+        <span style={{ fontFamily: "'DM Sans'", fontSize: 10, fontWeight: 600, color: C.muted, letterSpacing: 1, textTransform: "uppercase", marginRight: 2 }}>Type</span>
+        <FilterPill label="All" color={C.accent} active={typeFilter === null} onClick={() => setTypeFilter(null)} mobile={mobile} />
+        {allTypes.map((t) => (
+          <FilterPill key={t} label={t} color={getTypeColor(t)} active={typeFilter === t} onClick={() => setTypeFilter((prev) => prev === t ? null : t)} mobile={mobile} />
+        ))}
+
+        {/* divider */}
+        <div style={{ width: 1, height: 16, background: C.border, margin: mobile ? "0 2px" : "0 6px" }} />
+
+        {/* topic filters */}
+        <span style={{ fontFamily: "'DM Sans'", fontSize: 10, fontWeight: 600, color: C.muted, letterSpacing: 1, textTransform: "uppercase", marginRight: 2 }}>Topic</span>
+        <FilterPill label="All" color={C.accent} active={topicFilter === null} onClick={() => setTopicFilter(null)} mobile={mobile} />
+        {allTopics.map((t) => (
+          <FilterPill key={t} label={t} color={getTopicColor(t)} active={topicFilter === t} onClick={() => setTopicFilter((prev) => prev === t ? null : t)} mobile={mobile} />
+        ))}
+      </div>
+
+      {/* ── Table ── */}
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'DM Sans'", minWidth: mobile ? 600 : "auto" }}>
+          <thead>
+            <tr>
+              {["Year", "Project", "Type", "Topic", "Built with"].map((h) => (
+                <th key={h} style={{
+                  textAlign: "left", padding: "10px 12px", fontSize: 11, fontWeight: 600,
+                  color: C.muted, letterSpacing: 1, textTransform: "uppercase",
+                  borderBottom: `1px solid ${C.border}`, whiteSpace: "nowrap",
+                }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((p, i) => (
+              <tr
+                key={i}
+                onMouseEnter={(e) => (e.currentTarget.style.background = C.accentDim)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                {/* Year */}
+                <td style={{ padding: "10px 12px", fontSize: 12, color: C.muted, whiteSpace: "nowrap" }}>{p.year}</td>
+
+                {/* Project */}
+                <td style={{ padding: "10px 12px", fontSize: 13, fontWeight: 500, color: C.bright }}>{p.title}</td>
+
+                {/* Type — single colored badge */}
+                <td style={{ padding: "10px 12px" }}>
+                  {p.type && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 600,
+                      color: getTypeColor(p.type),
+                      background: `${getTypeColor(p.type)}15`,
+                      border: `1px solid ${getTypeColor(p.type)}30`,
+                      borderRadius: 10, padding: "2px 8px",
+                      whiteSpace: "nowrap",
+                    }}>{p.type}</span>
+                  )}
+                </td>
+
+                {/* Topics — multiple tags */}
+                <td style={{ padding: "10px 12px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                    {(p.topics || []).map((t) => (
+                      <span key={t} style={{
+                        fontSize: 10,
+                        color: getTopicColor(t),
+                        background: `${getTopicColor(t)}15`,
+                        borderRadius: 10, padding: "2px 7px",
+                        whiteSpace: "nowrap",
+                      }}>{t}</span>
+                    ))}
+                  </div>
+                </td>
+
+                {/* Built with */}
+                <td style={{ padding: "10px 12px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                    {(p.tags || []).map((t) => (
+                      <span key={t} style={{ fontSize: 10, color: C.accent, background: C.accentDim, borderRadius: 10, padding: "2px 7px" }}>{t}</span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} style={{ padding: "24px 12px", fontSize: 13, color: C.muted, textAlign: "center" }}>
+                  No projects match those filters
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* result count */}
+      <div style={{ marginTop: 8, fontFamily: "'DM Sans'", fontSize: 11, color: C.muted }}>
+        {filtered.length} of {ALL_PROJECTS.length} projects
       </div>
     </div>
   );
@@ -163,36 +347,10 @@ export function Projects({ mobile, pad }) {
         </button>
 
         {showArchive && (
-          <div style={{ marginTop: 16, overflowX: "auto", animation: "fadeUp .4s ease both" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'DM Sans'", minWidth: mobile ? 500 : "auto" }}>
-              <thead>
-                <tr>
-                  {["Year", "Project", "Built with"].map((h) => (
-                    <th key={h} style={{ textAlign: "left", padding: "10px 12px", fontSize: 11, fontWeight: 600, color: C.muted, letterSpacing: 1, textTransform: "uppercase", borderBottom: `1px solid ${C.border}` }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[...PROJECTS, ...ARCHIVE]
-                  .sort((a, b) => (b.year || "0").localeCompare(a.year || "0"))
-                  .map((p, i) => (
-                    <tr key={i} onMouseEnter={(e) => (e.currentTarget.style.background = C.accentDim)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                      <td style={{ padding: "10px 12px", fontSize: 12, color: C.muted, whiteSpace: "nowrap" }}>{p.year}</td>
-                      <td style={{ padding: "10px 12px", fontSize: 13, fontWeight: 500, color: C.bright }}>{p.title}</td>
-                      <td style={{ padding: "10px 12px" }}>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                          {(p.tags || []).map((t) => (
-                            <span key={t} style={{ fontSize: 10, color: C.accent, background: C.accentDim, borderRadius: 10, padding: "2px 7px" }}>{t}</span>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+          <div style={{ marginTop: 16 }}>
+            <ArchiveTable mobile={mobile} />
           </div>
         )}
-        
       </div>
     </div>
   );

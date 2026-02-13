@@ -1,41 +1,93 @@
 {
   "featured": [
-    { "title": "Recipe Book AI",
+    {
+      "title": "Recipe Book AI",
       "desc": "Personal recipe database with AI search. Upload text, photos, or URLs — then ask what you can cook with what's in the fridge.",
-      "tags": ["Personal", "LLMs", "RAG", "Python"],
+      "type": "Personal",
+      "topics": ["Engineering", "Data Science"],
+      "tags": ["Python", "LLMs", "RAG"],
       "year": "2026",
       "demo": "comingsoon"
     },
-    { "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", 
-      "desc": "Reference set from 50,000+ WGS across multiple cancer types.", 
-      "tags": ["Python", "Research", "ML", "Statistics"], 
-      "year": "2023-present", 
-      "demo": "sigbars" },
-
-    { "title": "mSigLit-AI", 
-      "desc": "AI literature curation with automated extraction and classification.", 
-      "tags": ["Python", "Research", "NLP", "LLMs"], 
-      "year": "2025-present", 
-      "demo": "pipeline" },
-
-    { "title": "Interactive HD Dashboards", 
-      "desc": "Web exploration tools for HD Signature analysis", 
-      "tags": ["Research", "AWS", "HTML/CSS", "JavaScript", "Plotly"], 
-      "year": "2025-present", 
-      "demo": "dashboard" },
-
-    { "title": "ENCODEd Database", 
-      "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", 
-      "tags": ["Professional", "AWS", "GCP", "Python", "Database"], 
-      "year": "2019-2021", 
-      "demo": "dots" }
+    {
+      "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers",
+      "desc": "Reference set from 50,000+ WGS across multiple cancer types.",
+      "type": "Research",
+      "topics": ["Computational Biology", "Mathematics", "Data Science", "Bioinformatics"],
+      "tags": ["Python", "ML", "Statistics"],
+      "year": "2023-present",
+      "demo": "sigbars"
+    },
+    {
+      "title": "mSigLit-AI",
+      "desc": "AI literature curation with automated extraction and classification.",
+      "type": "Research",
+      "topics": ["Computational Biology", "Data Science", "Bioinformatics"],
+      "tags": ["Python", "NLP", "LLMs"],
+      "year": "2025-present",
+      "demo": "pipeline"
+    },
+    {
+      "title": "Interactive HD Dashboards",
+      "desc": "Web exploration tools for HD Signature analysis",
+      "type": "Research",
+      "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
+      "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"],
+      "year": "2025-present",
+      "demo": "dashboard"
+    },
+    {
+      "title": "ENCODEd Database",
+      "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA",
+      "type": "Professional",
+      "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
+      "tags": ["AWS", "GCP", "Python", "Database"],
+      "year": "2019-2021",
+      "demo": "dots"
+    }
   ],
   "archived": [
-    { "year": "2019-2021", "title": "Checkfiles", "tags": ["Professional", "Python", "Automated file handler", "CI/CD", "Bioinformatics"] },
-    { "year": "2025", "title": "Mutational signture inference", "tags": ["Research", "Statistics", "Python", "Big-data"] },
-    { "year": "2018-2019", "title": "Investigating Ca2+ spark formation", "tags": ["Research", "C/C++", "SLURM", "HPC", "Biophysics"] },
-    { "year": "2017", "title": "Synchronization of Mechanical Fireflies", "tags": ["Research", "Python", "Matlab", "Hardware"] },
-    { "year": "2017", "title": "Cardiac arrhythmias in relation to nonlinear dynamics", "tags": ["Research", "Matlab", "C/C++", "Mathematics"] },
-    { "year": "2017", "title": "DNA Topology: effects on confinement affecting DNA structure", "tags": ["Reserch", "Python", "R", "Mathematics", "Biology"] }
+    {
+      "year": "2019-2021",
+      "title": "Checkfiles",
+      "type": "Professional",
+      "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
+      "tags": ["Python", "CI/CD"]
+    },
+    {
+      "year": "2025",
+      "title": "Mutational Signature Inference",
+      "type": "Research",
+      "topics": ["Computational Biology", "Mathematics", "Data Science", "Bioinformatics"],
+      "tags": ["Python", "Statistics"]
+    },
+    {
+      "year": "2018-2019",
+      "title": "Investigating Ca²⁺ Spark Formation",
+      "type": "Research",
+      "topics": ["Computational Biology", "Mathematics", "Biophysics"],
+      "tags": ["C/C++", "SLURM", "HPC"]
+    },
+    {
+      "year": "2017",
+      "title": "Synchronization of Mechanical Fireflies",
+      "type": "Research",
+      "topics": ["Engineering", "Mathematics", "Physics"],
+      "tags": ["Python", "Matlab", "RaspberryPi"]
+    },
+    {
+      "year": "2017",
+      "title": "Cardiac Arrhythmias in Relation to Nonlinear Dynamics",
+      "type": "Research",
+      "topics": ["Computational Biology", "Mathematics", "Biophysics"],
+      "tags": ["Matlab", "C/C++"]
+    },
+    {
+      "year": "2017",
+      "title": "DNA Topology: Effects of Confinement on DNA Structure",
+      "type": "Research",
+      "topics": ["Computational Biology", "Mathematics"],
+      "tags": ["Python", "R"]
+    }
   ]
 }
