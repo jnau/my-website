@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { C } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
 import { useReveal } from "../hooks/useReveal";
@@ -119,6 +119,12 @@ function ProjectCard({ proj, index, mobile }) {
 /* ─── Main Export ─── */
 export function Projects({ mobile, pad }) {
   const [showArchive, setShowArchive] = useState(false);
+  const [hintVisible, setHintVisible] = useState(true);
+  const scrollRef = useRef(null);
+
+  const handleScroll = useCallback(() => {
+    if (hintVisible) setHintVisible(false);
+  }, [hintVisible]);
 
   return (
     <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 40 : 50}px 0` }}>
@@ -127,14 +133,26 @@ export function Projects({ mobile, pad }) {
       </div>
 
       {/* horizontal scroll */}
-      <div className="hide-scroll" style={{ overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", padding: "8px 0 20px" }}>
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="hide-scroll"
+        style={{ overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", padding: "8px 0 20px" }}
+      >
         <div style={{ display: "flex", gap: mobile ? 12 : 16, paddingLeft: pad, paddingRight: pad, width: "max-content" }}>
           {PROJECTS.map((proj, i) => (
             <ProjectCard key={i} proj={proj} index={i} mobile={mobile} />
           ))}
         </div>
       </div>
-    
+
+      {/* scroll hint */}
+      <div style={{ textAlign: "center", marginTop: 4, opacity: hintVisible ? 1 : 0, transition: "opacity .8s", pointerEvents: "none" }}>
+        <span style={{ fontFamily: "'Caveat'", fontSize: 15, color: C.accent, background: C.accentDim, padding: "5px 16px", borderRadius: 20 }}>
+          ← scroll to explore more →
+        </span>
+      </div>
+
       {/* archive */}
       <div style={{ padding: `0 ${pad}px`, marginTop: 16 }}>
         <button
