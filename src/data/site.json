@@ -2,7 +2,7 @@
   "name": "Jessica N. Au",
   "greeting": "HI, MY NAME IS",
   "tagline": "I decode the patterns mutations leave behind in your DNA",
-  "intro": "Currently a PhD researcher in <strong>bioinformatics & systems biology</strong> at UC San Diego, building tools to understand how mutations shape disease.",
+  "intro": "Currently a PhD researcher in <strong>bioinformatics & systems biology</strong> at UC San Diego, using AI and statistics to turn biological noise into insight.",
   "links": {
     "GitHub": "https://github.com/jnau",
     "Scholar": "https://scholar.google.com/citations?user=V5wCP-0AAAAJ&hl=en",
@@ -17,10 +17,10 @@
   "navSections": ["Intro", "About", "Experience", "Projects", "Publications", "Beyond the Lab"],
   "about": {
     "paragraphs": [
-      "I'm a Ph.D. Candidate in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the Alexandrov Lab. My research sits at the intersection of biology and computer science to study precision oncology.",
-      "I'm currently developing a high-definition mutational signature reference using <strong>50,000+ whole-genome sequences</strong>, create interactive tools for exploring them, and build AI-powered curation systems.",
-      "When I'm not analyzing mutations, I'm painting watercolors, out fishing, or tending to a succulent collection that has gotten slightly out of hand."
-    ],
+    "I'm a Ph.D. Candidate in <strong>Bioinformatics & Systems Biology</strong> at UCSD, working in the <strong>Alexandrov Lab</strong> on precision oncology — studying how mutational patterns can reveal the history written in a cancer genome.",
+    "Day to day, I build interactive dashboards for exploring genomic signatures, develop AI-powered literature curation systems, and wrangle large-scale sequencing data across multiple international cohorts.",
+    "When I'm not analyzing mutations, I'm painting watercolors, out fishing, or tending to a succulent collection that has gotten slightly out of hand."
+  ],
     "photo": "images/profile/profile_picture_01.png"
   },
   "footer": {
