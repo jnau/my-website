@@ -14,7 +14,7 @@ function NavLogo({ scrolled }) {
   });
 
   const size = scrolled ? 36 : 72;
-  const radius = scrolled ? "50%" : "16px";
+  const radius = "50%";
 
   if (src) {
     return (
@@ -28,10 +28,23 @@ function NavLogo({ scrolled }) {
           transform: hov ? "scale(1.08)" : "scale(1)",
           boxShadow: hov
             ? `0 0 20px ${C.accentDim}`
-            : scrolled ? "none" : "0 4px 24px rgba(0,0,0,0.3)",
+            : scrolled ? "none" : "0 4px 24px rgba(255, 255, 255, 0.4)",
+          position: "relative",
         }}
       >
-        <img src={src} alt="JA" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        <img src={src} alt="JNA" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        <span style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontFamily: "'Cormorant Garamond'",
+          fontSize: scrolled ? 12 : 20,
+          fontWeight: 700,
+          color: "rgba(0, 0, 0, 0.75)",
+          textShadow: "0 1px 4px rgba(255,255,255,0.2)",
+          letterSpacing: 1,
+          transition: "font-size .45s cubic-bezier(.22,1,.36,1)",
+          pointerEvents: "none",
+        }}>JNA</span>
       </div>
     );
   }
@@ -44,7 +57,7 @@ function NavLogo({ scrolled }) {
         fontFamily: "'Cormorant Garamond'", fontSize: scrolled ? 20 : 32, fontWeight: 600,
         color: hov ? C.accent : C.heading, transition: "all .45s cubic-bezier(.22,1,.36,1)",
       }}
-    >JA</span>
+    >JNA</span>
   );
 }
 
