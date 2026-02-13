@@ -11,7 +11,8 @@
   "logoImages": [
     "/images/logo/image_01.png",
     "/images/logo/image_02.jpg",
-    "/images/logo/image_03.jpg"
+    "/images/logo/image_03.jpg",
+    "/images/logo/image_04.png"
   ],
   "navSections": ["Intro", "About", "Experience", "Projects", "Publications", "Beyond the Lab"],
   "about": {
