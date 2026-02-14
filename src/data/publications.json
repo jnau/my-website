@@ -1,9 +1,29 @@
 {
   "items": [
-    { "title": "The Impact of Variant Calling on Substitution Mutational Signature Inference", "authors": "Zichen Jiang & Jessica N Au et al.", "journal": "Biorxiv", "year": "2025" },
-    { "title": "Data navigation on the ENCODE portal", "authors": "Meenakshi S Kagda, Bonita Lam, ..., Jessica Au  et al.", "journal": "Nature Communications", "year": "2025" },
-    { "title": "Germline modifiers of the tumor immune microenvironment implicate drivers of cancer risk and immunotherapy response", "authors": "Meghana Pagadala, Timothy J Sears, ... , Jessica Au  et al.", "journal": "Nature Communications", "year": "2023" },
-    { "title": "Evolution of stickleback spines through independent cis-regulatory changes at HOXDB", "authors": "Julia I Wucherpfennig, Timothy R Howes, Jessica N Au, Eric H Au, et al.", "journal": "Nature Ecology and Evolution", "year": "2022" }
+    { "title": "The Impact of Variant Calling on Substitution Mutational Signature Inference", 
+      "authors": "Zichen Jiang & Jessica N Au et al.", 
+      "journal": "Biorxiv", 
+      "url": "https://doi.org/10.64898/2025.12.09.693327",
+      "summary": "We systematically evaluated how variant calling strategies affect mutational signature extraction across 8,900+ TCGA exomes and 1,800+ PCAWG genomes, finding that individual callers introduce artifactual signatures while consensus calling yields stable, reproducible results. A minimal two-caller consensus approach effectively removes technical artifacts while preserving true biological signal, establishing practical guidelines for robust de novo signature analysis", 
+      "year": "2025"},
+    { "title": "Data navigation on the ENCODE portal", 
+      "authors": "Meenakshi S Kagda, Bonita Lam, ..., Jessica Au  et al.", 
+      "journal": "Nature Communications", 
+      "summary":"We developed and maintained the ENCODE data portal (encodeproject.org), implementing uniform processing pipelines and redesigning the interface with improved search, curated dataset pages, and enhanced data visualization and download tools to serve the scientific community. Our work supported the delivery of over 23,000 functional genomics experiments and 60,000+ integrative analyses, ensuring comprehensive open access to functional element annotations across human and mouse genomes.", 
+      "url": "https://doi.org/10.1038/s41467-025-64343-9",
+      "year": "2025" },
+    { "title": "Germline modifiers of the tumor immune microenvironment implicate drivers of cancer risk and immunotherapy response", 
+      "authors": "Meghana Pagadala, Timothy J Sears, ... , Jessica Au  et al.", 
+      "journal": "Nature Communications", 
+      "summary":"We identified 1,084 eQTLs shaping the tumor immune microenvironment through analysis of TCGA data and literature curation, building polygenic score models that reproducibly stratified cancer risk, survival, and immune checkpoint blockade response across independent cohorts. We validated this eQTL-informed approach by inhibiting CTSS—a gene implicated by our polygenic models—demonstrating slowed tumor growth and extended survival in vivo, supporting the integration of germline variation with immune microenvironment characteristics for uncovering immunotherapy targets.",
+      "url":"https://doi.org/10.1038/s41467-023-38271-5", 
+      "year": "2023" },
+    { "title": "Evolution of stickleback spines through independent cis-regulatory changes at HOXDB", 
+      "authors": "Julia I Wucherpfennig, Timothy R Howes, Jessica N Au, Eric H Au, et al.", 
+      "journal": "Nature Ecology and Evolution", 
+      "url": "https://doi.org/10.1038/s41559-022-01855-3",
+      "summary":"We demonstrated that regulatory changes in the HOXDB locus have been repeatedly used across different stickleback genera to alter dorsal spine length and number, with variant alleles in both Gasterosteus and Apeltes modifying the same non-coding enhancer through diverse mechanisms including SNPs, deletions, and transposable element insertions. Our findings support the long-standing hypothesis that natural Hox gene variation drives key patterning changes in wild populations, showing how different mutations affecting the same regulatory region can produce opposite expression changes yet converge on similar phenotypic outcomes.",
+      "year": "2022" }
   ],
   "scholarUrl": "https://scholar.google.com/citations?user=V5wCP-0AAAAJ&hl=en"
 }

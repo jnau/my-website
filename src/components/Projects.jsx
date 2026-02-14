@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { C } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
 import { useReveal } from "../hooks/useReveal";
@@ -125,37 +125,46 @@ function FilterPill({ label, color, active, onClick, mobile }) {
 
 /* ─── Project Card ─── */
 function ProjectCard({ proj, index, mobile }) {
-  const [h, setH] = useState(false);
   const [ref, vis] = useReveal(0.1);
   const w = mobile ? 280 : 340;
   const DemoComp = proj.demo ? DEMO_MAP[proj.demo] : null;
+  const hasLinks = proj.github || proj.url;
 
   return (
     <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: `opacity .6s ease ${index * 0.06}s, transform .6s ease ${index * 0.06}s` }}>
       <div
-        onMouseEnter={() => setH(true)}
-        onMouseLeave={() => setH(false)}
         style={{
-          width: w, borderRadius: 14, border: `1px solid ${h ? C.accentMid : C.border}`,
-          background: h ? C.surfaceHov : C.surface,
+          width: w, borderRadius: 14, border: `1px solid ${C.border}`,
+          background: C.surface,
           padding: mobile ? 20 : 24, display: "flex", flexDirection: "column",
-          transition: "all .35s ease", transform: h ? "translateY(-6px)" : "none",
-          boxShadow: h ? "0 12px 36px rgba(0,0,0,.3)" : "none",
-          cursor: "pointer", position: "relative", overflow: "hidden", minHeight: mobile ? 180 : 220,
+          position: "relative", overflow: "hidden", minHeight: mobile ? 180 : 220,
         }}
       >
-        <div style={{ position: "absolute", top: -40, right: -40, width: 100, height: 100, borderRadius: "50%", background: `radial-gradient(circle,${C.accentDim},transparent 70%)`, opacity: h ? 1 : 0, transition: "opacity .4s" }} />
-        <div style={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 style={{ fontFamily: "'Cormorant Garamond'", fontSize: mobile ? 18 : 20, fontWeight: 600, color: C.heading, margin: 0, flex: 1 }}>{proj.title}</h3>
           <span style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.muted, marginLeft: 8 }}>{proj.year}</span>
         </div>
-        <p style={{ fontFamily: "'DM Sans'", fontSize: 13, color: C.text, lineHeight: 1.7, marginTop: 8, flex: 1, position: "relative" }}>{proj.desc}</p>
+        <p style={{ fontFamily: "'DM Sans'", fontSize: 13, color: C.text, lineHeight: 1.7, marginTop: 8, flex: 1 }}>{proj.desc}</p>
         {DemoComp && (
-          <div style={{ marginTop: 12, borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, padding: 12, position: "relative" }}>
+          <div style={{ marginTop: 12, borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, padding: 12 }}>
             <DemoComp />
           </div>
         )}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 12, position: "relative" }}>
+        {hasLinks && (
+          <div style={{ display: "flex", alignItems: "center", gap: mobile ? 12 : 16, marginTop: 12 }}>
+            {proj.url && (
+              <a href={proj.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 12 }}>↗</span> Demo
+              </a>
+            )}
+            {proj.github && (
+              <a href={proj.github} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.muted, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 12 }}>↗</span> GitHub
+              </a>
+            )}
+          </div>
+        )}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: hasLinks ? 10 : 12 }}>
           {proj.tags.map((t) => (
             <span key={t} style={{ fontFamily: "'DM Sans'", fontSize: 11, fontWeight: 500, color: C.accent, background: C.accentDim, borderRadius: 20, padding: "3px 9px" }}>{t}</span>
           ))}
@@ -219,7 +228,7 @@ function ArchiveTable({ mobile }) {
         <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'DM Sans'", minWidth: mobile ? 600 : "auto" }}>
           <thead>
             <tr>
-              {["Year", "Project", "Type", "Topic", "Built with"].map((h) => (
+              {["Year", "Project", "Type", "Topic", "Built with", "Links"].map((h) => (
                 <th key={h} style={{
                   textAlign: "left", padding: "10px 12px", fontSize: 11, fontWeight: 600,
                   color: C.muted, letterSpacing: 1, textTransform: "uppercase",
@@ -278,12 +287,28 @@ function ArchiveTable({ mobile }) {
                     ))}
                   </div>
                 </td>
+
+                {/* Links */}
+                <td style={{ padding: "10px 12px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    {p.url && (
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: C.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <span style={{ fontSize: 11 }}>↗</span> Demo
+                      </a>
+                    )}
+                    {p.github && (
+                      <a href={p.github} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: C.muted, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <span style={{ fontSize: 11 }}>↗</span> GitHub
+                      </a>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))}
 
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ padding: "24px 12px", fontSize: 13, color: C.muted, textAlign: "center" }}>
+                <td colSpan={6} style={{ padding: "24px 12px", fontSize: 13, color: C.muted, textAlign: "center" }}>
                   No projects match those filters
                 </td>
               </tr>
@@ -305,10 +330,60 @@ export function Projects({ mobile, pad }) {
   const [showArchive, setShowArchive] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
   const scrollRef = useRef(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [containerW, setContainerW] = useState(0);
+  const mounted = useRef(false);
 
+  const CARD_W = mobile ? 280 : 340;
+  const CARD_GAP = mobile ? 12 : 16;
+  const sidePad = containerW ? containerW / 2 - CARD_W / 2 : 0;
+
+  /* ── measure container on mount + resize ── */
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const measure = () => setContainerW(el.clientWidth);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  /* ── card centers ── */
+  const getCardCenter = (i) => sidePad + i * (CARD_W + CARD_GAP) + CARD_W / 2;
+
+  /* ── track active card on scroll ── */
   const handleScroll = useCallback(() => {
+    if (mounted.current && hintVisible) setHintVisible(false);
+    const el = scrollRef.current;
+    if (!el || !sidePad) return;
+    const scrollCenter = el.scrollLeft + el.clientWidth / 2;
+    let closest = 0;
+    let minDist = Infinity;
+    PROJECTS.forEach((_, i) => {
+      const d = Math.abs(getCardCenter(i) - scrollCenter);
+      if (d < minDist) { minDist = d; closest = i; }
+    });
+    setActiveIdx(closest);
+  }, [hintVisible, sidePad, CARD_W, CARD_GAP]);
+
+  /* ── initialize active index ── */
+  useEffect(() => {
+    if (!sidePad) return;
+    const timer = setTimeout(() => {
+      handleScroll();
+      setTimeout(() => { mounted.current = true; }, 250);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [handleScroll, sidePad]);
+
+  /* ── click dot → scroll to card ── */
+  const scrollToCard = (i) => {
+    const el = scrollRef.current;
+    if (!el || !sidePad) return;
+    const target = getCardCenter(i) - el.clientWidth / 2;
+    el.scrollTo({ left: target, behavior: "smooth" });
     if (hintVisible) setHintVisible(false);
-  }, [hintVisible]);
+  };
 
   return (
     <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 40 : 50}px 0` }}>
@@ -323,15 +398,47 @@ export function Projects({ mobile, pad }) {
         className="hide-scroll"
         style={{ overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", padding: "8px 0 20px" }}
       >
-        <div style={{ display: "flex", gap: mobile ? 12 : 16, paddingLeft: pad, paddingRight: pad, width: "max-content" }}>
+        <div style={{ display: "flex", gap: mobile ? 12 : 16, paddingLeft: sidePad, paddingRight: sidePad, width: "max-content" }}>
           {PROJECTS.map((proj, i) => (
             <ProjectCard key={i} proj={proj} index={i} mobile={mobile} />
           ))}
         </div>
       </div>
 
+      {/* ── dot indicators ── */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: mobile ? 8 : 10,
+        marginTop: 2,
+      }}>
+        {PROJECTS.map((_, i) => {
+          const isActive = i === activeIdx;
+          return (
+            <button
+              key={i}
+              onClick={() => scrollToCard(i)}
+              aria-label={`Go to project ${i + 1}`}
+              style={{
+                width: isActive ? 10 : 6,
+                height: isActive ? 10 : 6,
+                borderRadius: "50%",
+                background: isActive ? C.accent : C.border,
+                boxShadow: isActive ? `0 0 8px rgba(109,184,159,0.4)` : "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                transition: "all .3s ease",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            />
+          );
+        })}
+      </div>
+
       {/* scroll hint */}
-      <div style={{ textAlign: "center", marginTop: 4, opacity: hintVisible ? 1 : 0, transition: "opacity .8s", pointerEvents: "none" }}>
+      <div style={{ textAlign: "center", marginTop: 16, opacity: hintVisible ? 1 : 0, transition: "opacity .8s", pointerEvents: "none" }}>
         <span style={{ fontFamily: "'Caveat'", fontSize: 15, color: C.accent, background: C.accentDim, padding: "5px 16px", borderRadius: 20 }}>
           ← scroll to explore more →
         </span>

@@ -25,7 +25,8 @@
       "topics": ["Computational Biology", "Data Science", "Bioinformatics"],
       "tags": ["Python", "NLP", "LLMs"],
       "year": "2025-present",
-      "demo": "pipeline"
+      "demo": "pipeline",
+      "github": "https://github.com/jnau/msiglitai"
     },
     {
       "title": "Interactive HD Dashboards",
@@ -34,7 +35,8 @@
       "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
       "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"],
       "year": "2025-present",
-      "demo": "dashboard"
+      "demo": "dashboard",
+      "url": "https://d27bpfybwt8iuv.cloudfront.net/"
     },
     {
       "title": "ENCODEd Database",
@@ -43,7 +45,9 @@
       "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
       "tags": ["AWS", "GCP", "Python", "Database"],
       "year": "2019-2021",
-      "demo": "dots"
+      "demo": "dots",
+      "github": "https://github.com/ENCODE-DCC/encoded",
+      "url": "https://www.encodeproject.org/"
     }
   ],
   "archived": [

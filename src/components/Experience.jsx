@@ -3,6 +3,20 @@ import { C } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
 import EXPERIENCES from "../data/experiences.json";
 
+/* ── helpers ── */
+function getEndYear(period) {
+  if (!period) return "";
+  const lower = period.toLowerCase();
+  if (lower.includes("present") || lower.includes("current")) return "Present";
+  const years = period.match(/\d{4}/g);
+  return years ? years[years.length - 1] : "";
+}
+
+function getDisplayYear(exp) {
+  if (exp.isFuture) return "Future";
+  return getEndYear(exp.period);
+}
+
 export function Experience({ mobile, screenW, pad }) {
   return (
     <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 40 : 50}px 0` }}>
@@ -68,8 +82,88 @@ function DockTimeline({ mobile, screenW }) {
     return 0.25 + Math.max(0, 1 - dist / (CARD_W * 2.2)) * 0.75;
   };
 
+  /* ── find which card is nearest center ── */
+  const activeIdx = (() => {
+    if (!trackWidth || cardCenters.length === 0) return 0;
+    const viewCenter = scrollLeft + trackWidth / 2;
+    let closest = 0;
+    let minDist = Infinity;
+    cardCenters.forEach((cx, i) => {
+      const d = Math.abs(cx - viewCenter);
+      if (d < minDist) { minDist = d; closest = i; }
+    });
+    return closest;
+  })();
+
+  /* ── click dot → scroll to card ── */
+  const scrollToCard = (i) => {
+    const el = trackRef.current;
+    if (!el || !cardCenters[i]) return;
+    const target = cardCenters[i] - el.clientWidth / 2;
+    el.scrollTo({ left: target, behavior: "smooth" });
+    if (hintVisible) setHintVisible(false);
+  };
+
+  /* ── determine which dots get labels ── */
+  const oldestYear = getEndYear(EXPERIENCES[0]?.period);
+  const presentIdx = (() => {
+    const explicit = EXPERIENCES.findIndex(
+      (e) => !e.isFuture && getEndYear(e.period) === "Present"
+    );
+    if (explicit !== -1) return explicit;
+    // fallback: last non-future entry
+    for (let i = EXPERIENCES.length - 1; i >= 0; i--) {
+      if (!EXPERIENCES[i].isFuture) return i;
+    }
+    return -1;
+  })();
+  const futureIdx = EXPERIENCES.findIndex((e) => e.isFuture);
+
+  const getDotLabel = (i) => {
+    if (i === 0) return oldestYear;
+    if (i === presentIdx) return "Present";
+    if (i === futureIdx) return "Future";
+    return null;
+  };
+
+  /* ── floating year display ── */
+  const activeYear = getDisplayYear(EXPERIENCES[activeIdx]);
+  const isFutureActive = EXPERIENCES[activeIdx]?.isFuture;
+
   return (
     <div style={{ position: "relative", width: "100%" }}>
+
+      {/* ── floating year indicator on top ── */}
+      <div style={{
+        textAlign: "center",
+        padding: "0 0 4px",
+        minHeight: 32,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+        <span
+          key={activeYear}
+          style={{
+            fontFamily: "'Cormorant Garamond'",
+            fontSize: mobile ? 20 : 24,
+            fontWeight: 600,
+            color: isFutureActive ? "#c9a96e" : C.accent,
+            letterSpacing: 1.5,
+            animation: "yearFade .35s ease",
+          }}
+        >
+          {activeYear}
+        </span>
+        <style>{`
+          @keyframes yearFade {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </div>
+
+      {/* scrollable track */}
       <div ref={trackRef} onScroll={handleScroll} className="hide-scroll" style={{ overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", padding: "40px 0 24px", cursor: "grab" }}>
         <div style={{ width: totalTrackW, position: "relative", height: mobile ? 330 : 370 }}>
           {/* timeline bar */}
@@ -122,7 +216,72 @@ function DockTimeline({ mobile, screenW }) {
           })}
         </div>
       </div>
-      <div style={{ textAlign: "center", marginTop: 4, opacity: hintVisible ? 1 : 0, transition: "opacity .8s", pointerEvents: "none" }}>
+
+      {/* ── bottom dot strip ── */}
+      <div style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        gap: mobile ? 6 : 10,
+        marginTop: 6,
+        padding: "0 20px",
+      }}>
+        {EXPERIENCES.map((exp, i) => {
+          const isActive = i === activeIdx;
+          const isFuture = exp.isFuture;
+          const label = getDotLabel(i);
+          const accentColor = isFuture ? "#c9a96e" : C.accent;
+
+          return (
+            <button
+              key={i}
+              onClick={() => scrollToCard(i)}
+              aria-label={`Go to ${exp.role}`}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 5,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px 2px",
+                minWidth: label ? "auto" : 0,
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              {/* dot */}
+              <div style={{
+                width: isActive ? 10 : 6,
+                height: isActive ? 10 : 6,
+                borderRadius: "50%",
+                background: isActive ? accentColor : C.border,
+                boxShadow: isActive
+                  ? `0 0 8px ${isFuture ? "rgba(201,169,110,0.5)" : "rgba(109,184,159,0.4)"}`
+                  : "none",
+                transition: "all .3s ease",
+              }} />
+              {/* label — only on oldest, Present, Future */}
+              {label && (
+                <span style={{
+                  fontFamily: "'DM Sans'",
+                  fontSize: mobile ? 9 : 10,
+                  fontWeight: isActive ? 600 : 400,
+                  color: isActive ? accentColor : C.muted,
+                  letterSpacing: 0.5,
+                  transition: "color .3s",
+                  whiteSpace: "nowrap",
+                }}>
+                  {label}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* scroll hint */}
+      <div style={{ textAlign: "center", marginTop: 14, opacity: hintVisible ? 1 : 0, transition: "opacity .8s", pointerEvents: "none" }}>
         <span style={{ fontFamily: "'Caveat'", fontSize: 15, color: C.accent, background: C.accentDim, padding: "5px 16px", borderRadius: 20 }}>← scroll to explore more →</span>
       </div>
     </div>
