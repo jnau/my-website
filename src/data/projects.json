@@ -35,8 +35,7 @@
       "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
       "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"],
       "year": "2025-present",
-      "demo": "dashboard",
-      "url": "https://d27bpfybwt8iuv.cloudfront.net/"
+      "demo": "dashboard"
     },
     {
       "title": "ENCODEd Database",
