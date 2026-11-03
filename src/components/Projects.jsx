@@ -1,10 +1,13 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { C } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
 import { useReveal } from "../hooks/useReveal";
 import projectsData from "../data/projects.json";
 
 const PROJECTS = projectsData.featured;
+// The walkthrough game (public/demo-game) reads this from its parent window, so it stays in sync.
+if (typeof window !== "undefined") window.__projectsForGame = PROJECTS;
 const ARCHIVE = projectsData.archived;
 const ALL_PROJECTS = [...PROJECTS, ...ARCHIVE].sort((a, b) => (b.year || "0").localeCompare(a.year || "0"));
 
@@ -91,6 +94,33 @@ function ComingSoonDemo() {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 36, fontFamily: "'Caveat'", fontSize: 15, color: C.accent, letterSpacing: 1.5, opacity: 0.7, animation: "sigP 2s ease-in-out infinite alternate" }}>
       coming soon ✨
     </div>
+  );
+}
+
+/* ─── Pixel game demo (public/demo-game) ─── */
+function GameModal({ src, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  // Portal to <body> so the fixed overlay sits above the nav, outside the section's stacking context.
+  return createPortal(
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "min(860px, 100%)", height: "min(820px, 92vh)", position: "relative", borderRadius: 12, overflow: "hidden", background: "#2b2233" }}>
+        <button onClick={onClose} aria-label="Close game" style={{ position: "absolute", top: 8, right: 8, zIndex: 1, border: "none", borderRadius: 14, padding: "4px 10px", cursor: "pointer", fontFamily: "'DM Sans'", fontSize: 12 }}>Close ✕</button>
+        <iframe src={src} title="Project walkthrough game" style={{ width: "100%", height: "100%", border: 0 }} />
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function GameButton({ label, onClick }) {
+  return (
+    <button onClick={onClick} style={{ fontFamily: "'DM Sans'", fontSize: 12, fontWeight: 500, color: C.accent, background: "transparent", border: `1px solid ${C.border}`, borderRadius: 14, padding: "5px 12px", cursor: "pointer" }}>
+      {label}
+    </button>
   );
 }
 
@@ -328,6 +358,7 @@ function ArchiveTable({ mobile }) {
 /* ─── Main Export ─── */
 export function Projects({ mobile, pad }) {
   const [showArchive, setShowArchive] = useState(false);
+  const [gameSrc, setGameSrc] = useState(null);
   const [hintVisible, setHintVisible] = useState(true);
   const scrollRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -389,7 +420,11 @@ export function Projects({ mobile, pad }) {
     <div style={{ width: "100%", maxWidth: 1100, padding: `${mobile ? 40 : 50}px 0` }}>
       <div style={{ padding: `0 ${pad}px` }}>
         <SecHead num="03" title="Projects" mobile={mobile} />
+        <div style={{ display: "flex", justifyContent: "center", marginTop: mobile ? -16 : -28, marginBottom: mobile ? 16 : 24 }}>
+          <GameButton label="🎮 Interactive game to walk through my projects" onClick={() => setGameSrc("/demo-game/index.html")} />
+        </div>
       </div>
+      {gameSrc && <GameModal src={gameSrc} onClose={() => setGameSrc(null)} />}
 
       {/* horizontal scroll */}
       <div

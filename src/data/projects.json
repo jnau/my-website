@@ -2,7 +2,7 @@
   "featured": [
     {
       "title": "Recipe Book AI",
-      "desc": "Personal recipe database with AI search. Upload text, photos, or URLs — then ask what you can cook with what's in the fridge.",
+      "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.",
       "type": "Personal",
       "topics": ["Engineering", "Data Science"],
       "tags": ["Python", "LLMs", "RAG"],

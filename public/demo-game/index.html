@@ -1,0 +1,301 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Walk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--wood:#6b4423;--wood2:#a86f3d;--paper:#fff8e7;--ink:#3b2a20;--mute:#8a7464;--sage:#6aa84f}
+*{box-sizing:border-box}
+body{margin:0;background:#2b2233;color:#f5ead8;font:16px 'Pixelify Sans',monospace;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px}
+.game{width:100%;max-width:800px;border:6px solid var(--wood);border-radius:8px;background:var(--wood);box-shadow:0 0 0 2px #3b2414,0 8px 0 #0004}
+.stage{position:relative;background:#7cc66a}
+canvas#c{display:block;width:100%;image-rendering:pixelated}
+.px{image-rendering:pixelated;vertical-align:middle}
+button{font:inherit;cursor:pointer;border:3px solid var(--wood);background:var(--paper);color:var(--ink);padding:4px 12px;border-radius:4px;box-shadow:0 3px 0 var(--wood)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wood)}
+button.go{background:var(--sage);color:#fff;border-color:#3f6e2c;box-shadow:0 3px 0 #3f6e2c}
+button.on{background:#ffd34d}
+/* dialog box */
+.dialog{display:flex;gap:12px;background:var(--paper);color:var(--ink);border-top:6px solid var(--wood);padding:10px 12px;min-height:118px}
+.face{flex:none;width:76px;height:76px;background:#e9dcc0;border:3px solid var(--wood2);border-radius:6px;image-rendering:pixelated}
+.dname{font-weight:600;color:#c0563f}.dtx{min-height:44px;line-height:1.3;white-space:pre-line}
+.dbtn{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+/* in-game scene */
+#scene{--px:3px;--wp:4px;display:none;min-height:460px;padding:44px 14px 120px;position:relative;overflow:hidden;
+ background:repeating-linear-gradient(#c98f5a 0 14px,#b57d4b 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#f6e3c6 0 14px,#f0d6ae 14px 28px)}
+.stage.inscene canvas#c{display:none}
+@media(max-width:600px){#scene{--px:2px;--wp:3px}}
+.deco{position:absolute;image-rendering:pixelated;pointer-events:none}#panelWrap{position:relative;z-index:1}#panelWrap .panel{max-width:560px}
+.steam{position:absolute;width:var(--px);height:var(--px);background:#fff;opacity:0;animation:steam 2.4s linear infinite}
+@keyframes steam{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(calc(var(--px)*-12));opacity:0}}.stage.inscene #scene{display:block}
+.x{position:absolute;top:8px;right:8px;padding:0 8px}
+.panel{background:var(--paper);color:var(--ink);border:4px solid var(--wood);border-radius:6px;box-shadow:4px 4px 0 #0003;padding:12px;max-width:600px;margin:0 auto}
+.panel h3{margin:0 0 8px;font-size:20px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.big{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px}
+.steps div{color:var(--mute);padding:2px 0}.steps .done{color:var(--ink)}.steps .done::before{content:"✔ ";color:var(--sage)}
+.ing{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.ing span{background:#f3ead6;border-radius:4px;padding:2px 8px 2px 4px;display:flex;align-items:center;gap:4px}
+.res{display:flex;align-items:center;gap:10px;padding:6px;border-bottom:2px dashed #e3d6bb;cursor:pointer}.res:hover{background:#f6efdc}
+.bars{margin-left:auto;font-size:13px;color:var(--mute)}.bar{display:inline-block;width:60px;height:8px;background:#e3d6bb;vertical-align:middle;margin-left:4px}.bar i{display:block;height:100%;background:var(--sage)}
+.search{background:#fff;border:3px solid #e3d6bb;border-radius:4px;padding:6px 10px;margin-bottom:8px;min-height:36px}
+.card-photo{background:#fffdf5;background-image:repeating-linear-gradient(#fffdf5 0 19px,#cfe0f2 19px 20px);padding:4px 12px;font:italic 15px/20px 'Comic Sans MS',cursive;color:#3a4a7a;transform:rotate(-1.5deg);max-width:260px;border:1px solid #e3d9bf;margin:4px auto}
+.wave{display:flex;gap:2px;align-items:center;justify-content:center;height:34px}.wave i{width:4px;background:var(--sage)}
+.out{white-space:pre-wrap;background:#f3ead6;border-radius:4px;padding:8px;min-height:70px}
+.soon{background:#ffd34d33;border:3px dashed #e0a458;border-radius:6px;padding:16px;text-align:center;font-size:18px;margin-top:8px}.panel a{color:#2f5aa8}
+#scene:not(.kitchen) .k{display:none}
+.ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:14px}
+*{border-radius:0!important}.card-photo{transform:none!important}
+</style></head><body>
+<div class="game">
+ <div class="stage" id="stage"><canvas id="c" width="320" height="140"></canvas><div id="scene"><div id="deco"></div><button class="x" onclick="leave()" style="z-index:2">✕</button><div id="panelWrap"></div></div></div>
+ <div class="dialog"><canvas class="face" id="face" width="20" height="20"></canvas>
+  <div style="flex:1"><div class="dname" id="dname">Sparky</div><div class="dtx" id="dtx"></div><div class="dbtn" id="dbtn"></div></div></div>
+</div>
+<div class="ctl"><span>Tap a side or ← → to walk · tap Sparky or Space to jump</span><button id="prev">◀</button><button id="next">▶</button></div>
+<script>
+const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+/* ---------------- pixel sprites ---------------- */
+const PAL={K:"#2a1a1f",R:"#e8603c",G:"#5fb052",H:"#9ad27a",W:"#fffaf0",Y:"#ffd34d",P:"#c98bd6",L:"#ecd3f2",B:"#7fb3d5",O:"#e9a65a",N:"#f6d58a",D:"#6b3f22",S:"#9a9aa8"};
+const bowl=["KKKKKKKK","KBBBBBBK",".KBBBBK.","..KKKK..","........"];
+const ICON={
+ tomato:["...GG...","..KGGK..",".KRRRRK.","KRRWRRRK","KRRRRRRK","KRRRRRRK",".KRRRRK.","..KKKK.."],
+ egg:["..KKKK..",".KWWWWK.","KWWYYWWK","KWYYYYWK","KWYYYYWK","KWWYYWWK",".KWWWWK.","..KKKK.."],
+ onion:["...KK...","...GK...","..KPPK..",".KPPPPK.","KPPLPPPK","KPPLPPPK",".KPPPPK.","..KKKK.."],
+ garlic:[["...KK...","...WK...","..KWWK..",".KWWWWK.","KWWSWWWK","KWWSWWWK",".KWWWWK.","..KKKK.."]],
+ rice:["........","..WWWW..",".WWWWWW.",...bowl],
+ noodles:["........",".NONNON.",".NNONNN.",...bowl],
+ soup:["........",".RRWRRR.",".RWWRRR.",...bowl],
+ banana:["......K.",".....KYK","....KYYK","...KYYK.","KKKYYK..","KYYYK...",".KKK....","........"],
+ peas:["........","........","..KKKKK.",".KGHGHGK","KGGGGGK.",".KKKKK..","........","........"],
+ soy:["...KK...","...RK...","..KDDK..",".KDDDDK.",".KDWWDK.",".KDWWDK.",".KDDDDK.","..KKKK.."],
+ butter:["........","........","...KKKKK","..KYYYYK",".KYYYYKK","KYYYYKK.","KKKKKK..","........"],
+ pancake:["........","...YY...","..KYYK..",".KOOOOK.",".KNNNNK.","KOOOOOOK","KKKKKKKK","........"],
+ link:["..KKKK..",".KBBGBK.","KBGGBBBK","KBBGGBBK","KBBBGGBK","KBGBBBBK",".KBBBBK.","..KKKK.."],
+ pdf:[".KKKKK..",".KWWWKK.",".KWWWWK.",".KRRRWK.",".KWWWWK.",".KWKKWK.",".KWWWWK.",".KKKKKK."],
+ card:["........","KKKKKKKK","KWWWWWWK","KWRRRWWK","KWWWWWWK","KWKKKKWK","KWWWWWWK","KKKKKKKK"],
+ mic:["..KKK...",".KSSSK..",".KSSSK..",".KSSSK..","K.KKK.K.",".K...K..","..KKK...","...K...."],
+ book:["KKKKKKK.","KRRRRRKK","KRYRRRKW","KRRRRRKW","KRRRRRKW","KRRRRRKW","KKKKKKKW",".WWWWWWW"]};
+ICON.garlic=ICON.garlic[0];
+const urlCache={};
+function icon(k,s=4){if(!ICON[k])return"";if(!urlCache[k]){const c=document.createElement("canvas");c.width=c.height=8;const x=c.getContext("2d");
+ ICON[k].forEach((r,y)=>[...r].forEach((ch,xx)=>{if(PAL[ch]){x.fillStyle=PAL[ch];x.fillRect(xx,y,1,1)}}));urlCache[k]=c.toDataURL()}
+ return`<img class="px" src="${urlCache[k]}" width="${8*s}" height="${8*s}" alt="">`}
+const ING={tomato:"tomato",egg:"egg",onion:"onion",garlic:"garlic",rice:"rice",noodles:"noodles",banana:"banana",peas:"peas","soy sauce":"soy",butter:"butter",stock:"soup"};
+
+/* ---------------- characters ---------------- */
+// Sparky, facing right. alt = walk frame, eye = row hidden on blink, head = rows that bob when idle
+const CH={
+ dog:{rows:[".........K..K.....","........KOK.KPK...","........KOOKKPPK..","........KOOOOOOK..","........KOOOOEOOKK","........KOOOOOCCCN",
+  "K.......KOOOOCCCK.","OK.....KRRRCCCKK..",".OKKKKBBBBBCK.....",".KOOOOBbBBBCK.....",".KOOOOBBBbBCK.....",".KOOOOOOOOCCK.....",
+  "..KOK.....KCK.....","..KOK.....KCK.....","..KCK.....KCK.....","..KK......KK......"],
+  alt:{12:"...KOK...KCK......",13:"...KOK...KCK......",14:"...KCK...KCK......",15:"...KK....KK......."},eye:4,skin:"O",head:8,
+  pal:{K:"#3b2a20",O:"#d9a05b",P:"#f3c9a6",C:"#fbe9cf",E:"#1a1416",N:"#1a1416",R:"#c0392b",B:"#2f5aa8",b:"#ffffff"}}};
+const who="dog";
+function drawChar(c,x,feet,dir,walking,step,t,lift=0){const sp=CH[who],w=sp.rows[0].length,h=sp.rows.length,
+  blink=(t%240)<8,bob=walking?0:(t/30|0)%2,x0=Math.round(x)-(w>>1);
+ c.fillStyle="#0002";c.fillRect(x0+1,feet,w-2,1);
+ sp.rows.forEach((r,yy)=>{if(step&&sp.alt[yy])r=sp.alt[yy];if(blink&&yy===sp.eye)r=r.replaceAll("E",sp.skin);
+  [...r].forEach((ch,xx)=>{if(!sp.pal[ch])return;c.fillStyle=sp.pal[ch];c.fillRect(x0+(dir>0?xx:w-1-xx),feet-h+yy-lift+(yy<sp.head&&!lift?bob:0),1,1)})})}
+function drawFace(){const c=$("face").getContext("2d"),sp=CH[who];c.clearRect(0,0,20,20);
+ const w=sp.rows[0].length,h=sp.rows.length,ox=(20-w)>>1,oy=(20-h)>>1;
+ sp.rows.forEach((r,y)=>[...r].forEach((ch,x)=>{if(sp.pal[ch]){c.fillStyle=sp.pal[ch];c.fillRect(ox+x,oy+y,1,1)}}))}
+
+/* ---------------- Sparky's lines: edit these! ---------------- */
+// Keep them short. " Woof!" is added to the end of every line automatically.
+const LINES={
+ hello:"Hi! I'm Sparky, Jessica's dog. Let's go for a walk!",
+ bye:"That's the tour! Thanks for the pets.",
+ peek:"Wanna peek inside?",
+ // what Sparky says at each signboard, matched by project title
+ projects:{
+  "Recipe Book AI":"Jessica's recipe book. I'm mostly here for the chicken.",
+  "High Definition Single Base Substitution Mutational Signatures in Human Cancers":"Big science about tiny DNA typos. Very fancy.",
+  "mSigLit-AI":"A robot that reads papers for Jessica. Good robot.",
+  "Interactive HD Dashboards":"Charts you can chew on! I prefer chewing bones though.",
+  "ENCODEd Database":"A giant genome library. I'd fetch from it if they let me."},
+ projectDefault:"Sniff sniff… a project!",
+ soon:"Still being built! Come back soon for treats.",
+ recipe:{
+  start:"Welcome in! Let's add a recipe. Where's it from?",
+  url:"The recipe's hiding in the web page. The app sniffs it right out!",
+  pdf:"The AI fishes the recipe out of the PDF and tidies it up.",
+  photo:"Handwritten cards become real recipes. Paw prints and all!",
+  voice:"Even recipes from a phone call with Mom, in Vietnamese and English!",
+  preview:"Nothing saves until Jessica says so. Good human.",
+  search:"Now let's search! Fridge stuff or a craving?",
+  results:"Sorted by meaning and by words. Tap one!",
+  open:"Yum! Now try Tiếng Việt.",
+  translating:"Translating…",
+  translated:"All in Vietnamese now, and saved for next time!",
+  cached:"Instant! It remembered."}};
+
+/* ---------------- dialog ---------------- */
+let typer;
+function say(text,buttons=[]){clearInterval(typer);
+ if(text)text+=" Woof!";const el=$("dtx");let n=0;el.textContent="";
+ typer=setInterval(()=>{el.textContent=text.slice(0,n+=2);if(n>=text.length)clearInterval(typer)},18);
+ el.onclick=()=>{clearInterval(typer);el.textContent=text};
+ $("dbtn").innerHTML="";buttons.forEach(([label,fn,cls])=>{const b=document.createElement("button");b.innerHTML=label;if(cls)b.className=cls;b.onclick=fn;$("dbtn").append(b)})}
+
+/* ---------------- world ---------------- */
+// Fallback copy of projects.json "featured"; inside the site the game reads the live list from the parent page.
+const FALLBACK=[{"title": "Recipe Book AI", "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.", "tags": ["Python", "LLMs", "RAG"], "year": "2026"}, {"title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types.", "tags": ["Python", "ML", "Statistics"], "year": "2023-present"}, {"title": "mSigLit-AI", "desc": "AI literature curation with automated extraction and classification.", "tags": ["Python", "NLP", "LLMs"], "year": "2025-present", "github": "https://github.com/jnau/msiglitai"}, {"title": "Interactive HD Dashboards", "desc": "Web exploration tools for HD Signature analysis", "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"], "year": "2025-present"}, {"title": "ENCODEd Database", "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", "tags": ["AWS", "GCP", "Python", "Database"], "year": "2019-2021", "github": "https://github.com/ENCODE-DCC/encoded", "url": "https://www.encodeproject.org/"}];
+let PROJ=FALLBACK;try{if(window.parent!==window&&window.parent.__projectsForGame)PROJ=window.parent.__projectsForGame}catch(e){}
+const stops=[{line:LINES.hello,x:30},
+ ...PROJ.map((p,k)=>({line:`${p.title}\n${LINES.projects[p.title]||LINES.projectDefault}`,proj:p,x:100+k*70,board:true,scene:/recipe book/i.test(p.title)?"recipe":"soon"}))];
+stops.push({line:LINES.bye,x:stops[stops.length-1].x+60});
+const H=140,GROUND=116,W=innerWidth<600?200:320,WW=Math.max(W,stops[stops.length-1].x+30),cv=$("c"),g=cv.getContext("2d");cv.width=W;let cam=0;
+let i=0,x=stops[0].x,f=0,dir=1,shown=-1,inScene=false,jumpT=-1;
+const jump=()=>{if(jumpT<0)jumpT=0};
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const bg=document.createElement("canvas");bg.width=WW;bg.height=H;const b=bg.getContext("2d");
+const R=(c,x,y,w,h)=>{b.fillStyle=c;b.fillRect(x|0,y|0,w,h)};
+const disc=(c,cx,cy,r)=>{for(let y=-r;y<=r;y++){const w=Math.round(Math.sqrt(r*r-y*y));R(c,cx-w,cy+y,w*2+1,1)}};
+["#a9e1f5","#b6e6f6","#c3ebf7","#d0f0f8","#ddf4f9"].forEach((c,k)=>R(c,0,k*12,WW,k===4?30:12));
+for(let x=0;x<WW;x++){const h=Math.round(10+6*Math.sin(x/37)+4*Math.sin(x/13));R("#9ad27a",x,72-h,1,h+10)}
+for(let x=0;x<WW;x++){const h=Math.round(5+4*Math.sin(x/23+2));R("#7fc267",x,76-h,1,h+10)}
+for(let tx=14,n=0;tx<WW;tx+=46+(n*17)%30,n++){const ty=52+(n*5)%7;R("#7a4f2e",tx-2,ty,4,16);disc("#4f9a46",tx,ty-4,9);disc("#5fb052",tx-2,ty-6,6);disc("#77c460",tx-3,ty-8,3)}
+R("#7cc66a",0,78,WW,H-78);
+for(let k=0;k<500;k++)R(rnd()<.5?"#6db85c":"#8ad077",rnd()*WW,78+rnd()*62,1,rnd()<.3?2:1);
+for(let x=0;x<WW;x+=12){R("#c9935d",x+4,80,3,12);R("#a87444",x+4,80,3,1)}R("#d8a56d",0,83,WW,2);R("#d8a56d",0,88,WW,2);
+R("#e2bf8c",0,GROUND-8,WW,14);R("#d2a974",0,GROUND-8,WW,1);R("#d2a974",0,GROUND+5,WW,1);
+for(let k=0;k<60;k++)R(rnd()<.5?"#c99c66":"#ecd2a6",rnd()*WW,GROUND-7+rnd()*12,1,1);
+const fl=["#f29bb0","#ffe066","#ffffff","#c7a6ff"];
+for(let k=0;k<45;k++){const fx=rnd()*WW,fy=rnd()<.5?92+rnd()*12:GROUND+8+rnd()*14,c=fl[k%4];R("#4f9a46",fx,fy+1,1,2);R(c,fx-1,fy,3,1);R(c,fx,fy-1,1,3);R("#ffcf3f",fx,fy,1,1)}
+for(let k=0;k<5;k++){R("#9b6b43",120+k*9,124,6,8);R("#4f9a46",122+k*9,120,2,4);R("#e8603c",121+k*9,119,4,2)}
+R("#f3e2c4",0,78,26,26);R("#c0563f",-4,70,34,10);R("#9e4433",-4,79,34,1);R("#7a4f2e",9,90,8,14);R("#8fd3ef",18,84,6,6);R("#fff",20,84,1,6);
+/* ---------------- kitchen decor (inside scene) ---------------- */
+function mk(w,h,fn){const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");fn((col,a,b,ww,hh)=>{x.fillStyle=col;x.fillRect(a,b,ww,hh)});return c.toDataURL()}
+const DECO=[
+ {w:30,h:26,k:1,u:"--wp",css:"top:10px;left:5%",img:mk(30,26,R=>{R("#a86f3d",3,2,24,20);R("#bfe9f7",5,4,20,16);R("#9ad27a",5,15,20,5);R("#ffe066",8,6,3,3);R("#a86f3d",14,4,2,16);R("#a86f3d",5,11,20,2);
+  for(const cx of[0,24])for(let y=2;y<22;y+=2)for(let x=0;x<6;x+=2)R(((x+y)/2)%2?"#f7b6c6":"#fff",cx+x,y,2,2);
+  R("#f29bb0",0,0,30,3);R("#c98f5a",2,22,26,2);R("#c0563f",12,18,6,4);R("#5fb052",11,15,8,3);R("#77c460",13,13,4,2)})},
+ {w:34,h:22,k:1,u:"--wp",css:"top:18px;right:5%",img:mk(34,22,R=>{R("#a86f3d",0,9,34,2);R("#a86f3d",0,20,34,2);
+  ["#ffd34d","#e8603c","#9ad27a","#c98bd6"].forEach((c,k)=>{const x=2+k*8,h=6+(k%2)*2;R("#2a1a1f",x,8-h,6,h+1);R(c,x+1,9-h,4,h);R("#6b4423",x+1,8-h,4,1);R("#fff",x+1,9-(h>>1),4,1)});
+  ["#e05a7a","#5fb052","#7fb3d5","#ffd34d"].forEach((c,k)=>R(c,2+k*4,13+(k%2),3,7-(k%2)));R("#fff",20,16,10,4);R("#7fb3d5",20,16,10,1)})},
+ {w:44,h:40,k:1,css:"bottom:36px;left:2%",steam:[28,32,36],img:mk(44,40,R=>{R("#c0563f",23,3,18,2);R("#e8603c",24,5,16,8);R("#ffd34d",25,5,14,1);R("#2a1a1f",21,6,3,2);R("#2a1a1f",40,6,3,2);R("#f29bb0",27,9,10,2);
+  R("#d9b07a",2,10,16,3);R("#e8603c",5,6,5,4);R("#5fb052",7,5,1,1);R("#ccc",12,9,5,1);
+  R("#e2bf8c",0,13,44,3);R("#f0d3a3",0,13,44,1);R("#ffb38f",25,6,1,5);R("#ffd34d",24,18,1,1);R("#ffd34d",27,18,1,1);R("#c99c66",0,16,44,1);R("#c98f5a",0,17,20,23);R("#b57d4b",2,19,16,19);R("#d39b67",3,20,14,17);R("#6b4423",14,28,2,2);
+  R("#55555f",20,17,24,23);R("#9a9aa8",23,19,18,1);R("#2a2a33",23,22,18,10);R("#ffb347",24,29,16,2)})},
+ {w:22,h:46,k:1,css:"bottom:30px;right:2%",img:mk(22,46,R=>{R("#2a1a1f",1,0,20,44);R("#2a1a1f",0,1,22,42);R("#bfe6d8",1,1,20,42);
+  R("#e3f5ee",2,2,1,12);R("#e3f5ee",2,17,1,23);R("#e3f5ee",3,1,15,1);R("#9cccbb",19,2,1,40);R("#9cccbb",2,42,17,1);
+  R("#2a1a1f",1,15,20,1);R("#9cccbb",2,16,17,1);
+  R("#2a1a1f",16,4,3,9);R("#6f9e8e",17,5,1,7);R("#2a1a1f",16,19,3,12);R("#6f9e8e",17,20,1,10);
+  for(let x=4;x<18;x+=2)R("#8fb8a8",x+(x>>1)%2,39,1,1);R("#8fb8a8",4,40,14,1);
+  R("#2a1a1f",2,44,3,2);R("#2a1a1f",17,44,3,2);
+  R("#e8603c",4,4,3,3);R("#ffb38f",4,4,1,1);R("#ffd34d",9,7,3,3);R("#fff3b0",9,7,1,1);R("#7fb3d5",5,10,3,3);R("#d6ecfa",5,10,1,1);
+  R("#fff",4,20,9,11);R("#e3d6bb",12,20,1,11);R("#e3d6bb",4,30,9,1);R("#f3e2c4",7,19,3,2);
+  R("#f29bb0",6,23,2,1);R("#f29bb0",9,23,2,1);R("#f29bb0",5,24,7,2);R("#f29bb0",6,26,5,1);R("#f29bb0",7,27,3,1);R("#f29bb0",8,28,1,1)})},
+ {w:44,h:6,css:"bottom:14px;left:50%;transform:translateX(-50%)",img:mk(44,6,R=>{R("#f29bb0",0,0,44,6);R("#fff",0,1,44,1);R("#fff",0,4,44,1)})},
+ // Sparky's favorite toy: panda hand puppet
+ {w:14,h:6,css:"bottom:12px;left:calc(50% + var(--px)*18)",click:"pandaClick()",img:mk(14,6,R=>["BB.BB.........","WWWWWBBWWWWWBB","WWWWWBBWWWWWBB","WWWWWBBWWWWWBB",".WWW..BWWWWWB.",".SSSSSSSSSSSS."].forEach((r,y)=>[...r].forEach((c,x)=>{if(c!==".")R({B:"#1a1a1a",W:"#fafafa",S:"rgba(0,0,0,.15)"}[c],x,y,1,1)})))}];
+$("deco").innerHTML=DECO.map(d=>`<div class="deco${d.k?" k":""}" style="${d.css};width:calc(var(${d.u||"--px"})*${d.w});height:calc(var(${d.u||"--px"})*${d.h})${d.click?';pointer-events:auto;cursor:pointer':''}"${d.click?` onclick="${d.click}" title="Sparky's favorite toy"`:""}><img src="${d.img}" style="width:100%;height:100%;image-rendering:pixelated">`+
+ (d.steam||[]).map((sx,k)=>`<i class="steam" style="left:calc(var(--px)*${sx});top:0;animation-delay:${k*.8}s"></i>`).join("")+`</div>`).join("")+
+ `<canvas id="kdog" class="deco" width="24" height="28" onclick="kJump=0" style="pointer-events:auto;cursor:pointer;bottom:14px;left:50%;transform:translateX(-50%);width:calc(var(--px)*24);height:calc(var(--px)*28)"></canvas>`+
+ `<div id="pbub" class="deco" style="display:none;bottom:calc(var(--px)*8 + 16px);left:calc(50% + var(--px)*8);background:#fff8e7;border:2px solid #6b4423;border-radius:6px;padding:2px 8px;font-size:13px;color:#3b2a20;white-space:nowrap">♥ Sparky's favorite toy!</div>`;
+function pandaClick(){kJump=0;const b=$("pbub");b.style.display="block";clearTimeout(b.t);b.t=setTimeout(()=>b.style.display="none",2200)}
+let kJump=-1,kDir=1;
+function kitchenDog(t){const k=$("kdog").getContext("2d");k.clearRect(0,0,24,28);
+ if(kJump<0&&Math.random()<.006){kJump=0;if(Math.random()<.4)kDir=-kDir}
+ const lift=kJump<0?0:Math.round(Math.sin(kJump/26*Math.PI)*9);if(kJump>=0&&++kJump>26)kJump=-1;
+ drawChar(k,12,26,kDir,false,lift?1:0,t,lift)}
+
+function board(s,on,t){const x=s.x;
+ g.fillStyle="#7a4f2e";g.fillRect(x-14,86,3,22);g.fillRect(x+11,86,3,22);
+ g.fillStyle="#6b4423";g.fillRect(x-17,70,34,22);g.fillStyle="#a86f3d";g.fillRect(x-16,71,32,20);
+ g.fillStyle=on?"#fff8e7":"#e9dcc0";g.fillRect(x-13,73,26,16);
+ g.fillStyle=on?"#e05a7a":"#c9a98a";g.fillRect(x-11,75,22,3);
+ g.fillStyle=on?"#a08a74":"#cbbba0";for(let l=0;l<3;l++)g.fillRect(x-11,80+l*3,18-l*4,1);
+ g.fillStyle="#e05a7a";g.fillRect(x-1,72,2,2);
+ if(on){const by=62+Math.round(Math.sin(t/8)*1.5);g.fillStyle="#ffd34d";g.fillRect(x-1,by,2,5);g.fillRect(x-1,by+6,2,2)}}
+const clouds=Array.from({length:Math.ceil(WW/100)},(_,k)=>[40+k*100,10+(k*7)%14,.6+(k%3)*.2]),flies=Array.from({length:Math.ceil(WW/130)},(_,k)=>[80+k*130,95+(k%2)*5,k%2?"#ffd34d":"#fff"]);
+function draw(){
+ const tx=stops[i].x,moving=Math.abs(tx-x)>0.5;
+ if(moving){dir=Math.sign(tx-x);x+=dir;f++;shown=-2}else if(shown!==i&&!inScene)arrive();
+ const t=performance.now()/16;
+ if(inScene){kitchenDog(t);requestAnimationFrame(draw);return}
+ cam=Math.max(0,Math.min(WW-W,Math.round(x-W/2)));g.save();g.translate(-cam,0);
+ g.drawImage(bg,0,0);
+ clouds.forEach(c=>{const cx=((c[0]+t*.05*c[2])%(WW+40))-20;g.fillStyle="#fff";g.fillRect(cx,c[1],22,5);g.fillRect(cx+4,c[1]-3,12,3);g.fillRect(cx+2,c[1]+5,18,1)});
+ stops.forEach((s,k)=>{if(s.board)board(s,k===i&&!moving,t)});
+ flies.forEach((q,k)=>{const bx=q[0]+Math.sin(t/40+k)*30,by=q[1]+Math.sin(t/13+k)*4,o=(t/4|0)%2;g.fillStyle=q[2];g.fillRect(bx-1-o,by,1,1+o);g.fillRect(bx+1+o,by,1,1+o);g.fillStyle="#3b2a20";g.fillRect(bx,by,1,2)});
+ if(jumpT<0&&Math.random()<.005)jump();
+ const lift=jumpT<0?0:Math.round(Math.sin(jumpT/26*Math.PI)*9);if(jumpT>=0&&++jumpT>26)jumpT=-1;
+ drawChar(g,x,GROUND,dir,moving,lift||(moving&&(f>>3)%2),t,lift);
+ g.restore();requestAnimationFrame(draw)}
+function arrive(){shown=i;const s=stops[i];
+ say(s.scene?`${s.line} ${LINES.peek}`:s.line,s.scene?[["▶ Go inside",enter,"go"]]:[])}
+function go(d){if(!inScene)i=Math.max(0,Math.min(stops.length-1,i+d))}
+function enter(){const s=stops[i];if(!s.scene)return;inScene=true;$("stage").classList.add("inscene");$("scene").classList.toggle("kitchen",s.scene==="recipe");s.scene==="recipe"?recipe.start():soon(s)}
+function leave(){inScene=false;$("stage").classList.remove("inscene");$("panelWrap").innerHTML="";shown=-1}
+const scene=html=>{$("panelWrap").innerHTML=`<div class="panel">${html}</div>`};
+
+/* ---------------- coming-soon room (other projects) ---------------- */
+function soon(s){const p=s.proj,links=[p.url&&`<a href="${p.url}" target="_blank" rel="noopener">🌐 Website</a>`,p.github&&`<a href="${p.github}" target="_blank" rel="noopener">💻 GitHub</a>`].filter(Boolean).join(" · ");
+ scene(`<h3>${p.title}</h3><p style="margin:0 0 8px">${p.desc}</p><div class="ing">${(p.tags||[]).map(t=>`<span>${t}</span>`).join("")}</div>
+  <div class="soon">🚧 Interactive demo coming soon! 🚧</div>${links?`<p style="margin:10px 0 0">${links}</p>`:""}`);
+ say(LINES.soon,[["🚪 Back outside",leave,"go"]])}
+function typeOut(el,t){let n=0;el.textContent="";const iv=setInterval(()=>{el.textContent=t.slice(0,++n);if(n>=t.length)clearInterval(iv)},14)}
+
+/* ---------------- Recipe Book AI scene ---------------- */
+const book=[
+ {t:"Toy Tomato Egg Soup",vi:"Canh cà chua trứng",pic:"soup",ing:["tomato","egg","onion","stock"],ingVi:["cà chua","trứng","hành","nước dùng"],tags:["soup","quick"],mood:["warm","cozy","cold","comfort","light"],steps:["Soften onion and tomato.","Add stock and simmer.","Swirl in beaten egg."],stepsVi:["Xào mềm hành và cà chua.","Thêm nước dùng và đun liu riu.","Đổ trứng đã đánh vào, khuấy nhẹ."]},
+ {t:"Toy Fried Rice",vi:"Cơm chiên",pic:"rice",ing:["rice","egg","peas","soy sauce"],ingVi:["cơm","trứng","đậu Hà Lan","nước tương"],tags:["leftovers","quick"],mood:["filling","fast","leftover","easy"],steps:["Scramble egg, set aside.","Fry rice and peas hot.","Season with soy, fold egg back in."],stepsVi:["Chiên trứng bác, để riêng.","Xào cơm và đậu Hà Lan trên lửa lớn.","Nêm nước tương, cho trứng vào trộn đều."]},
+ {t:"Toy Garlic Noodles",vi:"Mì xào tỏi",pic:"noodles",ing:["noodles","garlic","butter","soy sauce"],ingVi:["mì","tỏi","bơ","nước tương"],tags:["noodles"],mood:["comfort","savory","craving","easy"],steps:["Boil noodles.","Melt butter with garlic.","Toss noodles with garlic butter and soy."],stepsVi:["Luộc mì.","Đun chảy bơ với tỏi.","Trộn mì với bơ tỏi và nước tương."]}];
+const toy={t:"Toy Banana Pancakes",vi:"Bánh chuối chiên",pic:"pancake",ing:["banana","egg","cinnamon"],ingVi:["chuối","trứng","quế"],tags:["breakfast","sweet"],mood:["sweet","breakfast","easy","fast"],steps:["Mash bananas.","Mix in eggs and cinnamon.","Fry small pancakes."],stepsVi:["Nghiền chuối.","Trộn đều với trứng và quế.","Chiên thành những chiếc bánh nhỏ."]};
+const SRC={
+ url:{label:"Link",ic:"link",show:`<div class="search">🔗 example-recipes.com/toy-banana-pancakes</div>`,
+  steps:["Fetching the page","Found recipe data built into the page","Read directly, no AI needed"],
+  },
+ pdf:{label:"PDF",ic:"pdf",show:`<div style="text-align:center">${"PDF"&&""}<span style="font-size:15px">📄 toy-cookbook-page.pdf</span></div>`,
+  steps:["Reading text from the PDF","AI pulls out title, ingredients, steps","Checked against my recipe format"],
+  },
+ photo:{label:"Card photo",ic:"card",show:`<div class="card-photo">Banana pancakes ♡<br>2 ripe bananas, 2 eggs<br>pinch of cinnamon<br>mash, mix, fry small!</div>`,
+  steps:["Uploading the photo","Vision AI reads the handwriting","Turning it into a recipe"],
+  },
+ voice:{label:"Voice memo",ic:"mic",show:`<div class="wave">${Array.from({length:40},(_,k)=>`<i style="height:${6+Math.abs(Math.sin(k*1.7)*24)|0}px"></i>`).join("")}</div><div style="text-align:center;font-size:13px;color:var(--mute)">toy-call-with-mom.m4a · 0:42</div>`,
+  steps:["Shrinking the audio","Transcribing Vietnamese + English","Writing the recipe in English"],
+  }};
+const recipe={
+ start(){scene(`<h3>${icon("book",3)} MyRecipeBook</h3><p style="margin:0 0 8px">Add a recipe from…</p><div class="grid">${Object.entries(SRC).map(([k,s])=>`<button class="big" onclick="recipe.add('${k}')">${icon(s.ic,5)}${s.label}</button>`).join("")}</div>`);
+  say(LINES.recipe.start,[["🚪 Back outside",leave]])},
+ async add(k){const s=SRC[k];
+  scene(`<h3>${icon(s.ic,3)} Adding from ${s.label.toLowerCase()}</h3>${s.show}<div class="steps" id="st">${s.steps.map(x=>`<div>${x}…</div>`).join("")}</div><div id="pv"></div>`);
+  say(LINES.recipe[k]);const rows=$("st").children;
+  for(let n=0;n<rows.length;n++){await sleep(750);if(!$("st"))return;rows[n].className="done";rows[n].textContent=s.steps[n]}
+  $("pv").innerHTML=`<hr style="border:0;border-top:2px dashed #e3d6bb">${card(toy,false)}<button class="go" onclick="recipe.save()">Save to my book</button>`;
+  say(LINES.recipe.preview)},
+ async save(){if(!book.includes(toy))book.push(toy);
+  $("pv").lastElementChild.outerHTML=`<div class="steps"><div class="done">Saved + indexed for search</div></div>`;await sleep(500);this.search()},
+ search(){scene(`<h3>🔍 Search my book</h3><div class="search" id="q"><span style="color:var(--mute)">What do you have, or what are you craving?</span></div><div class="grid" id="ex"></div><div id="rs"></div>`);
+  ["I have eggs and rice","something cozy for a cold day","garlic","something sweet"].forEach(q=>{const bt=document.createElement("button");bt.textContent=q;bt.onclick=()=>this.run(q);$("ex").append(bt)});
+  say(LINES.recipe.search,[["🚪 Back outside",leave]])},
+ async run(text){$("ex").remove();typeOut($("q"),text);await sleep(text.length*14+300);
+  const stop=["for","the","and","have","something","with","what","can","make","day"];
+  const words=text.toLowerCase().split(/\W+/).filter(w=>w.length>2&&!stop.includes(w)),has=(a,w)=>a.some(x=>x.includes(w)||w.includes(x));
+  const res=book.map(r=>{const kw=words.filter(w=>has([r.t.toLowerCase(),...r.ing,...r.tags],w)),mean=words.filter(w=>has(r.mood,w));
+   return{r,kw,word:Math.min(1,kw.length/2),meaning:Math.min(1,(mean.length+kw.length*.5)/2)}}).map(o=>({...o,s:o.word+o.meaning})).filter(o=>o.s>0).sort((a,b)=>b.s-a.s);
+  $("rs").innerHTML=res.map((o,k)=>`<div class="res" onclick="recipe.open(${book.indexOf(o.r)})">${icon(o.r.pic,4)}<div><b>${o.r.t}</b><div style="font-size:13px;color:var(--mute)">${o.kw.length?"words: "+o.kw.join(", "):"found by meaning"}</div><div style="font-size:13px">💬 ${o.kw.length?"Uses "+o.kw.join(" and ")+" from your search.":"Fits the mood: "+o.r.mood.slice(0,2).join(", ")+"."}</div></div>
+   <div class="bars">meaning<span class="bar"><i style="width:${o.meaning*100}%"></i></span><br>words&nbsp;&nbsp;&nbsp;<span class="bar"><i style="width:${o.word*100}%"></i></span></div></div>`).join("")||"No matches.";
+  say(LINES.recipe.results,[["↺ Search again",()=>this.search()]])},
+ open(k,vi=false){const r=book[k];
+  scene(`${card(r,vi)}<button id="vi" class="${vi?"on":""}">${vi?"English":"Tiếng Việt"}</button>`);
+  $("vi").onclick=async()=>{if(vi)return this.open(k,false);
+   if(!r.done){say(LINES.recipe.translating);await sleep(900);r.done=1;this.open(k,true);
+    say(LINES.recipe.translated,this.endBtns())}
+   else{this.open(k,true);say(LINES.recipe.cached,this.endBtns())}};
+  if(!vi)say(LINES.recipe.open,this.endBtns())},
+ endBtns(){return[["↺ Start over",()=>this.start()],["🚪 Back outside",leave,"go"]]}};
+function card(r,vi){return`<h3>${icon(r.pic,5)} ${vi?r.vi:r.t}</h3><b>${vi?"Nguyên liệu":"Ingredients"}</b><div class="ing">${(vi?r.ingVi:r.ing).map((n,k)=>`<span>${icon(ING[r.ing[k]],2)||"🌿"} ${n}</span>`).join("")}</div>
+ <b>${vi?"Cách làm":"Steps"}</b><ol style="margin:4px 0 10px;padding-left:22px">${(vi?r.stepsVi:r.steps).map(x=>`<li>${x}</li>`).join("")}</ol>`}
+
+/* ---------------- controls ---------------- */
+drawFace();
+addEventListener("keydown",e=>{if(/ArrowRight|KeyD/.test(e.code))go(1);if(/ArrowLeft|KeyA/.test(e.code))go(-1);
+ if(e.code==="Escape"&&inScene)leave();if(e.code==="Space"&&!inScene){e.preventDefault();jump()}if(e.code==="Enter"&&!inScene)enter()});
+$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);
+cv.onclick=e=>{const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W+cam,py=(e.clientY-r.top)/r.height*H;
+ if(Math.abs(px-x)<12&&py>GROUND-26)jump();else go(px<x?-1:1)};
+const openAt=stops.findIndex(s=>s.scene&&s.scene===new URLSearchParams(location.search).get("open"));
+if(openAt>0){i=openAt;x=stops[i].x;shown=i;enter()}
+draw();
+</script></body></html>
