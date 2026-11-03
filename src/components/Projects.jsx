@@ -98,18 +98,31 @@ function ComingSoonDemo() {
 }
 
 /* ─── Pixel game demo (public/demo-game) ─── */
-function GameModal({ src, onClose }) {
+function GameModal({ src, onClose, mobile }) {
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
+    // The game posts this when Esc is pressed inside the iframe.
+    const onMsg = (e) => e.origin === window.location.origin && e.data?.type === "sparky-close" && onClose();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("message", onMsg);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("message", onMsg);
+    };
   }, [onClose]);
   // Portal to <body> so the fixed overlay sits above the nav, outside the section's stacking context.
+  // Full screen on phones; the header keeps Close visible no matter what the game is showing.
   return createPortal(
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: "min(860px, 100%)", height: "min(820px, 92vh)", position: "relative", borderRadius: 12, overflow: "hidden", background: "#2b2233" }}>
-        <button onClick={onClose} aria-label="Close game" style={{ position: "absolute", top: 8, right: 8, zIndex: 1, border: "none", borderRadius: 14, padding: "4px 10px", cursor: "pointer", fontFamily: "'DM Sans'", fontSize: 12 }}>Close ✕</button>
-        <iframe src={src} title="Project walkthrough game" style={{ width: "100%", height: "100%", border: 0 }} />
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: mobile ? 0 : 12 }}>
+      <div onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Project walkthrough game" style={{ width: mobile ? "100%" : "min(860px, 100%)", height: mobile ? "100dvh" : "min(680px, 92vh)", display: "flex", flexDirection: "column", borderRadius: mobile ? 0 : 12, overflow: "hidden", background: "#2b2233" }}>
+        <div style={{ flex: "none", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 10px 8px 14px", background: "#3b2414", color: "#fff8e7", fontFamily: "'DM Sans'", fontSize: 13 }}>
+          <span>🐾 Sparky's project walk</span>
+          <button onClick={onClose} aria-label="Close game" style={{ border: "none", borderRadius: 14, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans'", fontSize: 13, fontWeight: 500, background: "#fff8e7", color: "#3b2414" }}>Close ✕</button>
+        </div>
+        <iframe src={src} title="Project walkthrough game" style={{ flex: 1, width: "100%", border: 0 }} />
       </div>
     </div>,
     document.body
@@ -424,7 +437,7 @@ export function Projects({ mobile, pad }) {
           <GameButton label="🎮 Interactive game to walk through my projects" onClick={() => setGameSrc("/demo-game/index.html")} />
         </div>
       </div>
-      {gameSrc && <GameModal src={gameSrc} onClose={() => setGameSrc(null)} />}
+      {gameSrc && <GameModal src={gameSrc} onClose={() => setGameSrc(null)} mobile={mobile} />}
 
       {/* horizontal scroll */}
       <div
