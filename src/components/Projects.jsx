@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { Fragment, useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { C } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
@@ -57,17 +57,29 @@ function GenomeDotsDemo() {
   );
 }
 
+// Agent (robot) does the reading, a human curates, then it's published.
+const ICON_PATHS = {
+  robot: "M6 6h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM12 2v4M9 11v1M15 11v1M10 15h4M2 11v2M22 11v2",
+  person: "M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2",
+  book: "M3 19a9 9 0 0 1 9 0 9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0 9 9 0 0 1 9 0M3 6v13M12 6v13M21 6v13",
+};
 function PipelineDemo() {
-  const steps = ["Search", "→", "Read", "→", "Validate", "→", "Draft", "→", "Curate", "→", "Publish"];
+  const steps = [
+    { icon: "robot", label: "search · read · check · draft", color: C.accent },
+    { icon: "person", label: "curate", color: C.wc[0] },
+    { icon: "book", label: "publish", color: C.accent },
+  ];
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, fontFamily: "'DM Sans'", fontSize: 11 }}>
-      {steps.map((s, i) =>
-        s === "→" ? (
-          <span key={i} style={{ color: C.accent, animation: `arrP 1.5s ease ${i * 0.15}s infinite` }}>→</span>
-        ) : (
-          <span key={i} style={{ background: C.accentDim, color: C.accent, padding: "3px 8px", borderRadius: 5, fontWeight: 500 }}>{s}</span>
-        )
-      )}
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, fontFamily: "'DM Sans'", fontSize: 10.5, color: C.text }}>
+      {steps.map((s, i) => (
+        <Fragment key={s.icon}>
+          {i > 0 && <span style={{ color: C.accent, animation: `arrP 1.5s ease ${i * 0.3}s infinite` }}>→</span>}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={ICON_PATHS[s.icon]} /></svg>
+            <span style={{ textAlign: "center" }}>{s.label}</span>
+          </div>
+        </Fragment>
+      ))}
     </div>
   );
 }

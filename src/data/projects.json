@@ -21,7 +21,7 @@
     },
     {
       "title": "SigProfilerCurator",
-      "desc": "An agentic literature-curation pipeline that builds a living, evidence-graded reference of all 101 COSMICv3.6 SBS mutational signatures. LLM agents search, read, cross-check and draft, and a human curator signs off on the result.",
+      "desc": "Agents read the literature, a human signs off: a living reference for every COSMIC SBS signature.",
       "details": [
         "LLM agents turn the published literature into short, cited claims for each signature.",
         "Every claim is graded by strength of evidence and checked against its sources.",
@@ -30,7 +30,7 @@
       ],
       "type": "Research",
       "topics": ["Computational Biology", "Data Science", "Bioinformatics"],
-      "tags": ["Python", "LLMs", "AI Agents", "NLP", "Bioinformatics", "MCP"],
+      "tags": ["Python", "LLMs", "AI Agents", "Bioinformatics", "MCP"],
       "year": "2025–present",
       "demo": "pipeline",
       "github": "https://github.com/jnau/msiglitai"
