@@ -32,8 +32,7 @@
       "topics": ["Computational Biology", "Data Science", "Bioinformatics"],
       "tags": ["Python", "LLMs", "AI Agents", "Bioinformatics", "MCP"],
       "year": "2025–present",
-      "demo": "pipeline",
-      "github": "https://github.com/jnau/msiglitai"
+      "demo": "pipeline"
     },
     {
       "title": "ENCODEd Database",
