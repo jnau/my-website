@@ -58,9 +58,9 @@ function GenomeDotsDemo() {
 }
 
 function PipelineDemo() {
-  const steps = ["Search", "→", "Classify", "→", "Extract", "→", "Chat"];
+  const steps = ["Search", "→", "Read", "→", "Validate", "→", "Draft", "→", "Curate", "→", "Publish"];
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans'", fontSize: 11 }}>
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, fontFamily: "'DM Sans'", fontSize: 11 }}>
       {steps.map((s, i) =>
         s === "→" ? (
           <span key={i} style={{ color: C.accent, animation: `arrP 1.5s ease ${i * 0.15}s infinite` }}>→</span>
@@ -86,6 +86,50 @@ function DashboardDemo() {
         </div>
       ))}
     </div>
+  );
+}
+
+// Types "eggs" into a toy search box, then shows matches scored by meaning and by words. Click opens Sparky's kitchen.
+const RECIPE_HITS = [
+  { title: "Egg fried rice", meaning: 0.9, words: 0.85, color: "#c9a96e" },
+  { title: "Tomato & egg stir-fry", meaning: 0.75, words: 0.6, color: "#c98e8e" },
+];
+function RecipeSearchDemo({ onPlay }) {
+  const query = "eggs";
+  const [step, setStep] = useState(0); // 0..4 typing, 5 results, 6 hold
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setStep(6); return; }
+    const delays = [600, 180, 180, 180, 450, 2800, 0];
+    const t = setTimeout(() => setStep((s) => (s >= 5 ? 0 : s + 1)), delays[step]);
+    return () => clearTimeout(t);
+  }, [step]);
+  const typed = query.slice(0, Math.min(step, 4));
+  const shown = step >= 5;
+  return (
+    <button onClick={onPlay} aria-label="Try the recipe book demo in Sparky's kitchen" style={{ all: "unset", cursor: "pointer", display: "block", width: "100%", fontFamily: "'DM Sans'" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", fontSize: 11, color: C.bright }}>
+        <span style={{ color: C.muted }}>⌕</span>
+        <span>{typed || <span style={{ color: C.muted }}>What are you craving?</span>}</span>
+        {step < 5 && typed && <span style={{ width: 1, height: 11, background: C.accent, animation: "arrP 1s step-end infinite" }} />}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5, marginTop: 7, minHeight: 34 }}>
+        {RECIPE_HITS.map((r, i) => (
+          <div key={r.title} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10.5, color: C.text, opacity: shown ? 1 : 0, transform: shown ? "none" : "translateY(4px)", transition: `opacity .35s ease ${i * 0.15}s, transform .35s ease ${i * 0.15}s` }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.color, opacity: 0.8, flex: "none" }} />
+            <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.title}</span>
+            {[["meaning", r.meaning], ["words", r.words]].map(([k, v]) => (
+              <div key={k} title={k} style={{ width: 34, height: 5, borderRadius: 3, background: `${C.accent}33`, overflow: "hidden", flex: "none" }}>
+                <div style={{ height: "100%", width: shown ? `${v * 100}%` : 0, borderRadius: 3, background: C.accent, opacity: 0.75, transition: `width .6s ease ${0.2 + i * 0.15}s` }} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7, fontSize: 10, color: C.muted }}>
+        <span>meaning · words</span>
+        <span style={{ color: C.accent }}>▶ Try it in Sparky's kitchen</span>
+      </div>
+    </button>
   );
 }
 
@@ -137,7 +181,7 @@ function GameButton({ label, onClick }) {
   );
 }
 
-const DEMO_MAP = { sigbars: SigBarsDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, dashboard: DashboardDemo, comingsoon: ComingSoonDemo };
+const DEMO_MAP = { sigbars: SigBarsDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, dashboard: DashboardDemo, recipesearch: RecipeSearchDemo, comingsoon: ComingSoonDemo };
 
 /* ─── Filter Pill ─── */
 function FilterPill({ label, color, active, onClick, mobile }) {
@@ -167,11 +211,12 @@ function FilterPill({ label, color, active, onClick, mobile }) {
 }
 
 /* ─── Project Card ─── */
-function ProjectCard({ proj, index, mobile }) {
+function ProjectCard({ proj, index, mobile, onPlayGame }) {
   const [ref, vis] = useReveal(0.1);
+  const [open, setOpen] = useState(false);
   const w = mobile ? 280 : 340;
   const DemoComp = proj.demo ? DEMO_MAP[proj.demo] : null;
-  const hasLinks = proj.github || proj.url || proj.explainer;
+  const hasLinks = proj.github || proj.url || proj.explainer || proj.details;
 
   return (
     <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: `opacity .6s ease ${index * 0.06}s, transform .6s ease ${index * 0.06}s` }}>
@@ -184,17 +229,17 @@ function ProjectCard({ proj, index, mobile }) {
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h3 style={{ fontFamily: "'Cormorant Garamond'", fontSize: mobile ? 18 : 20, fontWeight: 600, color: C.heading, margin: 0, flex: 1 }}>{proj.title}</h3>
+          <h3 style={{ fontFamily: "'Cormorant Garamond'", fontSize: mobile ? 18 : 20, fontWeight: 600, color: C.heading, margin: 0, flex: 1 }}>{proj.title}{proj.explainer && <span aria-hidden="true" style={{ fontSize: "0.85em", marginLeft: 6 }}>📖</span>}</h3>
           <span style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.muted, marginLeft: 8 }}>{proj.year}</span>
         </div>
         <p style={{ fontFamily: "'DM Sans'", fontSize: 13, color: C.text, lineHeight: 1.7, marginTop: 8, flex: 1 }}>{proj.desc}</p>
         {DemoComp && (
           <div style={{ marginTop: 12, borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, padding: 12 }}>
-            <DemoComp />
+            <DemoComp onPlay={onPlayGame} />
           </div>
         )}
         {hasLinks && (
-          <div style={{ display: "flex", alignItems: "center", gap: mobile ? 12 : 16, marginTop: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: proj.url || proj.github ? "flex-start" : "center", gap: mobile ? 12 : 16, marginTop: 12 }}>
             {proj.url && (
               <a href={proj.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
                 <span style={{ fontSize: 12 }}>↗</span> Demo
@@ -207,10 +252,20 @@ function ProjectCard({ proj, index, mobile }) {
             )}
             {proj.explainer && (
               <a href={proj.explainer} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                <span style={{ fontSize: 12 }}>📖</span> How it works
+                How it works
               </a>
             )}
+            {proj.details && (
+              <button onClick={() => setOpen((o) => !o)} aria-expanded={open} style={{ all: "unset", cursor: "pointer", fontFamily: "'DM Sans'", fontSize: 11, color: C.accent, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 10, display: "inline-block", transition: "transform .2s", transform: open ? "rotate(90deg)" : "none" }}>▸</span> {open ? "Less" : "More"}
+              </button>
+            )}
           </div>
+        )}
+        {proj.details && open && (
+          <ul style={{ fontFamily: "'DM Sans'", fontSize: 12, color: C.text, lineHeight: 1.6, margin: "10px 0 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+            {proj.details.map((d) => <li key={d}>{d}</li>)}
+          </ul>
         )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: hasLinks ? 10 : 12 }}>
           {proj.tags.map((t) => (
@@ -458,7 +513,7 @@ export function Projects({ mobile, pad }) {
       >
         <div style={{ display: "flex", gap: mobile ? 12 : 16, paddingLeft: sidePad, paddingRight: sidePad, width: "max-content" }}>
           {PROJECTS.map((proj, i) => (
-            <ProjectCard key={i} proj={proj} index={i} mobile={mobile} />
+            <ProjectCard key={i} proj={proj} index={i} mobile={mobile} onPlayGame={() => setGameSrc("/demo-game/index.html?open=recipe")} />
           ))}
         </div>
       </div>

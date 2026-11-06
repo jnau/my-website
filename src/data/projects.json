@@ -7,7 +7,7 @@
       "topics": ["Engineering", "Data Science"],
       "tags": ["Python", "LLMs", "RAG"],
       "year": "2026",
-      "demo": "comingsoon",
+      "demo": "recipesearch",
       "explainer": "/recipe-book/how-it-works.html"
     },
     {
@@ -20,12 +20,18 @@
       "demo": "sigbars"
     },
     {
-      "title": "mSigLit-AI",
-      "desc": "AI literature curation with automated extraction and classification.",
+      "title": "SigProfilerCurator",
+      "desc": "An agentic literature-curation pipeline that builds a living, evidence-graded reference of all 101 COSMICv3.6 SBS mutational signatures. LLM agents search, read, cross-check and draft, and a human curator signs off on the result.",
+      "details": [
+        "LLM agents turn the published literature into short, cited claims for each signature.",
+        "Every claim is graded by strength of evidence and checked against its sources.",
+        "Agent output is benchmarked against expert review, and a human curator makes the final call.",
+        "Results are shared as an interactive reference that both people and chat assistants can query."
+      ],
       "type": "Research",
       "topics": ["Computational Biology", "Data Science", "Bioinformatics"],
-      "tags": ["Python", "NLP", "LLMs"],
-      "year": "2025-present",
+      "tags": ["Python", "LLMs", "AI Agents", "NLP", "Bioinformatics", "MCP"],
+      "year": "2025–present",
       "demo": "pipeline",
       "github": "https://github.com/jnau/msiglitai"
     },
