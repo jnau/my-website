@@ -1,6 +1,6 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Project Walk</title>
+<title>Project Walk</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=DM+Sans:wght@400;500&display=swap">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--wood:#6b4423;--wood2:#a86f3d;--paper:#fff8e7;--ink:#3b2a20;--mute:#8a7464;--sage:#6aa84f}
@@ -47,11 +47,25 @@ body.inscene canvas#c{display:none}
 .wave{display:flex;gap:2px;align-items:center;justify-content:center;height:34px}.wave i{width:4px;background:var(--sage)}
 .out{white-space:pre-wrap;background:#f3ead6;border-radius:4px;padding:8px;min-height:70px}
 .soon{background:#ffd34d33;border:3px dashed #e0a458;border-radius:6px;padding:16px;text-align:center;font-size:18px;margin-top:8px}.panel a{color:#2f5aa8}
-#scene:not(.kitchen) .k{display:none}
-*{border-radius:0!important}.card-photo{transform:none!important}
+.deco[data-room]{display:none}#scene.kitchen .deco[data-room=kitchen],#scene.library .deco[data-room=library],#scene.office .deco[data-room=office],#scene.hpc .deco[data-room=hpc]{display:block}
+#scene.hpc{background:repeating-linear-gradient(#aab6c2 0 14px,#98a5b2 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#e7e3f0 0 14px,#ddd8ea 14px 28px)}#scene.hpc.running .led{animation-duration:.25s}
+.jobs{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin:6px 0}.jobs i{aspect-ratio:1;background:#e3d6bb}.jobs i.on{background:#5fb052}.jobs i.run{background:#ffd34d}
+.count{font:600 22px ui-monospace,Menlo,monospace;text-align:center}.chart{display:block;width:100%;height:130px;background:#fff;border:2px solid #e3d6bb}
+#scene.library{background:repeating-linear-gradient(#b57d4b 0 14px,#a06b3c 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#e3ead6 0 14px,#d8e2c8 14px 28px)}
+#scene.office{background:repeating-linear-gradient(#aab6c2 0 14px,#98a5b2 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#e1e8f0 0 14px,#d6dfea 14px 28px)}
+.deco.talk{animation-duration:.3s!important}.chat{display:flex;gap:8px;align-items:flex-start;margin:6px 0;animation:fadein .25s ease-out}.chat img{width:24px;height:28px;image-rendering:pixelated;flex:none}.chat .bub{flex:1;background:#f3ead6;padding:4px 8px}.chat b{display:block;font-size:13px}
+.led{position:absolute;width:var(--px);height:var(--px);background:#5fe08a;animation:blink 1.4s steps(2) infinite}@keyframes blink{50%{opacity:.25}}
+.claim{display:flex;gap:8px;align-items:flex-start;padding:6px;border-bottom:2px dashed #e3d6bb}.claim small{display:block;color:var(--mute);font-size:12px}.claim.drop{color:var(--mute)}.claim.drop span.t{text-decoration:line-through}
+.grade{flex:none;font-size:12px;padding:1px 6px;margin-left:auto}.g-Strong{background:#cfe8c9}.g-Moderate{background:#fbe6b0}.g-Weak{background:#f6c9c9}
+.claim .vote{flex:none;display:flex;gap:4px;margin-left:auto}.claim .vote button{padding:2px 8px;min-width:0}.claim.ok{background:#eef7e9}.claim.no{background:#fbeeee;color:var(--mute)}
+.json{font:13px/1.45 ui-monospace,Menlo,monospace;background:#f3ead6;padding:8px;white-space:pre-wrap;margin:0 0 8px}.json .bad{background:#f6c9c9}
+.steps .fail{color:#b5475a}.steps .fail::before{content:"✗ "}.err{background:#fbeeee;border:2px solid #e8a3a3;padding:6px 8px;font:13px ui-monospace,Menlo,monospace;margin-top:6px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl td,.tbl th{padding:4px 6px;border-bottom:2px dashed #e3d6bb;text-align:left}.tbl th{color:var(--mute);font-weight:600;font-size:12px}.tbl tr.new{background:#fff3c4}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.chips button{padding:4px 10px}.tag{font-size:12px;padding:1px 6px;background:#f3ead6}.tag.rel{background:#cfe8c9}.tag.ip{background:#fbe6b0}
+*{border-radius:0!important}#pcard{position:absolute;z-index:2;left:10px;bottom:50%;width:min(340px,calc(100% - 20px));background:#111b2e;border:1px solid #1a2744;border-radius:14px!important;padding:16px 18px;color:#8a9ab5;font:13px/1.6 "DM Sans",system-ui,sans-serif;box-shadow:0 8px 24px #0005;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateY(6px)}#pcard.on{opacity:1;pointer-events:auto;transform:none}#pcard::after{content:"";position:absolute;bottom:-7px;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:#111b2e;border:1px solid #1a2744;border-width:0 1px 1px 0;transform:rotate(45deg)}#pcard .hd{display:flex;gap:8px;align-items:baseline;padding-right:16px}#pcard h4{flex:1;margin:0;font:600 19px/1.2 "Cormorant Garamond",Georgia,serif;color:#e0e7f3}#pcard .yr{font-size:11px;color:#475b7a;white-space:nowrap}#pcard p{margin:6px 0 0}#pcard .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}#pcard .tags span{font-size:11px;color:#6db89f;background:rgba(109,184,159,.12);padding:2px 8px;border-radius:5px!important}#pcard .lk{display:flex;gap:14px;margin-top:10px;font-size:11px}#pcard a{color:#6db89f;text-decoration:none}#pcard .x{position:absolute;top:6px;right:8px;background:none;border:0;color:#475b7a;font-size:14px;cursor:pointer;padding:2px 4px;box-shadow:none}@media(max-height:560px){#pcard p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}body.inscene #pcard{display:none}.card-photo{transform:none!important}
 </style></head><body>
 <div class="game">
- <div class="stage" id="stage"><canvas id="c"></canvas><select id="jump" aria-label="Jump to a project"></select><div id="scene"><div id="deco"></div><div id="panelWrap"></div></div></div>
+ <div class="stage" id="stage"><canvas id="c"></canvas><select id="jump" aria-label="Jump to a project"></select><div id="pcard" aria-live="polite"></div><div id="scene"><div id="deco"></div><div id="panelWrap"></div></div></div>
  <div class="dialog" id="dbox"><canvas class="face" id="face" width="20" height="20"></canvas>
   <div style="flex:1;min-width:0"><div class="dname" id="dname">Sparky</div><div class="dtx" id="dtx"></div></div><span id="more">▼</span></div>
  <div class="ctrlbar"><button class="arrow" id="prev" aria-label="Walk back">◀</button><div id="dbtn"></div><button class="arrow" id="next" aria-label="Walk forward">▶</button></div>
@@ -115,11 +129,33 @@ const LINES={
  projects:{
   "Recipe Book AI":"Jessica's recipe book. I'm mostly here for the chicken.",
   "High Definition Single Base Substitution Mutational Signatures in Human Cancers":"Big science about tiny DNA typos. Very fancy.",
-  "mSigLit-AI":"A robot that reads papers for Jessica. Good robot.",
+  "SigProfilerCurator":"Robots read the papers, Jessica double-checks. Good robots.",
   "ENCODEd Database":"A giant genome library. I'd fetch from it if they let me."},
  projectDefault:"Sniff sniff… a project!",
  soon:"Still being built! Come back soon for treats.",
  explain:"Want to see how Jessica built it? Lots of wires, no bones.",
+ curator:{
+  start:"Welcome to the library! Pick a signature and the robots fetch the papers.",
+  reading:"The robots are talking it over. No chewing the pages!",
+  claims:"Every claim gets a grade and a source. One didn't hold up, so it's out.",
+  review:"Your turn, curator! Tap ✔ or ✗ on each claim.",
+  needOne:"Approve at least one claim first!",
+  published:"Published! People and chat assistants can both ask it now."},
+ hdsbs:{
+  start:"Welcome to the server room! 50,000+ genomes is way too many for one computer.",
+  running:"The whole cluster is on it. Zoom zoom!",
+  done:"Done! Here's one toy signature at SBS96. Tap the bigger numbers to zoom in.",
+  96:"SBS96: the mutation plus one neighbor on each side.",
+  288:"SBS288: each of the 96 split by DNA strand.",
+  1536:"SBS1536: two neighbors on each side. So much more detail!",
+  4608:"SBS4608: two neighbors each side plus strand. See the peaks hiding in that one bar?"},
+ encode:{
+  start:"This is the ENCODE portal. Pick a file to submit. The schema guards the door!",
+  checking:"Checking it against the schema…",
+  fail:"Uh oh, the schema said no. Let's fix it!",
+  pass:"It passed! It waits as in progress until it's released.",
+  released:"Released! Now anyone can find it.",
+  browse:"Tap a filter to narrow the files, like the real portal."},
  recipe:{
   start:"Welcome in! Let's add a recipe. Where's it from?",
   url:"The recipe's hiding in the web page. The app sniffs it right out!",
@@ -151,10 +187,10 @@ $("dbox").onclick=()=>{if(typing)doneTyping();else if(pg<pages.length-1){pg++;ty
 
 /* ---------------- world ---------------- */
 // Fallback copy of projects.json "featured"; inside the site the game reads the live list from the parent page.
-const FALLBACK=[{"title": "Recipe Book AI", "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.", "tags": ["Python", "LLMs", "RAG"], "year": "2026", "explainer": "/recipe-book/how-it-works.html"}, {"title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types.", "tags": ["Python", "ML", "Statistics"], "year": "2023-present"}, {"title": "mSigLit-AI", "desc": "AI literature curation with automated extraction and classification.", "tags": ["Python", "NLP", "LLMs"], "year": "2025-present", "github": "https://github.com/jnau/msiglitai"}, {"title": "ENCODEd Database", "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", "tags": ["AWS", "GCP", "Python", "Database"], "year": "2019-2021", "github": "https://github.com/ENCODE-DCC/encoded", "url": "https://www.encodeproject.org/"}];
+const FALLBACK=[{"title": "Recipe Book AI", "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.", "type": "Personal", "topics": ["Engineering", "Data Science"], "tags": ["Python", "LLMs", "RAG"], "year": "2026", "demo": "recipesearch", "explainer": "/recipe-book/how-it-works.html"}, {"title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types, with interactive web dashboards for exploring the signatures.", "type": "Research", "topics": ["Computational Biology", "Mathematics", "Data Science", "Bioinformatics", "Engineering"], "tags": ["Python", "ML", "Statistics", "JavaScript", "Plotly", "AWS"], "year": "2023-present", "demo": "sbscontext"}, {"title": "SigProfilerCurator", "desc": "Agents read the literature, a human signs off: a living reference for every COSMIC SBS signature.", "details": ["LLM agents turn the published literature into short, cited claims for each signature.", "Every claim is graded by strength of evidence and checked against its sources.", "Agent output is benchmarked against expert review, and a human curator makes the final call.", "Results are shared as an interactive reference that both people and chat assistants can query."], "type": "Research", "topics": ["Computational Biology", "Data Science", "Bioinformatics"], "tags": ["Python", "LLMs", "AI Agents", "Bioinformatics", "MCP"], "year": "2025–present", "demo": "pipeline"}, {"title": "ENCODEd Database", "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", "type": "Professional", "topics": ["Computational Biology", "Engineering", "Bioinformatics"], "tags": ["AWS", "GCP", "Python", "Database"], "year": "2019-2021", "demo": "ingest", "github": "https://github.com/ENCODE-DCC/encoded", "url": "https://www.encodeproject.org/"}];
 let PROJ=FALLBACK;try{if(window.parent!==window&&window.parent.__projectsForGame)PROJ=window.parent.__projectsForGame}catch(e){}
 const stops=[{line:`${LINES.hello} ${LINES.howto}`,x:30},
- ...PROJ.map((p,k)=>({line:`${p.title}\n${LINES.projects[p.title]||LINES.projectDefault}`,proj:p,x:100+k*70,board:true,scene:/recipe book/i.test(p.title)?"recipe":"soon"}))];
+ ...PROJ.map((p,k)=>({line:LINES.projects[p.title]||LINES.projectDefault,proj:p,x:100+k*70,board:true,scene:/recipe book/i.test(p.title)?"recipe":/curator/i.test(p.title)?"curator":/encode/i.test(p.title)?"encode":/high definition/i.test(p.title)?"hdsbs":"soon"}))];
 stops.push({line:LINES.bye,x:stops[stops.length-1].x+60});
 const H=140,GROUND=116,WW=Math.max(420,stops[stops.length-1].x+30),cv=$("c"),g=cv.getContext("2d");let W=320,VH=H,cam=0;
 // Size the canvas to the game view without stretching: the world fills at least ~65% of the height, extra becomes sky.
@@ -243,8 +279,34 @@ const DECO=[
  {w:44,h:6,css:"bottom:14px;left:50%;transform:translateX(-50%)",img:mk(44,6,R=>{R("#f29bb0",0,0,44,6);R("#fff",0,1,44,1);R("#fff",0,4,44,1)})},
  // Sparky's favorite toy: panda hand puppet
  {w:14,h:6,css:"bottom:12px;left:calc(50% + var(--px)*18)",click:"pandaClick()",img:mk(14,6,R=>["BB.BB.........","WWWWWBBWWWWWBB","WWWWWBBWWWWWBB","WWWWWBBWWWWWBB",".WWW..BWWWWWB.",".SSSSSSSSSSSS."].forEach((r,y)=>[...r].forEach((c,x)=>{if(c!==".")R({B:"#1a1a1a",W:"#fafafa",S:"rgba(0,0,0,.15)"}[c],x,y,1,1)})))}];
-$("deco").innerHTML=DECO.map(d=>`<div class="deco${d.k?" k":""}" style="${d.css};width:calc(var(${d.u||"--px"})*${d.w});height:calc(var(${d.u||"--px"})*${d.h})${d.click?';pointer-events:auto;cursor:pointer':''}"${d.click?` onclick="${d.click}" title="Sparky's favorite toy"`:""}><img src="${d.img}" style="width:100%;height:100%;image-rendering:pixelated">`+
- (d.steam||[]).map((sx,k)=>`<i class="steam" style="left:calc(var(--px)*${sx});top:0;animation-delay:${k*.8}s"></i>`).join("")+`</div>`).join("")+
+// ---- library (SigProfilerCurator) ----
+const BOTS=[{name:"Searcher",c:"#7fb3d5",ink:"#2f6f9e"},{name:"Reader",c:"#e0a458",ink:"#9a5f10"},{name:"Validator",c:"#5fb052",ink:"#3a7a36"},{name:"Summarizer",c:"#e05a7a",ink:"#b5475a"}];
+const botImg=c=>mk(12,14,R=>{R("#55555f",5,0,2,2);R(c,5,0,2,1);R("#2a2a33",1,2,10,6);R("#c9d2da",2,3,8,4);R("#3fc1e0",3,4,2,2);R("#3fc1e0",7,4,2,2);
+  R("#2a2a33",2,8,8,5);R(c,3,9,6,3);R("#ffffff66",3,9,6,1);R("#2a2a33",2,13,3,1);R("#2a2a33",7,13,3,1)});
+const shelf=R=>{R("#4a3022",0,0,30,50);R("#8a5a33",1,1,28,48);R("#5c3a22",3,3,24,44);const bc=["#c0563f","#2f5aa8","#5fb052","#e0a458","#9d7fd9","#e05a7a","#7fb3d5","#e8d9b0"];let n=3;
+ for(const yb of[13,25,37,47]){for(let x=3;x<26;){const w=2+(n%2),h=6+(n*7)%4;if(x+w>27)break;R(bc[n%bc.length],x,yb-h,w,h);R("#ffffff55",x,yb-h+2,w,1);R("#0003",x+w-1,yb-h,1,h);x+=w+(n%6===5?2:0);n++}R("#a87444",1,yb,28,2);R("#c08850",1,yb,28,1)}};
+DECO.push(
+ {w:30,h:50,room:"library",css:"bottom:28px;left:2%",img:mk(30,50,shelf)},
+ {w:30,h:50,room:"library",css:"bottom:28px;right:2%",img:mk(30,50,shelf)},
+ {w:28,h:18,room:"library",u:"--wp",css:"top:12px;left:4%",img:mk(28,18,R=>{R("#6b4423",0,0,28,18);R("#fff8e7",1,1,26,16);R("#d8c8a6",2,2,24,1);
+  const cl=["#03bcee","#2a2a33","#e32926","#cac8c9","#a1ce63","#ebc6c4"];for(let k=0;k<24;k++){const h=1+((k*37+11)%9)+(k<4?3:0);R(cl[k>>2],2+k,15-h,1,h)}R("#9a8a74",2,15,24,1)})},
+ ...BOTS.map((b,n)=>({w:12,h:14,room:"library",id:"bot"+n,css:`bottom:${n%2?26:32}px;${n<2?"left":"right"}:calc(2% + var(--px)*${33+(n%2)*14});animation:bob ${1.1+n*.15}s steps(2) infinite`,img:botImg(b.c)})),
+// ---- office (ENCODEd) ----
+ {w:46,h:34,room:"office",css:"bottom:30px;left:2%",img:mk(46,34,R=>{R("#2a2a33",8,1,26,17);R("#123a2a",9,2,24,14);
+  [[11,9,"#5fe08a"],[13,13,"#7fd3ef"],[13,8,"#5fe08a"],[11,16,"#e0d27a"],[13,10,"#5fe08a"],[11,6,"#7fd3ef"]].forEach(([x,w,c],k)=>R(c,x,4+k*2,w,1));R("#5fe08a",11,15,2,1);
+  R("#2a2a33",19,18,4,2);R("#a86f3d",0,20,46,3);R("#c98f5a",0,20,46,1);R("#55555f",11,19,18,1);R("#e05a7a",37,15,4,5);R("#e05a7a",41,16,1,3);R("#fff8e7",38,15,2,1);
+  R("#6b4423",2,23,3,11);R("#6b4423",41,23,3,11);R("#8a5a33",27,23,12,8);R("#6b4423",27,27,12,1);R("#e0a458",32,25,2,1);R("#e0a458",32,29,2,1)})},
+ {w:20,h:48,room:"office",css:"bottom:30px;right:2%",leds:[[4,4],[7,4,"#ffd34d"],[4,13],[7,13],[4,22,"#ffd34d"],[4,31],[7,31],[4,40,"#7fd3ef"]],img:mk(20,48,R=>{R("#1d1d24",0,0,20,48);R("#2a2a33",1,1,18,46);
+  for(let y=2;y<44;y+=9){R("#3a3a46",2,y,16,7);R("#4a4a58",2,y,16,1);for(let x=10;x<17;x+=2)R("#22222a",x,y+2,1,4)}R("#1d1d24",2,46,3,2);R("#1d1d24",15,46,3,2)})},
+ {w:20,h:28,room:"office",u:"--wp",css:"top:12px;left:5%",img:mk(20,28,R=>{R("#6b4423",0,0,20,28);R("#eef4fa",1,1,18,26);
+  for(let y=3;y<25;y++){const d=Math.round(5*Math.sin(y/2.6));if(y%3===0)R("#c9d2da",10-Math.abs(d),y,Math.abs(d)*2+1,1);R("#2f5aa8",10+d,y,1,1);R("#e05a7a",10-d,y,1,1)}})},
+ {w:12,h:12,room:"office",u:"--wp",css:"top:18px;right:8%",img:mk(12,12,R=>{R("#2a2a33",3,0,6,12);R("#2a2a33",0,3,12,6);R("#2a2a33",1,1,10,10);R("#fff8e7",2,2,8,8);R("#fff8e7",1,4,10,4);R("#fff8e7",4,1,4,10);R("#2a2a33",5,3,2,3);R("#2a2a33",6,5,3,1);R("#e05a7a",5,5,2,2)})}
+);
+{const desk=DECO.find(d=>d.room==="office"&&d.w===46),rack=DECO.find(d=>d.room==="office"&&d.w===20&&d.h===48);
+ DECO.push({...desk,room:"hpc"},...[2,24,46].map((o,n)=>({...rack,room:"hpc",css:`bottom:${30+n*2}px;right:calc(2% + var(--px)*${o})`,leds:rack.leds.map(([x,y,c],k)=>[x+(k%2)*6,y,c])})),
+  {w:28,h:18,room:"hpc",u:"--wp",css:"top:12px;left:4%",img:DECO.find(d=>d.room==="library"&&d.w===28).img})}
+$("deco").innerHTML=DECO.map(d=>`<div class="deco"${d.id?` id="${d.id}"`:""}${d.room||d.k?` data-room="${d.room||"kitchen"}"`:""} style="${d.css};width:calc(var(${d.u||"--px"})*${d.w});height:calc(var(${d.u||"--px"})*${d.h})${d.click?';pointer-events:auto;cursor:pointer':''}"${d.click?` onclick="${d.click}" title="Sparky's favorite toy"`:""}><img src="${d.img}" style="width:100%;height:100%;image-rendering:pixelated">`+
+ (d.steam||[]).map((sx,k)=>`<i class="steam" style="left:calc(var(--px)*${sx});top:0;animation-delay:${k*.8}s"></i>`).join("")+(d.leds||[]).map(([lx,ly,c],k)=>`<i class="led" style="left:calc(var(--px)*${lx});top:calc(var(--px)*${ly});background:${c||"#5fe08a"};animation-delay:${(k*.37)%1.4}s"></i>`).join("")+`</div>`).join("")+
  `<canvas id="kdog" class="deco" width="24" height="28" onclick="kJump=0" style="pointer-events:auto;cursor:pointer;bottom:14px;left:50%;transform:translateX(-50%);width:calc(var(--px)*24);height:calc(var(--px)*28)"></canvas>`+
  `<div id="pbub" class="deco" style="display:none;bottom:calc(var(--px)*8 + 16px);left:calc(50% + var(--px)*8);background:#fff8e7;border:2px solid #6b4423;border-radius:6px;padding:2px 8px;font-size:13px;color:#3b2a20;white-space:nowrap">♥ Sparky's favorite toy!</div>`;
 function pandaClick(){kJump=0;const b=$("pbub");b.style.display="block";clearTimeout(b.t);b.t=setTimeout(()=>b.style.display="none",2200)}
@@ -266,10 +328,10 @@ function board(s,on,t){const x=s.x,F=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(a,b,
 const clouds=Array.from({length:Math.ceil(WW/100)},(_,k)=>[40+k*100,10+(k*7)%14,.6+(k%3)*.2]),flies=Array.from({length:Math.ceil(WW/130)},(_,k)=>[80+k*130,95+(k%2)*5,k%2?"#ffd34d":"#fff"]);
 function draw(){
  const tx=stops[i].x,moving=Math.abs(tx-x)>0.5;
- if(moving){dir=Math.sign(tx-x);x+=dir;f++;shown=-2}else if(shown!==i&&!inScene)arrive();
+ if(moving){dir=Math.sign(tx-x);x+=dir;f++;if(shown!==-2)hideCard();shown=-2}else if(shown!==i&&!inScene)arrive();
  const t=performance.now()/16;
  if(inScene){kitchenDog(t);requestAnimationFrame(draw);return}
- cam=Math.max(0,Math.min(WW-W,Math.round(x-W/2)));
+ cam=Math.max(0,Math.min(WW-W,Math.round(x-W/2)));placeCard();
  g.fillStyle="#8fd3f0";g.fillRect(0,0,W,VH);g.fillStyle="#ffe066";g.fillRect(W-30,12,10,10);g.fillRect(W-32,14,14,6);g.fillRect(W-28,10,6,14);
  g.save();g.translate(-cam,VH-H);
  g.drawImage(bg,0,0);
@@ -280,10 +342,16 @@ function draw(){
  const lift=jumpT<0?0:Math.round(Math.sin(jumpT/26*Math.PI)*9);if(jumpT>=0&&++jumpT>26)jumpT=-1;
  drawChar(g,x,GROUND,dir,moving,lift||(moving&&(f>>3)%2),t,lift);
  g.restore();requestAnimationFrame(draw)}
-function arrive(){shown=i;const s=stops[i];$("jump").value=i;
+function showCard(p){const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),links=[p.url&&["Website",p.url],p.github&&["GitHub",p.github],p.explainer&&["How it works",p.explainer]].filter(Boolean);
+ $("pcard").innerHTML=`<button class="x" onclick="hideCard()" aria-label="Hide card">✕</button><div class="hd"><h4>${esc(p.title)}</h4><span class="yr">${esc(p.year||"")}</span></div><p>${esc(p.desc)}</p><div class="tags">${(p.tags||[]).map(t=>`<span>${esc(t)}</span>`).join("")}</div>${links.length?`<div class="lk">${links.map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${l} ↗</a>`).join("")}</div>`:""}`;$("pcard").classList.add("on");placeCard()}
+// Keep the card just above the current signboard, nudged inward at the screen edges; the arrow still points at the sign.
+function placeCard(){const c=$("pcard");if(!c.classList.contains("on")||!stops[i].board)return;const st=$("stage").getBoundingClientRect(),sx=(stops[i].x-cam)*st.width/W,sy=(68+VH-H)*st.height/VH,cw=c.offsetWidth,l=Math.max(10,Math.min(st.width-cw-10,sx-cw/2));
+ c.style.left=l+"px";c.style.bottom=Math.max(0,st.height-sy)+"px";c.style.setProperty("--ax",Math.max(16,Math.min(cw-16,sx-l))+"px")}
+function hideCard(){$("pcard").classList.remove("on")}
+function arrive(){shown=i;const s=stops[i];$("jump").value=i;s.proj?showCard(s.proj):hideCard();
  say(s.scene?`${s.line} ${LINES.peek}`:s.line,s.scene?[["▶ Go inside",enter,"go"]]:[])}
 function go(d){if(!inScene)i=Math.max(0,Math.min(stops.length-1,i+d))}
-function enter(){const s=stops[i];if(!s.scene)return;inScene=true;document.body.classList.add("inscene");$("scene").classList.toggle("kitchen",s.scene==="recipe");s.scene==="recipe"?recipe.start():soon(s)}
+function enter(){const s=stops[i];if(!s.scene)return;inScene=true;document.body.classList.add("inscene");$("scene").className={recipe:"kitchen",curator:"library",encode:"office",hdsbs:"hpc"}[s.scene]||"";const room={recipe,curator,encode,hdsbs}[s.scene];room?room.start():soon(s)}
 function leave(){inScene=false;document.body.classList.remove("inscene");$("panelWrap").innerHTML="";shown=-1}
 const OUT=["🚪 Outside",()=>leave(),"out"];
 // Projects with an "explainer" page get a button that opens it in a new tab; the game stays put.
@@ -349,6 +417,91 @@ const recipe={
   say(line,[["↺ Again",()=>this.search()],["Tiếng Việt",toggle,"go"],OUT])}};
 function card(r,vi){return`<h3>${icon(r.pic,5)} ${vi?r.vi:r.t}</h3><b>${vi?"Nguyên liệu":"Ingredients"}</b><div class="ing">${(vi?r.ingVi:r.ing).map((n,k)=>`<span>${icon(ING[r.ing[k]],2)||"🌿"} ${n}</span>`).join("")}</div>
  <b>${vi?"Cách làm":"Steps"}</b><ol style="margin:4px 0 10px;padding-left:22px">${(vi?r.stepsVi:r.steps).map(x=>`<li>${x}</li>`).join("")}</ol>`}
+
+/* ---------------- SigProfilerCurator library ---------------- */
+// Toy run: real, well-known biology for each signature; papers and citations are made up.
+const SIGS={
+ SBS1:{about:"Clock-like",claims:[["Caused by spontaneous deamination of 5-methylcytosine.","Strong",3],["The count grows with age in most cancer types.","Strong",1],["Higher in tissues whose cells divide often.","Moderate",5],["Only found in children's cancers.","Weak",2,1]]},
+ SBS4:{about:"Tobacco smoking",claims:[["Associated with tobacco smoking.","Strong",1],["Mostly found in lung and head and neck cancers.","Strong",4],["Strand bias suggests repair of bulky DNA damage.","Moderate",6],["Caused by drinking coffee.","Weak",3,1]]},
+ SBS7a:{about:"UV light",claims:[["Caused by ultraviolet (UV) light exposure.","Strong",2],["Mostly found in skin cancers such as melanoma.","Strong",5],["C>T changes where two pyrimidines sit side by side.","Moderate",1],["Caused by sunscreen.","Weak",4,1]]}};
+const gradeTag=g=>`<span class="grade g-${g}">${g}</span>`;
+const curator={
+ start(){this.tok={};scene(`<h3>📚 SigProfilerCurator</h3><p style="margin:0 0 8px">Pick a mutational signature. The agents will read up on it.</p><div class="grid">${Object.entries(SIGS).map(([k,v])=>`<button class="big" onclick="curator.run('${k}')"><b>${k}</b><span style="font-size:13px">${v.about}</span></button>`).join("")}</div>`);
+  say(LINES.curator.start,[OUT])},
+ async run(k){const tok=this.tok={},c=SIGS[k].claims,drop=c.find(x=>x[3]),kept=c.length-1;
+  const talk=[[0,`Found 6 toy papers on ${k}. Passing them to Reader!`],[1,`Read all 6. I pulled out ${c.length} claims.`],[2,`Checking each claim against its paper…`],
+   [2,`Reader, where does "${drop[0].replace(/\.$/,"")}" come from?`],[1,`Toy paper #${drop[2]}… hmm, it doesn't actually say that.`],[2,`Then it's out. The other ${kept} hold up.`],
+   [3,`Drafted ${kept} cited claims, graded by evidence. Over to the human curator!`]];
+  scene(`<h3>🤖 Agents on ${k}</h3><div id="log"></div>`);say(LINES.curator.reading,[OUT,["⏭ Skip",()=>{this.quiet();this.claims(k)}]]);
+  for(const [n,t] of talk){if(this.tok!==tok||!inScene||!$("log"))return this.quiet();this.quiet();$("bot"+n).classList.add("talk");
+   const row=document.createElement("div");row.className="chat";row.innerHTML=`<img src="${BOTS[n].img||(BOTS[n].img=botImg(BOTS[n].c))}" alt=""><div class="bub"><b style="color:${BOTS[n].ink}">${BOTS[n].name}</b><span></span></div>`;
+   $("log").append(row);typeOut(row.querySelector("span"),t);const w=$("panelWrap");w.scrollTop=w.scrollHeight;await sleep(t.length*14+750)}
+  this.quiet();await sleep(400);if(this.tok===tok)this.claims(k)},
+ quiet(){BOTS.forEach((b,n)=>$("bot"+n)&&$("bot"+n).classList.remove("talk"))},
+ claims(k){this.tok={};scene(`<h3>📝 Draft claims · ${k}</h3>${SIGS[k].claims.map(([t,g,p,drop])=>`<div class="claim${drop?" drop":""}"><div><span class="t">${t}</span><small>${drop?"✗ Not supported by its source, dropped":"📄 Toy paper #"+p}</small></div>${drop?"":gradeTag(g)}</div>`).join("")}`);
+  say(LINES.curator.claims,[OUT,["🧑‍🔬 Review",()=>this.review(k),"go"]])},
+ review(k){this.tok={};const kept=SIGS[k].claims.filter(c=>!c[3]);this.votes=kept.map(()=>0);
+  scene(`<h3>🧑‍🔬 Curator review · ${k}</h3>${kept.map(([t,g,p],n)=>`<div class="claim" id="cl${n}"><div>${t}<small>📄 Toy paper #${p} · ${g}</small></div><span class="vote"><button onclick="curator.vote(${n},1)">✔</button><button onclick="curator.vote(${n},-1)">✗</button></span></div>`).join("")}`);
+  say(LINES.curator.review,[OUT,["📚 Publish",()=>this.publish(k),"go"]])},
+ vote(n,v){this.votes[n]=v;$("cl"+n).className="claim"+(v>0?" ok":" no")},
+ async publish(k){const kept=SIGS[k].claims.filter(c=>!c[3]),ok=kept.filter((c,n)=>this.votes[n]>0);if(!ok.length)return say(LINES.curator.needOne,[OUT,["📚 Publish",()=>this.publish(k),"go"]]);
+  const tok=this.tok={};scene(`<h3>📖 ${k} · ${SIGS[k].about}</h3>${ok.map(([t,g,p])=>`<div class="claim"><div>${t}<small>📄 Toy paper #${p}</small></div>${gradeTag(g)}</div>`).join("")}
+   <p style="margin:10px 0 4px"><b>🤖 Ask the reference</b></p><div class="search" id="q"></div><div class="out" id="a" style="min-height:0"></div>`);
+  say(LINES.curator.published,[["✔ Done",()=>this.start(),"go"],OUT]);
+  typeOut($("q"),`What do we know about ${k}?`);await sleep(900);if(this.tok!==tok)return;typeOut($("a"),`${ok[0][0]} (${ok[0][1].toLowerCase()} evidence, toy paper #${ok[0][2]})`)}};
+
+/* ---------------- HD SBS server room ---------------- */
+// Toy signature: each SBS96 bar is split unevenly into its finer channels, so hidden peaks show up as the resolution goes up.
+const HD=(()=>{let z=12345;const r=()=>(z=(z*16807)%2147483647)/2147483647,v96=[],w16=[],ws=[];
+ for(let p=0;p<96;p++){v96.push(.05+r()*.25+(p===42?1.6:p===38||p===46?.7:0));const a=p===42?[.02,.03,.22,.02,.04,.02,.03,.16,.02,.02,.05,.26,.02,.03,.02,.06]:Array.from({length:16},()=>Math.pow(r(),4)+.02),t=a.reduce((x,y)=>x+y);w16.push(a.map(x=>x/t));
+  const b=p===42?[.62,.28,.1]:[.35+r()*.4,.2+r()*.3,.1+r()*.1],u=b[0]+b[1]+b[2];ws.push(b.map(x=>x/u))}
+ const lv={96:p=>[v96[p]],288:p=>ws[p].map(x=>v96[p]*x),1536:p=>w16[p].map(x=>v96[p]*x),4608:p=>w16[p].flatMap(x=>ws[p].map(y=>v96[p]*x*y))};
+ return n=>Array.from({length:96},(_,p)=>lv[n](p)).flat()})();
+const HDCOL=["#03bcee","#2a2a33","#e32926","#cac8c9","#a1ce63","#ebc6c4"],HDTXT={96:"6 substitution types × 16 neighbor pairs",288:"96 × 3 strand states",1536:"6 substitution types × 256 neighbor sets (two bases each side)",4608:"1,536 × 3 strand states"};
+function drawHD(cv,n){const d=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*d;cv.height=h*d;const c=cv.getContext("2d");c.scale(d,d);
+ const v=HD(n),m=Math.max(...v),bw=(w-8)/v.length,per=v.length/96,base=h-18;
+ v.forEach((x,k)=>{c.fillStyle=HDCOL[Math.floor(k/per/16)];c.globalAlpha=n===288||n===4608?[1,.6,.35][k%3]:1;c.fillRect(4+k*bw,base-x/m*(base-6),Math.max(bw-(bw>2?1:0),.6),x/m*(base-6))});
+ c.globalAlpha=1;const x0=4+42*per*bw,x1=4+43*per*bw;c.fillStyle="#3b2a20";c.fillRect(x0,base+3,x1-x0,1);c.fillRect(x0,base+1,1,3);c.fillRect(x1-1,base+1,1,3);
+ c.font="10px sans-serif";c.textAlign="center";c.fillText("one SBS96 bar",Math.min(Math.max((x0+x1)/2,40),w-40),base+14);
+ const z=$("hdz"),zw=z.clientWidth,zh=z.clientHeight;z.width=zw*d;z.height=zh*d;const q=z.getContext("2d");q.scale(d,d);const kids=v.slice(42*per,43*per),km=Math.max(...kids),gw=Math.min(40,(zw-8)/kids.length);
+ kids.forEach((x,k)=>{q.fillStyle="#e32926";q.globalAlpha=n===288||n===4608?[1,.6,.35][k%3]:1;q.fillRect((zw-gw*kids.length)/2+k*gw,zh-4-x/km*(zh-10),Math.max(gw-(gw>3?1:0),1),x/km*(zh-10))})}
+const hdsbs={
+ start(){this.tok={};$("scene").classList.remove("running");scene(`<h3>🖥️ HD Signatures</h3><p style="margin:0 0 8px">50,000+ whole genomes across many cancer types. Each one has thousands of mutations to count in context.</p><div class="soon" style="font-size:16px">Too big for one computer. Time for the cluster!</div>`);
+  say(LINES.hdsbs.start,[OUT,["🚀 Submit to the cluster",()=>this.run(),"go"]])},
+ async run(){const tok=this.tok={},N=240,steps=["Splitting genomes into jobs","Counting mutations in context","Extracting signatures"];$("scene").classList.add("running");
+  scene(`<h3>🚀 Cluster job</h3><div class="count" id="cn">0 genomes</div><div class="jobs" id="jb">${"<i></i>".repeat(N)}</div><div class="steps" id="st">${steps.map(x=>`<div>${x}…</div>`).join("")}</div>`);
+  say(LINES.hdsbs.running,[OUT,["⏭ Skip",()=>this.show(96)]]);const cells=$("jb").children,order=[...Array(N).keys()].sort((a,b)=>((a*97)%N)-((b*97)%N)),rows=$("st").children;
+  for(let k=0;k<N;k+=8){await sleep(40);if(this.tok!==tok||!inScene)return;for(let j=k;j<k+8;j++){cells[order[j]].className="on";if(j+12<N)cells[order[j+12]].className="run"}
+   $("cn").textContent=Math.round((k+8)/N*50000).toLocaleString()+(k+8>=N?"+":"")+" genomes";if(k===48)rows[0].className="done";if(k===160)rows[1].className="done"}
+  rows[2].className="done";$("scene").classList.remove("running");await sleep(600);if(this.tok===tok&&inScene)this.show(96,LINES.hdsbs.done)},
+ show(n,line){this.tok={};$("scene").classList.remove("running");scene(`<h3>🔬 Toy signature · SBS${n}</h3><div class="chips">${[96,288,1536,4608].map(k=>`<button${k===n?' class="go"':""} onclick="hdsbs.show(${k})">SBS${k}</button>`).join("")}</div>
+   <canvas class="chart" id="hd"></canvas><p style="margin:6px 0 2px;font-size:13px;color:var(--mute)">Inside that one bar: ${n/96} channel${n>96?"s":""}</p><canvas class="chart" id="hdz" style="height:60px"></canvas><p style="margin:6px 0 0;font-size:14px">${n.toLocaleString()} channels: ${HDTXT[n]}.</p>`);
+  drawHD($("hd"),n);say(line||LINES.hdsbs[n],n===4608?[["✔ Done",()=>this.start(),"go"],OUT]:[OUT])}};
+
+/* ---------------- ENCODE portal office ---------------- */
+// Toy submission checked against a toy version of the portal's JSON schema.
+const GOOD={dataset:"ENCSR000TOY",file_format:"fastq",output_type:"reads",md5sum:"3f2a9c1d7be04e5a8c6d2f1b9a0e7c4d",lab:"toy-lab",award:"TOY-AWARD"};
+const SUBS={good:{label:"✅ Good file",doc:GOOD},nomd5:{label:"❓ Missing md5sum",doc:(({md5sum,...r})=>r)(GOOD)},fmt:{label:"❌ Wrong format",doc:{...GOOD,file_format:"txt"}}};
+const RULES=[["file_format is fastq, bam, bed, bigWig…",d=>["fastq","bam","bed","bigWig"].includes(d.file_format),"file_format","'txt' is not one of ['fastq', 'bam', 'bed', 'bigWig', …]"],
+ ["md5sum is there and 32 characters",d=>d.md5sum&&d.md5sum.length===32,"md5sum","'md5sum' is a required property"],
+ ["lab and award are filled in",d=>d.lab&&d.award],["dataset links to an experiment",d=>/^ENCSR/.test(d.dataset)]];
+const FILES=[["ENCFF001TOY","bam","ChIP-seq"],["ENCFF002TOY","bigWig","ATAC-seq"],["ENCFF003TOY","bed","ChIP-seq"],["ENCFF004TOY","fastq","ATAC-seq"]];
+const encode={
+ start(){this.tok={};scene(`<h3>🧬 ENCODE portal · Submit a file</h3><p style="margin:0 0 8px">Every submission is checked against the portal's JSON schema before it's stored.</p><div class="grid">${Object.entries(SUBS).map(([k,v])=>`<button class="big" onclick="encode.submit('${k}')">${v.label}</button>`).join("")}</div>`);
+  say(LINES.encode.start,[OUT])},
+ async submit(k,doc=SUBS[k].doc){const tok=this.tok={},bad=RULES.find(r=>!r[1](doc));
+  const json=JSON.stringify(doc,null,1).replace(/\n\s*/g,"\n  ").replace("\n  }","\n}");
+  scene(`<h3>📤 POST /files/</h3><div class="json">${bad&&bad[2]&&doc[bad[2]]!==undefined?json.replace(`"${bad[2]}": "${doc[bad[2]]}"`,`<span class="bad">"${bad[2]}": "${doc[bad[2]]}"</span>`):json}</div><div class="steps" id="st">${RULES.map(r=>`<div>${r[0]}</div>`).join("")}</div><div id="er"></div>`);
+  say(LINES.encode.checking,[OUT]);const rows=$("st").children;
+  for(let n=0;n<RULES.length;n++){await sleep(550);if(this.tok!==tok)return;const ok=RULES[n][1](doc);rows[n].className=ok?"done":"fail";if(!ok){
+   $("er").innerHTML=`<div class="err">422 Unprocessable Entity<br>${RULES[n][3]}</div>`;return say(LINES.encode.fail,[OUT,["🔧 Fix it",()=>this.submit(k,GOOD),"go"]])}}
+  await sleep(400);if(this.tok===tok)this.stored(false)},
+ stored(rel){this.tok={};scene(`<h3>📄 ENCFF000TOY</h3><table class="tbl"><tr><th>Dataset</th><td>ENCSR000TOY</td></tr><tr><th>Format</th><td>fastq · reads</td></tr><tr><th>Assay</th><td>RNA-seq</td></tr><tr><th>Status</th><td><span class="tag ${rel?"rel":"ip"}">${rel?"released":"in progress"}</span></td></tr></table>`);
+  rel?say(LINES.encode.released,[OUT,["🔍 Browse files",()=>this.browse("All"),"go"]]):say(LINES.encode.pass,[OUT,["🚀 Release",()=>this.stored(true),"go"]])},
+ browse(f){this.tok={};const rows=[["ENCFF000TOY","fastq","RNA-seq",1],...FILES].filter(r=>f==="All"||r[2]===f);
+  scene(`<h3>🔍 Files</h3><div class="chips">${["All","RNA-seq","ChIP-seq","ATAC-seq"].map(c=>`<button${c===f?' class="go"':""} onclick="encode.browse('${c}')">${c}</button>`).join("")}</div>
+   <table class="tbl"><tr><th>Accession</th><th>Format</th><th>Assay</th><th>Status</th></tr>${rows.map(r=>`<tr${r[3]?' class="new"':""}><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="tag rel">released</span></td></tr>`).join("")}</table>`);
+  say(LINES.encode.browse,[["✔ Done",()=>this.start(),"go"],OUT])}};
 
 /* ---------------- controls ---------------- */
 drawFace();fit();addEventListener("resize",fit);
