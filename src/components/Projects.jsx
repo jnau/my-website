@@ -311,7 +311,8 @@ function GameModal({ src, onClose, mobile }) {
           <span>🐾 Sparky's project walk</span>
           <button onClick={onClose} aria-label="Close game" style={{ border: "none", borderRadius: 14, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans'", fontSize: 13, fontWeight: 500, background: "#fff8e7", color: "#3b2414" }}>Close ✕</button>
         </div>
-        <iframe src={src} title="Project walkthrough game" style={{ flex: 1, width: "100%", border: 0 }} />
+        {/* Focus the game on load so the arrow keys work without clicking it first. */}
+        <iframe src={src} title="Project walkthrough game" onLoad={(e) => e.currentTarget.contentWindow?.focus()} style={{ flex: 1, width: "100%", border: 0 }} />
       </div>
     </div>,
     document.body

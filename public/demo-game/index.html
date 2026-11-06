@@ -62,7 +62,7 @@ body.inscene canvas#c{display:none}
 .steps .fail{color:#b5475a}.steps .fail::before{content:"✗ "}.err{background:#fbeeee;border:2px solid #e8a3a3;padding:6px 8px;font:13px ui-monospace,Menlo,monospace;margin-top:6px}
 .tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl td,.tbl th{padding:4px 6px;border-bottom:2px dashed #e3d6bb;text-align:left}.tbl th{color:var(--mute);font-weight:600;font-size:12px}.tbl tr.new{background:#fff3c4}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.chips button{padding:4px 10px}.tag{font-size:12px;padding:1px 6px;background:#f3ead6}.tag.rel{background:#cfe8c9}.tag.ip{background:#fbe6b0}
-*{border-radius:0!important}#pcard{position:absolute;z-index:2;left:10px;bottom:50%;width:min(340px,calc(100% - 20px));background:#111b2e;border:1px solid #1a2744;border-radius:14px!important;padding:16px 18px;color:#8a9ab5;font:13px/1.6 "DM Sans",system-ui,sans-serif;box-shadow:0 8px 24px #0005;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateY(6px)}#pcard.on{opacity:1;pointer-events:auto;transform:none}#pcard::after{content:"";position:absolute;bottom:-7px;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:#111b2e;border:1px solid #1a2744;border-width:0 1px 1px 0;transform:rotate(45deg)}#pcard .hd{display:flex;gap:8px;align-items:baseline;padding-right:16px}#pcard h4{flex:1;margin:0;font:600 19px/1.2 "Cormorant Garamond",Georgia,serif;color:#e0e7f3}#pcard .yr{font-size:11px;color:#475b7a;white-space:nowrap}#pcard p{margin:6px 0 0}#pcard .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}#pcard .tags span{font-size:11px;color:#6db89f;background:rgba(109,184,159,.12);padding:2px 8px;border-radius:5px!important}#pcard .lk{display:flex;gap:14px;margin-top:10px;font-size:11px}#pcard a{color:#6db89f;text-decoration:none}#pcard .x{position:absolute;top:6px;right:8px;background:none;border:0;color:#475b7a;font-size:14px;cursor:pointer;padding:2px 4px;box-shadow:none}@media(max-height:560px){#pcard p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}body.inscene #pcard{display:none}.card-photo{transform:none!important}
+*{border-radius:0!important}#pcard{position:absolute;z-index:2;left:10px;bottom:50%;width:min(340px,calc(100% - 20px));background:#111b2e;border:1px solid #1a2744;border-radius:14px!important;padding:16px 18px;color:#8a9ab5;font:13px/1.6 "DM Sans",system-ui,sans-serif;box-shadow:0 8px 24px #0005;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateY(6px)}#pcard.on{opacity:1;pointer-events:auto;transform:none}#pcard::after{content:"";position:absolute;bottom:-7px;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:#111b2e;border:1px solid #1a2744;border-width:0 1px 1px 0;transform:rotate(45deg)}#pcard .hd{display:flex;gap:8px;align-items:baseline;padding-right:16px}#pcard h4{flex:1;margin:0;font:600 19px/1.2 "Cormorant Garamond",Georgia,serif;color:#e0e7f3}#pcard .yr{font-size:11px;color:#475b7a;white-space:nowrap}#pcard p{margin:6px 0 0}#pcard .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}#pcard .tags span{font-size:11px;color:#6db89f;background:rgba(109,184,159,.12);padding:2px 8px;border-radius:5px!important}#pcard .lk{display:flex;gap:14px;margin-top:10px;font-size:11px}#pcard a{color:#6db89f;text-decoration:none}#pcard .x{position:absolute;top:6px;right:8px;background:none;border:0;color:#475b7a;font-size:14px;cursor:pointer;padding:2px 4px;box-shadow:none}@media(max-height:560px){#pcard p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}body.inscene #pcard{display:none}/* card in the game's paper style: pixel title, plain readable text */#pcard{background:#fff8e7;border:3px solid #6b4423;border-radius:0!important;box-shadow:4px 4px 0 #0003;color:#3b2a20;font:14px/1.5 "DM Sans",system-ui,sans-serif}#pcard h4{font:600 18px/1.25 "Pixelify Sans",monospace;color:#3b2a20}#pcard .yr,#pcard .x{color:#8a7464}#pcard::after{background:#fff8e7;border-color:#6b4423;border-width:0 3px 3px 0;bottom:-9px}.card-photo{transform:none!important}
 </style></head><body>
 <div class="game">
  <div class="stage" id="stage"><canvas id="c"></canvas><select id="jump" aria-label="Jump to a project"></select><div id="pcard" aria-live="polite"></div><div id="scene"><div id="deco"></div><div id="panelWrap"></div></div></div>
@@ -321,10 +321,29 @@ function board(s,on,t){const x=s.x,F=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(a,b,
  F("#4a3022",x-18,81,36,20);F("#8a5a33",x-17,82,34,18);F("#b07a46",x-17,82,34,1);F("#6b4423",x-17,99,34,1);
  F("#7a4c2b",x-17,90,34,1);F("#9c6a3c",x-16,84,3,1);F("#9c6a3c",x+12,93,4,1);F("#9c6a3c",x+13,86,2,1);F("#9c6a3c",x-15,95,3,1);
  F("#5c3a22",x-14,85,28,13);F(on?"#fff8e7":"#e9dcc0",x-14,84,27,13);F(on?"#f1e3c6":"#d8c8a6",x-14,96,27,1);F(on?"#e6d3ae":"#cdbb98",x+10,84,3,3);F("#5c3a22",x+10,86,1,1);
- F(on?"#e05a7a":"#c9a98a",x-11,87,20,2);F(on?"#b5475a":"#b39577",x-11,89,20,1);
- F(on?"#a08a74":"#cbbba0",x-11,91,17,1);F(on?"#a08a74":"#cbbba0",x-11,93,12,1);
+ signDemo(s,on,t,F,x);
  F("#e05a7a",x-1,83,2,2);F("#ff9bb0",x-1,83,1,1);
  if(on){const by=72+Math.round(Math.sin(t/8)*1.5);F("#b5872a",x-2,by,4,6);F("#ffd34d",x-1,by,2,5);F("#b5872a",x-2,by+6,4,3);F("#ffd34d",x-1,by+7,2,2);F("#fff1a8",x-1,by,1,2)}}
+// Each signboard plays a tiny version of its project's card animation while Sparky stands there; the others hold a muted still.
+const SIGNCOL=["#03bcee","#2a2a33","#e32926","#cac8c9","#a1ce63","#ebc6c4"],SIGNH=[2,3,2,1,2,1,2,1,3,4,9,3,1,2,1,2,2,3,2,2,1,2,1,1];
+function signDemo(s,on,t,F,x){const T=on?t|0:170,M=c=>on?c:"#cbbba0",ink=M("#a08a74");
+ if(s.scene==="recipe"){const ph=T%260,n=ph<20?0:Math.min(4,(ph-20)/18|0);
+  F(M("#c9b994"),x-13,85,22,1);F(M("#c9b994"),x-13,89,22,1);F(M("#c9b994"),x-13,85,1,5);F(M("#c9b994"),x+8,85,1,5);
+  for(let k=0;k<n;k++)F(M("#3b2a20"),x-11+k*3,86,2,2);if(ph<110&&(T>>4)%2)F(M("#6db89f"),x-11+n*3,86,1,3);
+  [[.9,"#c9a96e"],[.7,"#c98e8e"]].forEach(([v,c],k)=>{const r=91+k*3,p=(ph-100-k*15)/40;if(p<0)return;F(M(c),x-13,r,2,2);F(ink,x-10,r,7,1);F(M("#e3d6bb"),x-1,r,10,2);F(M("#5fb052"),x-1,r,Math.round(10*Math.min(1,p)*v),2)});return}
+ if(s.scene==="hdsbs"){SIGNH.forEach((hb,k)=>{const h=Math.max(1,Math.round(hb*(.7+.3*Math.sin(T/15+k))));F(M(SIGNCOL[k>>2]),x-13+k,95-h,1,h)});F(ink,x-13,95,24,1);return}
+ if(s.scene==="curator"){const ph=T%180;
+  F(M("#55555f"),x-12,87,5,5);F(M("#c9d2da"),x-11,88,3,2);F(M("#3fc1e0"),x-11,88,1,1);F(M("#3fc1e0"),x-9,88,1,1);F(M("#55555f"),x-10,86,1,1);
+  F(M("#e9b48a"),x-1,86,3,3);F(M("#5fb052"),x-2,89,5,3);
+  F(M("#c0563f"),x+6,86,4,6);F(M("#fff8e7"),x+7,87,1,4);
+  for(const ax of[x-6,x+3])F(M("#6db89f"),ax,89,2,1);
+  if(on){const px=ph<60?x-7+5*ph/60:ph<90?x-2:ph<150?x+2+4*(ph-90)/60:-99;if(px>-99)F("#ffd34d",Math.round(px),93,2,2)}
+  F(ink,x-13,95,6,1);F(ink,x-3,95,6,1);F(ink,x+5,95,6,1);return}
+ if(s.scene==="encode"){const n=T/120|0,ph=T%120,ok=n%5!==4,cc=["#c9a96e","#78aec8","#a990c0","#6db89f"][n%4],flash=ph>=50&&ph<75?(ok?"#5fb052":"#e05a5a"):M("#8a7a64");
+  F(flash,x-4,86,1,6);F(flash,x+4,86,1,6);F(flash,x-3,86,1,1);F(flash,x+3,86,1,1);F(flash,x-3,91,1,1);F(flash,x+3,91,1,1);
+  if(on){if(ph<50)F(cc,Math.round(x-13+11*ph/50),88,3,2);else if(ph<75)F(cc,x-2+(ok?0:Math.round(Math.sin(ph)*1)),88,3,2);else if(ok&&ph<100)F(cc,x-2,Math.round(88+5*(ph-75)/25),3,2)}
+  [93,95].forEach((r,k)=>{F(ink,x-13,r,7,1);F(ink,x-4,r,4,1);F(M("#5fb052"),x+6,r,3,1)});return}
+ F(M("#e05a7a"),x-11,87,20,2);F(M("#b5475a"),x-11,89,20,1);F(ink,x-11,91,17,1);F(ink,x-11,93,12,1)}
 const clouds=Array.from({length:Math.ceil(WW/100)},(_,k)=>[40+k*100,10+(k*7)%14,.6+(k%3)*.2]),flies=Array.from({length:Math.ceil(WW/130)},(_,k)=>[80+k*130,95+(k%2)*5,k%2?"#ffd34d":"#fff"]);
 function draw(){
  const tx=stops[i].x,moving=Math.abs(tx-x)>0.5;
@@ -342,8 +361,8 @@ function draw(){
  const lift=jumpT<0?0:Math.round(Math.sin(jumpT/26*Math.PI)*9);if(jumpT>=0&&++jumpT>26)jumpT=-1;
  drawChar(g,x,GROUND,dir,moving,lift||(moving&&(f>>3)%2),t,lift);
  g.restore();requestAnimationFrame(draw)}
-function showCard(p){const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),links=[p.url&&["Website",p.url],p.github&&["GitHub",p.github],p.explainer&&["How it works",p.explainer]].filter(Boolean);
- $("pcard").innerHTML=`<button class="x" onclick="hideCard()" aria-label="Hide card">✕</button><div class="hd"><h4>${esc(p.title)}</h4><span class="yr">${esc(p.year||"")}</span></div><p>${esc(p.desc)}</p><div class="tags">${(p.tags||[]).map(t=>`<span>${esc(t)}</span>`).join("")}</div>${links.length?`<div class="lk">${links.map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${l} ↗</a>`).join("")}</div>`:""}`;$("pcard").classList.add("on");placeCard()}
+function showCard(p){const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+ $("pcard").innerHTML=`<button class="x" onclick="hideCard()" aria-label="Hide card">✕</button><div class="hd"><h4>${esc(p.title)}</h4><span class="yr">${esc(p.year||"")}</span></div><p>${esc(p.desc)}</p>`;$("pcard").classList.add("on");placeCard()}
 // Keep the card just above the current signboard, nudged inward at the screen edges; the arrow still points at the sign.
 function placeCard(){const c=$("pcard");if(!c.classList.contains("on")||!stops[i].board)return;const st=$("stage").getBoundingClientRect(),sx=(stops[i].x-cam)*st.width/W,sy=(68+VH-H)*st.height/VH,cw=c.offsetWidth,l=Math.max(10,Math.min(st.width-cw-10,sx-cw/2));
  c.style.left=l+"px";c.style.bottom=Math.max(0,st.height-sy)+"px";c.style.setProperty("--ax",Math.max(16,Math.min(cw-16,sx-l))+"px")}
@@ -509,8 +528,11 @@ drawFace();fit();addEventListener("resize",fit);
 $("jump").innerHTML=stops.map((s,k)=>`<option value="${k}">${k===0?"🏡 Start":k===stops.length-1?"🏁 End":"📍 "+(s.proj.title.length>30?s.proj.title.slice(0,28)+"…":s.proj.title)}</option>`).join("");
 $("jump").onchange=e=>{i=+e.target.value;x=stops[i].x;shown=-1;e.target.blur()};
 addEventListener("keydown",e=>{if(/ArrowRight|KeyD/.test(e.code))go(1);if(/ArrowLeft|KeyA/.test(e.code))go(-1);
- if(e.code==="Escape"){if(inScene)leave();else if(parent!==window)parent.postMessage({type:"sparky-close"},location.origin)}if(e.code==="Space"&&!inScene){e.preventDefault();jump()}if(e.code==="Enter"&&!inScene)enter()});
-$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);
+ if(e.code==="Escape"){if(inScene)leave();else if(parent!==window)parent.postMessage({type:"sparky-close"},location.origin)}// Space or Enter goes inside at a sign (jumps elsewhere); inside a room it presses the green button. Focused buttons and links keep their own Space/Enter.
+ if(/^(Space|Enter|NumpadEnter)$/.test(e.code)&&!e.target.closest?.("button,a,select,input")){e.preventDefault();
+  if(inScene){const b=$("dbtn").querySelector("button.go");if(b)b.click()}else if(stops[i].scene&&shown===i)enter();else if(e.code==="Space")jump()}});
+// Blur after a click so Space/Enter go back to the game instead of re-pressing the arrow.
+$("prev").onclick=e=>{go(-1);e.currentTarget.blur()};$("next").onclick=e=>{go(1);e.currentTarget.blur()};
 cv.onclick=e=>{const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W+cam,py=(e.clientY-r.top)/r.height*VH-(VH-H);
  if(Math.abs(px-x)<12&&py>GROUND-26)jump();else go(px<x?-1:1)};
 const openAt=stops.findIndex(s=>s.scene&&s.scene===new URLSearchParams(location.search).get("open"));
