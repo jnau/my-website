@@ -33,16 +33,99 @@ const TOPIC_COLORS = {
 const getTopicColor = (topic) => TOPIC_COLORS[topic] || C.accent;
 
 /* ─── Mini Demos ─── */
-function SigBarsDemo() {
-  const bars = [0.9, 0.45, 0.7, 0.25, 0.6, 0.35, 0.8, 0.15, 0.55, 0.4, 0.65, 0.3, 0.5, 0.72, 0.2, 0.85];
-  const cols = ["#6db89f", "#c9a96e", "#78aec8", "#c98e8e", "#a990c0", "#6db89f"];
-  return (
-    <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 48 }}>
-      {bars.map((h, i) => (
-        <div key={i} style={{ flex: 1, height: `${h * 100}%`, borderRadius: "2px 2px 0 0", background: cols[i % cols.length], opacity: 0.7, animation: `sigP 2.5s ease-in-out ${i * 0.1}s infinite alternate` }} />
-      ))}
-    </div>
-  );
+// A reading window steps along a sequence, mutates the centre base and spells out its trinucleotide
+// context (e.g. A[C>T]G), which lands in a 96-channel spectrum grouped into the six SBS classes.
+const SBS_CLASSES = ["C>A", "C>G", "C>T", "T>A", "T>C", "T>G"];
+const SBS_COLORS = ["#78aec8", "#cad5e8", "#c98e8e", "#8a9ab5", "#88b89a", "#d4a5b8"];
+const SBS_WEIGHTS = [0.13, 0.08, 0.38, 0.09, 0.2, 0.12]; // roughly SBS-like: C>T heavy
+const BASES = "ACGT";
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+const easeInOut = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const pickSbsClass = () => { let r = Math.random(); for (let i = 0; i < 5; i++) { r -= SBS_WEIGHTS[i]; if (r <= 0) return i; } return 5; };
+
+function makeSbsContextScene() {
+  const S = 11, STEP = 1.1, seq = [], parts = [];
+  const get = (i) => { while (seq.length <= i) seq.push({ b: BASES[(Math.random() * 4) | 0] }); return seq[i]; };
+  // Counts ease toward their target and halve when they get big, so the loop never overflows.
+  const counts = new Array(96).fill(0), shown = new Array(96).fill(0);
+  const frac = (b) => shown[b] / Math.max(3, ...shown);
+  let n = 20, stepStart = 0, label = null;
+  return (ctx, w, h, t, dt) => {
+    // Step two bases at a time so a mutation's neighbours (its context) are never mutated themselves.
+    if (t - stepStart > STEP) { stepStart = t; n += 2; label = null; }
+    const u = t - stepStart, p = n - 2 + 2 * easeInOut(clamp01(u / 0.35)), cx = w / 2, ly = 14;
+    if (u > 0.35 && !label) {
+      const c = pickSbsClass(), [ref, alt] = SBS_CLASSES[c].split(">"), o = get(n);
+      o.b = ref; o.mut = { alt, c };
+      const five = get(n - 1).b, three = get(n + 1).b;
+      label = { c, text: `${five}[${ref}>${alt}]${three}` };
+      parts.push({ c, bin: c * 16 + BASES.indexOf(five) * 4 + BASES.indexOf(three), t0: t + 0.2 });
+    }
+    ctx.strokeStyle = rgba(C.accent, 0.7); ctx.lineWidth = 1;
+    ctx.strokeRect(cx - S * 1.5, ly - 9, S * 3, 18);
+    ctx.font = "11px ui-monospace, Menlo, monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    for (let i = Math.max(0, Math.floor(p - w / 2 / S) - 1); i < p + w / 2 / S + 1; i++) {
+      const o = get(i), x = cx + (i - p) * S, fade = clamp01(Math.min(x, w - x) / 30);
+      ctx.fillStyle = o.mut ? rgba(SBS_COLORS[o.mut.c], fade) : rgba(C.text, fade * (Math.abs(x - cx) < S * 1.6 ? 1 : 0.6));
+      ctx.fillText(o.mut && !(i === n && u < 0.45) ? o.mut.alt : o.b, x, ly);
+    }
+    if (label) {
+      ctx.font = "10px ui-monospace, Menlo, monospace"; ctx.fillStyle = SBS_COLORS[label.c];
+      ctx.globalAlpha = clamp01((u - 0.35) / 0.2); ctx.fillText(label.text, cx, ly + 19); ctx.globalAlpha = 1;
+    }
+    const gap = 4, bw = (w - 5 * gap) / 96, base = h - 13, maxH = base - 46;
+    const binX = (b) => b * bw + Math.floor(b / 16) * gap;
+    for (let j = parts.length - 1; j >= 0; j--) {
+      const q = parts[j], k = (t - q.t0) / 0.6;
+      if (k < 0) continue;
+      if (k >= 1) {
+        counts[q.bin]++;
+        if (Math.max(...counts) > 12) for (let b = 0; b < 96; b++) counts[b] *= 0.5;
+        parts.splice(j, 1); continue;
+      }
+      const e = easeInOut(k);
+      ctx.fillStyle = SBS_COLORS[q.c]; ctx.beginPath();
+      ctx.arc(cx + (binX(q.bin) + bw / 2 - cx) * e, ly + 26 + (base - frac(q.bin) * maxH - ly - 26) * e, 2.2, 0, 7); ctx.fill();
+    }
+    for (let b = 0; b < 96; b++) shown[b] += (counts[b] - shown[b]) * clamp01(dt * 6);
+    for (let b = 0; b < 96; b++) {
+      const bh = Math.max(1, frac(b) * maxH);
+      ctx.fillStyle = rgba(SBS_COLORS[(b / 16) | 0], 0.85); ctx.fillRect(binX(b), base - bh, Math.max(1, bw - 0.6), bh);
+    }
+    ctx.font = "8px 'DM Sans', sans-serif"; ctx.textBaseline = "alphabetic";
+    SBS_CLASSES.forEach((cls, c) => {
+      const x0 = binX(c * 16), x1 = binX(c * 16 + 15) + bw;
+      ctx.fillStyle = SBS_COLORS[c]; ctx.fillRect(x0, base + 2, x1 - x0, 2);
+      ctx.fillStyle = C.text; ctx.fillText(cls, (x0 + x1) / 2, h - 1);
+    });
+  };
+}
+
+function SbsContextDemo() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current, ctx = cv.getContext("2d"), H = 104;
+    let draw = makeSbsContextScene(), w = 0, t = 0, last = performance.now(), raf = 0;
+    const size = () => {
+      const dpr = window.devicePixelRatio || 1;
+      w = cv.clientWidth; cv.width = w * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const render = (dt) => { t += dt; ctx.clearRect(0, 0, w, H); draw(ctx, w, H, t, dt); };
+    size();
+    const ro = new ResizeObserver(() => { size(); draw = makeSbsContextScene(); });
+    ro.observe(cv);
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      // Run the scene forward off screen and leave a filled-in still frame.
+      for (let i = 0; i < 600; i++) render(1 / 60);
+    } else {
+      const frame = (now) => { render(Math.min(0.05, (now - last) / 1000)); last = now; raf = requestAnimationFrame(frame); };
+      raf = requestAnimationFrame(frame);
+    }
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+  }, []);
+  return <canvas ref={ref} role="img" aria-label="Animation: mutations read from a DNA sequence with their trinucleotide context, tallied into a 96-channel spectrum grouped into six substitution classes" style={{ display: "block", width: "100%", height: 104 }} />;
 }
 
 function GenomeDotsDemo() {
@@ -79,23 +162,6 @@ function PipelineDemo() {
             <span style={{ textAlign: "center" }}>{s.label}</span>
           </div>
         </Fragment>
-      ))}
-    </div>
-  );
-}
-
-function DashboardDemo() {
-  const rows = [0.7, 0.45, 0.9, 0.6, 0.35];
-  const cols = ["#6db89f", "#78aec8", "#c9a96e", "#a990c0", "#c98e8e"];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {rows.map((w, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: cols[i], opacity: 0.8 }} />
-          <div style={{ height: 6, borderRadius: 3, background: `${cols[i]}44`, flex: 1, position: "relative", overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${w * 100}%`, borderRadius: 3, background: cols[i], opacity: 0.7, animation: `sigP 2.5s ease-in-out ${i * 0.2}s infinite alternate` }} />
-          </div>
-        </div>
       ))}
     </div>
   );
@@ -193,7 +259,7 @@ function GameButton({ label, onClick }) {
   );
 }
 
-const DEMO_MAP = { sigbars: SigBarsDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, dashboard: DashboardDemo, recipesearch: RecipeSearchDemo, comingsoon: ComingSoonDemo };
+const DEMO_MAP = { sbscontext: SbsContextDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, recipesearch: RecipeSearchDemo, comingsoon: ComingSoonDemo };
 
 /* ─── Filter Pill ─── */
 function FilterPill({ label, color, active, onClick, mobile }) {

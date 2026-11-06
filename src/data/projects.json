@@ -12,12 +12,12 @@
     },
     {
       "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers",
-      "desc": "Reference set from 50,000+ WGS across multiple cancer types.",
+      "desc": "Reference set from 50,000+ WGS across multiple cancer types, with interactive web dashboards for exploring the signatures.",
       "type": "Research",
-      "topics": ["Computational Biology", "Mathematics", "Data Science", "Bioinformatics"],
-      "tags": ["Python", "ML", "Statistics"],
+      "topics": ["Computational Biology", "Mathematics", "Data Science", "Bioinformatics", "Engineering"],
+      "tags": ["Python", "ML", "Statistics", "JavaScript", "Plotly", "AWS"],
       "year": "2023-present",
-      "demo": "sigbars"
+      "demo": "sbscontext"
     },
     {
       "title": "SigProfilerCurator",
@@ -34,15 +34,6 @@
       "year": "2025–present",
       "demo": "pipeline",
       "github": "https://github.com/jnau/msiglitai"
-    },
-    {
-      "title": "Interactive HD Dashboards",
-      "desc": "Web exploration tools for HD Signature analysis",
-      "type": "Research",
-      "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
-      "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"],
-      "year": "2025-present",
-      "demo": "dashboard"
     },
     {
       "title": "ENCODEd Database",
