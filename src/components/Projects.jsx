@@ -102,11 +102,87 @@ function makeSbsContextScene() {
   };
 }
 
-function SbsContextDemo() {
+// Submitted files slide into a schema check; valid ones drop into the portal's file table and go
+// from "in progress" to "released", invalid ones are bounced. Counters tally both.
+const INGEST_FORMATS = [["fastq", C.wc[4]], ["bam", C.wc[2]], ["bigWig", C.wc[0]], ["bed", C.wc[5]]];
+const REJECT = C.wc[3];
+// Human cell lines and mouse tissues as sample labels; no accessions, so it stays a toy table.
+const SAMPLES = ["HepG2", "K562", "WTC11", "GM12878", "HCT116", "A549", "MCF-7", "IMR-90", "mouse_liver", "mouse_heart", "mouse_brain", "mouse_lung"];
+const randSample = () => SAMPLES[(Math.random() * SAMPLES.length) | 0];
+
+function makeIngestScene() {
+  const SPAWN = 1.4, RH = 12, laneY = 11, headY = 36, rowY0 = 49, chips = [], rows = [];
+  for (let i = 0; i < 4; i++) { const [fmt, col] = INGEST_FORMATS[i % 4]; rows.push({ name: randSample(), fmt, col, t0: -10, rel: true }); }
+  let nextSpawn = 0.2, n = 0, released = 0, rejected = 0, check = null;
+  const chip = (ctx, x, y, label, col, a, border) => {
+    const cw = ctx.measureText(label).width + 10;
+    ctx.globalAlpha = a; ctx.fillStyle = rgba(col, 0.15); ctx.strokeStyle = border || col; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - cw / 2, y - 7, cw, 14, 4) : ctx.rect(x - cw / 2, y - 7, cw, 14);
+    ctx.fill(); ctx.stroke(); ctx.fillStyle = col; ctx.fillText(label, x, y + 0.5); ctx.globalAlpha = 1;
+  };
+  return (ctx, w, h, t) => {
+    const gx = w / 2;
+    // Every fifth file fails validation, so the check reads as a real gate.
+    if (t >= nextSpawn) { nextSpawn += SPAWN; const [fmt, col] = INGEST_FORMATS[(Math.random() * 4) | 0]; chips.push({ fmt, col, t0: t, ok: ++n % 5 !== 0 }); }
+
+    // Gate: braces around the lane, coloured by the latest verdict.
+    const flash = check && t - check.t < 0.5 ? (check.ok ? C.accent : REJECT) : null;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = "17px ui-monospace, Menlo, monospace"; ctx.fillStyle = flash || C.muted;
+    ctx.fillText("{", gx - 28, laneY); ctx.fillText("}", gx + 28, laneY);
+    ctx.font = "8px 'DM Sans', sans-serif"; ctx.fillStyle = flash || C.muted;
+    ctx.fillText(flash ? (check.ok ? "schema ✓" : "schema ✗") : "schema", gx, laneY + 15);
+
+    ctx.font = "9px ui-monospace, Menlo, monospace";
+    for (let j = chips.length - 1; j >= 0; j--) {
+      const c = chips[j], u = t - c.t0;
+      if (u < 0.8) { const x = -20 + (gx + 20) * easeInOut(u / 0.8); chip(ctx, x, laneY, c.fmt, c.col, clamp01(x / 30)); continue; }
+      if (u < 1.1) {
+        if (u >= 0.95 && !c.checked) { c.checked = true; check = { t, ok: c.ok }; }
+        chip(ctx, gx, laneY, c.fmt, c.col, 1, c.checked ? (c.ok ? C.accent : REJECT) : null); continue;
+      }
+      const k = clamp01((u - 1.1) / 0.5), e = easeInOut(k);
+      if (c.ok) {
+        if (k >= 1) { chips.splice(j, 1); rows.unshift({ name: randSample(), fmt: c.fmt, col: c.col, t0: t }); if (rows.length > 5) rows.pop(); continue; }
+        chip(ctx, gx, laneY + (rowY0 - laneY) * e, c.fmt, c.col, 1 - 0.8 * e, C.accent);
+      } else {
+        if (k >= 1) { chips.splice(j, 1); rejected++; continue; }
+        chip(ctx, gx + Math.sin(u * 40) * 3 * (1 - k), laneY + 8 * e, c.fmt, REJECT, 1 - k);
+      }
+    }
+
+    // File table: header, then rows that slide down as each new one lands on top.
+    ctx.font = "7.5px 'DM Sans', sans-serif"; ctx.fillStyle = C.muted;
+    ctx.textAlign = "left"; ctx.fillText("SAMPLE", 0, headY);
+    ctx.textAlign = "center"; ctx.fillText("FORMAT", gx, headY);
+    ctx.textAlign = "right"; ctx.fillText("STATUS", w, headY);
+    ctx.fillStyle = C.border; ctx.fillRect(0, headY + 5, w, 1);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, headY + 6, w, rowY0 + 3.5 * RH - headY - 6); ctx.clip();
+    const slide = easeInOut(clamp01((t - rows[0].t0) / 0.35));
+    rows.forEach((r, i) => {
+      const y = rowY0 + (i - 1 + slide) * RH;
+      if (!r.rel && t - r.t0 > 0.8) { r.rel = true; released++; }
+      ctx.globalAlpha = (i === 0 ? slide : 1) * clamp01((rowY0 + 3.5 * RH - y) / RH);
+      ctx.font = "9px ui-monospace, Menlo, monospace";
+      ctx.textAlign = "left"; ctx.fillStyle = C.bright; ctx.fillText(r.name, 0, y);
+      ctx.textAlign = "center"; ctx.fillStyle = r.col; ctx.fillText(r.fmt, gx, y);
+      const col = r.rel ? C.accent : C.wc[0], label = r.rel ? "released" : "in progress";
+      ctx.font = "8.5px 'DM Sans', sans-serif"; ctx.textAlign = "right"; ctx.fillStyle = col; ctx.fillText(label, w, y);
+      ctx.beginPath(); ctx.arc(w - ctx.measureText(label).width - 5, y, 2, 0, 7); ctx.fill();
+    });
+    ctx.restore(); ctx.globalAlpha = 1;
+
+    ctx.font = "8px 'DM Sans', sans-serif"; ctx.textBaseline = "alphabetic";
+    ctx.textAlign = "left"; ctx.fillStyle = C.accent; ctx.fillText(`✓ ${released} released`, 0, h - 1);
+    ctx.textAlign = "right"; ctx.fillStyle = rejected ? REJECT : C.muted; ctx.fillText(`✗ ${rejected} rejected`, w, h - 1);
+  };
+}
+
+function CanvasDemo({ makeScene, label }) {
   const ref = useRef(null);
   useEffect(() => {
     const cv = ref.current, ctx = cv.getContext("2d"), H = 104;
-    let draw = makeSbsContextScene(), w = 0, t = 0, last = performance.now(), raf = 0;
+    let draw = makeScene(), w = 0, t = 0, last = performance.now(), raf = 0;
     const size = () => {
       const dpr = window.devicePixelRatio || 1;
       w = cv.clientWidth; cv.width = w * dpr; cv.height = H * dpr;
@@ -114,7 +190,7 @@ function SbsContextDemo() {
     };
     const render = (dt) => { t += dt; ctx.clearRect(0, 0, w, H); draw(ctx, w, H, t, dt); };
     size();
-    const ro = new ResizeObserver(() => { size(); draw = makeSbsContextScene(); });
+    const ro = new ResizeObserver(() => { size(); draw = makeScene(); t = 0; });
     ro.observe(cv);
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       // Run the scene forward off screen and leave a filled-in still frame.
@@ -124,21 +200,12 @@ function SbsContextDemo() {
       raf = requestAnimationFrame(frame);
     }
     return () => { cancelAnimationFrame(raf); ro.disconnect(); };
-  }, []);
-  return <canvas ref={ref} role="img" aria-label="Animation: mutations read from a DNA sequence with their trinucleotide context, tallied into a 96-channel spectrum grouped into six substitution classes" style={{ display: "block", width: "100%", height: 104 }} />;
+  }, [makeScene]);
+  return <canvas ref={ref} role="img" aria-label={label} style={{ display: "block", width: "100%", height: 104 }} />;
 }
 
-function GenomeDotsDemo() {
-  const bases = "ACGTACGATCGTAGCTACGTAGCATCGA";
-  const bc = { A: "#6db89f", C: "#78aec8", G: "#c9a96e", T: "#c98e8e" };
-  return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-      {bases.split("").map((b, i) => (
-        <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: bc[b], opacity: 0.6, animation: `dotF 3s ease ${i * 0.08}s infinite alternate` }} />
-      ))}
-    </div>
-  );
-}
+const SbsContextDemo = () => <CanvasDemo makeScene={makeSbsContextScene} label="Animation: mutations read from a DNA sequence with their trinucleotide context, tallied into a 96-channel spectrum grouped into six substitution classes" />;
+const IngestDemo = () => <CanvasDemo makeScene={makeIngestScene} label="Animation: submitted sequencing files pass a schema check and are added to the portal's file table as released, while invalid files are rejected" />;
 
 // Agent (robot) does the reading, a human curates, then it's published.
 const ICON_PATHS = {
@@ -259,7 +326,7 @@ function GameButton({ label, onClick }) {
   );
 }
 
-const DEMO_MAP = { sbscontext: SbsContextDemo, pipeline: PipelineDemo, dots: GenomeDotsDemo, recipesearch: RecipeSearchDemo, comingsoon: ComingSoonDemo };
+const DEMO_MAP = { sbscontext: SbsContextDemo, pipeline: PipelineDemo, ingest: IngestDemo, recipesearch: RecipeSearchDemo, comingsoon: ComingSoonDemo };
 
 /* ─── Filter Pill ─── */
 function FilterPill({ label, color, active, onClick, mobile }) {

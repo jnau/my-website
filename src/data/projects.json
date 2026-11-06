@@ -41,7 +41,7 @@
       "topics": ["Computational Biology", "Engineering", "Bioinformatics"],
       "tags": ["AWS", "GCP", "Python", "Database"],
       "year": "2019-2021",
-      "demo": "dots",
+      "demo": "ingest",
       "github": "https://github.com/ENCODE-DCC/encoded",
       "url": "https://www.encodeproject.org/"
     }
