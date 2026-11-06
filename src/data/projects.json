@@ -7,7 +7,8 @@
       "topics": ["Engineering", "Data Science"],
       "tags": ["Python", "LLMs", "RAG"],
       "year": "2026",
-      "demo": "comingsoon"
+      "demo": "comingsoon",
+      "explainer": "/recipe-book/how-it-works.html"
     },
     {
       "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers",

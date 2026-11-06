@@ -171,7 +171,7 @@ function ProjectCard({ proj, index, mobile }) {
   const [ref, vis] = useReveal(0.1);
   const w = mobile ? 280 : 340;
   const DemoComp = proj.demo ? DEMO_MAP[proj.demo] : null;
-  const hasLinks = proj.github || proj.url;
+  const hasLinks = proj.github || proj.url || proj.explainer;
 
   return (
     <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: `opacity .6s ease ${index * 0.06}s, transform .6s ease ${index * 0.06}s` }}>
@@ -203,6 +203,11 @@ function ProjectCard({ proj, index, mobile }) {
             {proj.github && (
               <a href={proj.github} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.muted, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
                 <span style={{ fontSize: 12 }}>↗</span> GitHub
+              </a>
+            )}
+            {proj.explainer && (
+              <a href={proj.explainer} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans'", fontSize: 11, color: C.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 12 }}>📖</span> How it works
               </a>
             )}
           </div>
@@ -342,6 +347,11 @@ function ArchiveTable({ mobile }) {
                     {p.github && (
                       <a href={p.github} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: C.muted, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}>
                         <span style={{ fontSize: 11 }}>↗</span> GitHub
+                      </a>
+                    )}
+                    {p.explainer && (
+                      <a href={p.explainer} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: C.accent, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                        <span style={{ fontSize: 11 }}>📖</span> How it works
                       </a>
                     )}
                   </div>

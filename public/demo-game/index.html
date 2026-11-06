@@ -31,7 +31,7 @@ body.inscene #jump{display:none}body.inscene .arrow{display:none}
  background:repeating-linear-gradient(#c98f5a 0 14px,#b57d4b 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#f6e3c6 0 14px,#f0d6ae 14px 28px)}
 body.inscene canvas#c{display:none}
 @media(max-width:600px){#scene{--px:2px;--wp:3px}}
-.deco{position:absolute;image-rendering:pixelated;pointer-events:none}#panelWrap{position:absolute;left:10px;right:10px;top:10px;bottom:calc(var(--px)*30 + 16px);overflow-y:auto;z-index:1}#panelWrap .panel{max-width:560px}
+.deco{position:absolute;image-rendering:pixelated;pointer-events:none}#panelWrap{position:absolute;left:10px;right:10px;top:10px;bottom:calc(var(--px)*30 + 16px);overflow-y:auto;z-index:1}#panelWrap .panel{max-width:560px}body.short #panelWrap{bottom:10px}
 .steam{position:absolute;width:var(--px);height:var(--px);background:#fff;opacity:0;animation:steam 2.4s linear infinite}
 @keyframes steam{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(calc(var(--px)*-12));opacity:0}}body.inscene #scene{display:block}
 .panel{background:var(--paper);color:var(--ink);border:4px solid var(--wood);border-radius:6px;box-shadow:4px 4px 0 #0003;padding:12px;max-width:600px;margin:0 auto}
@@ -120,6 +120,7 @@ const LINES={
   "ENCODEd Database":"A giant genome library. I'd fetch from it if they let me."},
  projectDefault:"Sniff sniff… a project!",
  soon:"Still being built! Come back soon for treats.",
+ explain:"Want to see how Jessica built it? Lots of wires, no bones.",
  recipe:{
   start:"Welcome in! Let's add a recipe. Where's it from?",
   url:"The recipe's hiding in the web page. The app sniffs it right out!",
@@ -151,7 +152,7 @@ $("dbox").onclick=()=>{if(typing)doneTyping();else if(pg<pages.length-1){pg++;ty
 
 /* ---------------- world ---------------- */
 // Fallback copy of projects.json "featured"; inside the site the game reads the live list from the parent page.
-const FALLBACK=[{"title": "Recipe Book AI", "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.", "tags": ["Python", "LLMs", "RAG"], "year": "2026"}, {"title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types.", "tags": ["Python", "ML", "Statistics"], "year": "2023-present"}, {"title": "mSigLit-AI", "desc": "AI literature curation with automated extraction and classification.", "tags": ["Python", "NLP", "LLMs"], "year": "2025-present", "github": "https://github.com/jnau/msiglitai"}, {"title": "Interactive HD Dashboards", "desc": "Web exploration tools for HD Signature analysis", "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"], "year": "2025-present"}, {"title": "ENCODEd Database", "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", "tags": ["AWS", "GCP", "Python", "Database"], "year": "2019-2021", "github": "https://github.com/ENCODE-DCC/encoded", "url": "https://www.encodeproject.org/"}];
+const FALLBACK=[{"title": "Recipe Book AI", "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.", "tags": ["Python", "LLMs", "RAG"], "year": "2026", "explainer": "/recipe-book/how-it-works.html"}, {"title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers", "desc": "Reference set from 50,000+ WGS across multiple cancer types.", "tags": ["Python", "ML", "Statistics"], "year": "2023-present"}, {"title": "mSigLit-AI", "desc": "AI literature curation with automated extraction and classification.", "tags": ["Python", "NLP", "LLMs"], "year": "2025-present", "github": "https://github.com/jnau/msiglitai"}, {"title": "Interactive HD Dashboards", "desc": "Web exploration tools for HD Signature analysis", "tags": ["AWS", "HTML/CSS", "JavaScript", "Plotly"], "year": "2025-present"}, {"title": "ENCODEd Database", "desc": "Built full-stack features for the ENCODE portal: front-end UI components, JSON schema extensions, and back-end contributions to the SnoVault framework, with API test coverage and AWS deployment QA", "tags": ["AWS", "GCP", "Python", "Database"], "year": "2019-2021", "github": "https://github.com/ENCODE-DCC/encoded", "url": "https://www.encodeproject.org/"}];
 let PROJ=FALLBACK;try{if(window.parent!==window&&window.parent.__projectsForGame)PROJ=window.parent.__projectsForGame}catch(e){}
 const stops=[{line:`${LINES.hello} ${LINES.howto}`,x:30},
  ...PROJ.map((p,k)=>({line:`${p.title}\n${LINES.projects[p.title]||LINES.projectDefault}`,proj:p,x:100+k*70,board:true,scene:/recipe book/i.test(p.title)?"recipe":"soon"}))];
@@ -159,26 +160,65 @@ stops.push({line:LINES.bye,x:stops[stops.length-1].x+60});
 const H=140,GROUND=116,WW=Math.max(420,stops[stops.length-1].x+30),cv=$("c"),g=cv.getContext("2d");let W=320,VH=H,cam=0;
 // Size the canvas to the game view without stretching: the world fills at least ~65% of the height, extra becomes sky.
 function fit(){const r=$("stage").getBoundingClientRect();if(!r.width||!r.height)return;
- const s=Math.min(Math.max(r.width/320,r.height*.65/H),r.height/H);W=Math.round(r.width/s);VH=Math.round(r.height/s);cv.width=W;cv.height=VH}
+ const s=Math.min(Math.max(r.width/320,r.height*.65/H),r.height/H);W=Math.round(r.width/s);VH=Math.round(r.height/s);cv.width=W;cv.height=VH;document.body.classList.toggle("short",r.height<380)}
 let i=0,x=stops[0].x,f=0,dir=1,shown=-1,inScene=false,jumpT=-1;
 const jump=()=>{if(jumpT<0)jumpT=0};
 let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const bg=document.createElement("canvas");bg.width=WW;bg.height=H;const b=bg.getContext("2d");
 const R=(c,x,y,w,h)=>{b.fillStyle=c;b.fillRect(x|0,y|0,w,h)};
 const disc=(c,cx,cy,r)=>{for(let y=-r;y<=r;y++){const w=Math.round(Math.sqrt(r*r-y*y));R(c,cx-w,cy+y,w*2+1,1)}};
-["#a9e1f5","#b6e6f6","#c3ebf7","#d0f0f8","#ddf4f9"].forEach((c,k)=>R(c,0,k*12,WW,k===4?30:12));
-for(let x=0;x<WW;x++){const h=Math.round(10+6*Math.sin(x/37)+4*Math.sin(x/13));R("#9ad27a",x,72-h,1,h+10)}
-for(let x=0;x<WW;x++){const h=Math.round(5+4*Math.sin(x/23+2));R("#7fc267",x,76-h,1,h+10)}
-for(let tx=14,n=0;tx<WW;tx+=46+(n*17)%30,n++){const ty=52+(n*5)%7;R("#7a4f2e",tx-2,ty,4,16);disc("#4f9a46",tx,ty-4,9);disc("#5fb052",tx-2,ty-6,6);disc("#77c460",tx-3,ty-8,3)}
+// ---- detailed world (prototype) ----
+const P=(c,x,y)=>R(c,x,y,1,1);
+// sky: bands with a dithered seam between each pair
+const SKY=["#8fd3f0","#9fdaf2","#b0e1f5","#c2e9f7","#d5f1fa"];
+SKY.forEach((c,k)=>{R(c,0,k*12,WW,k===4?30:12);if(k)for(let x=0;x<WW;x++)for(let y=0;y<2;y++)if((x+y)%2)P(SKY[k-1],x,k*12+y)});
+// far blue hills
+for(let x=0;x<WW;x++){const h=Math.round(14+5*Math.sin(x/53+1)+3*Math.sin(x/19));R("#b5dcc8",x,66-h,1,h+12);P("#c9e7d6",x,66-h);if(x%2)P("#a6d2bc",x,66-h+3)}
+// near hills: highlight lip, body, dithered shade toward the bottom
+for(let x=0;x<WW;x++){const h=Math.round(10+6*Math.sin(x/37)+4*Math.sin(x/13)),top=72-h;R("#93cf77",x,top,1,h+10);P("#b2e08f",x,top);P("#a5d985",x,top+1);
+ for(let y=top+6;y<82;y++)if((x+y)%2&&y>top+8)P("#84c26b",x,y)}
+for(let k=0;k<70;k++){const x=rnd()*WW|0,y=58+rnd()*16|0;P("#7fbd66",x,y);P("#a5d985",x,y-1)}
+// trees: round leafy ones and the odd pine, each with a soft shadow
+const leafy=(tx,ty)=>{for(let x=-10;x<=10;x++)P("#6aac58",tx+x,ty+17+(Math.abs(x)>7));R("#6aac58",tx-7,ty+16,15,2);
+ R("#5a3a22",tx-2,ty,5,17);R("#7a4f2e",tx-1,ty,3,17);R("#956340",tx-1,ty,1,17);P("#5a3a22",tx,ty+6);P("#5a3a22",tx+1,ty+11);R("#5a3a22",tx-3,ty+15,7,2);
+ disc("#2f6a37",tx+1,ty-3,10);disc("#3f8441",tx+1,ty-3,9);disc("#4f9a46",tx,ty-5,8);disc("#5fb052",tx-2,ty-7,6);disc("#79c45e",tx-3,ty-9,3);P("#a4dc7c",tx-4,ty-10);P("#a4dc7c",tx-3,ty-11);
+ for(let n=0;n<26;n++){const a=rnd()*6.28,r=rnd()*8,px=tx+Math.cos(a)*r|0,py=ty-5+Math.sin(a)*r|0;P(r>5&&Math.sin(a)>-.2?"#3f8441":"#6dbb57",px,py);P("#2f6a37",px+1,py+1)}};
+const pine=(tx,ty)=>{R("#6aac58",tx-6,ty+16,13,2);R("#5a3a22",tx-1,ty+10,3,7);P("#7a4f2e",tx,ty+10);
+ for(let k=0;k<4;k++){const y0=ty-14+k*6,w0=3+k*2;for(let y=0;y<7;y++){const w=Math.round(w0*y/6)+1;R("#2c5e3c",tx-w,y0+y,w*2+1,1);R("#3d7a4a",tx-w+1,y0+y,w,1);if(y>1)P("#5a9a5f",tx-w+1,y0+y)}}P("#2c5e3c",tx,ty-15)};
+for(let tx=14,n=0;tx<WW;tx+=46+(n*17)%30,n++){const ty=52+(n*5)%7;n%4===2?pine(tx,ty):leafy(tx,ty)}
+// meadow with grass tufts
 R("#7cc66a",0,78,WW,H-78);
-for(let k=0;k<500;k++)R(rnd()<.5?"#6db85c":"#8ad077",rnd()*WW,78+rnd()*62,1,rnd()<.3?2:1);
-for(let x=0;x<WW;x+=12){R("#c9935d",x+4,80,3,12);R("#a87444",x+4,80,3,1)}R("#d8a56d",0,83,WW,2);R("#d8a56d",0,88,WW,2);
-R("#e2bf8c",0,GROUND-8,WW,14);R("#d2a974",0,GROUND-8,WW,1);R("#d2a974",0,GROUND+5,WW,1);
-for(let k=0;k<60;k++)R(rnd()<.5?"#c99c66":"#ecd2a6",rnd()*WW,GROUND-7+rnd()*12,1,1);
-const fl=["#f29bb0","#ffe066","#ffffff","#c7a6ff"];
-for(let k=0;k<45;k++){const fx=rnd()*WW,fy=rnd()<.5?92+rnd()*12:GROUND+8+rnd()*14,c=fl[k%4];R("#4f9a46",fx,fy+1,1,2);R(c,fx-1,fy,3,1);R(c,fx,fy-1,1,3);R("#ffcf3f",fx,fy,1,1)}
-for(let k=0;k<5;k++){R("#9b6b43",120+k*9,124,6,8);R("#4f9a46",122+k*9,120,2,4);R("#e8603c",121+k*9,119,4,2)}
-R("#f3e2c4",0,78,26,26);R("#c0563f",-4,70,34,10);R("#9e4433",-4,79,34,1);R("#7a4f2e",9,90,8,14);R("#8fd3ef",18,84,6,6);R("#fff",20,84,1,6);
+for(let k=0;k<420;k++){const x=rnd()*WW|0,y=79+rnd()*61|0;if(y>GROUND-10&&y<GROUND+7)continue;
+ if(k%3){P("#66b157",x,y);P("#66b157",x+2,y);P("#66b157",x+1,y-1);P("#9bd884",x+1,y-2)}else{P("#8ad077",x,y);P("#5aa34f",x,y+1)}}
+for(let k=0;k<14;k++){const x=rnd()*WW|0,y=124+rnd()*12|0;for(let d=0;d<5;d++)for(let e=0;e<3;e++)if((d+e)%2)P("#70b960",x+d,y+e)}
+// fence: lit posts with caps and shadows, two shaded rails
+for(let x=0;x<WW;x+=12){R("#8a5a33",x+3,79,5,14);R("#c08850",x+4,80,3,12);R("#dca46a",x+4,80,1,12);R("#9a6a3c",x+6,80,1,12);R("#e8bb7f",x+4,79,3,1);R("#6aac58",x+3,93,6,1)}
+for(const ry of[83,88]){R("#8a5a33",0,ry-1,WW,1);R("#d8a56d",0,ry,WW,2);R("#ecc58f",0,ry,WW,1);R("#a87444",0,ry+2,WW,1)}
+for(let x=0;x<WW;x+=12){R("#c08850",x+4,82,3,1);R("#c08850",x+4,87,3,1);P("#dca46a",x+4,82);P("#dca46a",x+4,87)}
+// dirt path: ragged grassy edges, ruts, pebbles with highlights
+R("#dcb784",0,GROUND-8,WW,14);R("#e6c597",0,GROUND-5,WW,2);R("#e6c597",0,GROUND+1,WW,2);
+for(let x=0;x<WW;x++){if(rnd()<.5)P("#c9a06c",x,GROUND-8);if(rnd()<.35)P("#7cc66a",x,GROUND-8);if(rnd()<.5)P("#c49b68",x,GROUND+5);if(rnd()<.3)P("#7cc66a",x,GROUND+5);if(rnd()<.15)P("#66b157",x,GROUND+6)}
+for(let k=0;k<70;k++){const x=rnd()*WW|0,y=GROUND-6+rnd()*10|0;if(k%3){P("#c49b68",x,y);P("#c49b68",x+1,y)}else{R("#b48a5a",x,y,3,2);R("#efd6ad",x,y,2,1);P("#9c7448",x+2,y+1)}}
+// flowers with stems and leaves
+const fl=["#f29bb0","#ffe066","#ffffff","#c7a6ff"],flD=["#d46f8a","#e0b93a","#d7dde6","#9d7fd9"];
+for(let k=0;k<45;k++){const fx=rnd()*WW|0,fy=rnd()<.5?94+rnd()*10|0:GROUND+9+rnd()*14|0,c=k%4;
+ R("#3f8441",fx,fy+1,1,3);P("#5fb052",fx-1,fy+3);P("#5fb052",fx+1,fy+2);R(fl[c],fx-1,fy,3,1);R(fl[c],fx,fy-1,1,3);P(flD[c],fx+1,fy);P(flD[c],fx,fy+1);P("#ffcf3f",fx,fy)}
+// little mushrooms and rocks
+for(let k=0;k<8;k++){const x=rnd()*WW|0,y=128+rnd()*8|0;R("#efe3cf",x+1,y+2,2,2);R("#d0453a",x,y,4,2);R("#a5302a",x,y+1,4,1);P("#fff",x+1,y);P("#f7d9cc",x+3,y)}
+for(let k=0;k<10;k++){const x=rnd()*WW|0,y=96+rnd()*36|0;if(y>GROUND-10&&y<GROUND+8)continue;R("#8f969c",x,y,4,3);R("#b6bcc2",x,y,3,1);P("#d6dade",x,y);R("#6b7176",x+1,y+2,3,1);R("#5fa652",x,y+3,5,1)}
+// terracotta pots between signs
+const pot=(px,c)=>{R("#5fa652",px-1,132,9,1);R("#9b5233",px,125,6,7);R("#c56d43",px,125,4,7);R("#e08a5a",px+1,126,1,5);R("#7d3f27",px+5,125,1,7);R("#d97f50",px-1,123,8,2);R("#f0a272",px-1,123,6,1);R("#7d3f27",px-1,125,8,1);
+ R("#3f8441",px+2,119,2,4);P("#5fb052",px+1,121);P("#5fb052",px+4,120);P("#79c45e",px,120);P("#79c45e",px+5,119);
+ const d=flD[fl.indexOf(c)]||"#b54a2a";R(c,px+1,117,4,3);R(c,px+2,116,2,5);P(d,px+4,119);P(d,px+3,119);R("#ffcf3f",px+2,118,2,1);P("#fff6c4",px+2,118)};
+const bx=stops.filter(s=>s.board).map(s=>s.x),pc=["#f29bb0","#ffe066","#c7a6ff","#ffffff"];bx.forEach((bx0,k)=>{const m=k<bx.length-1?(bx0+bx[k+1])/2:bx0+35;pot(m-3,pc[k%4])});
+// cottage: plank walls, shingled roof, chimney, door, and a window with a flower box
+R("#6aac58",0,104,40,2);
+R("#5a3a22",0,77,39,28);R("#f3e2c4",0,78,38,26);for(let y=81;y<104;y+=4)R("#e4cfaa",0,y,38,1);R("#fff3dc",0,78,38,1);R("#e4cfaa",37,78,1,26);
+R("#5a3a22",29,63,6,11);R("#b0573f",30,63,4,11);R("#d06e52",30,63,1,11);R("#5a3a22",29,62,6,1);
+R("#5a3a22",-4,69,47,1);for(let r=0;r<5;r++){const y=70+r*2;R(r%2?"#b44c37":"#c0563f",-4,y,47,2);for(let x=-4+(r%2)*2;x<43;x+=4)P("#8f3a2a",x,y+1);R("#d97659",-4,y,47,1)}R("#7d2f22",-4,80,47,1);
+R("#5a3a22",6,89,10,15);R("#7a4f2e",7,90,8,14);R("#8c5c37",8,91,6,6);R("#8c5c37",8,98,6,5);P("#ffd34d",13,97);R("#c9a06c",5,104,12,1);
+R("#5a3a22",23,84,10,9);R("#8fd3ef",24,85,8,7);R("#c7ecf9",24,85,3,2);R("#5a3a22",27,85,1,7);R("#5a3a22",24,88,8,1);R("#a86f3d",22,93,12,2);R("#8a5a33",22,95,12,1);
+for(const [fx,c] of [[23,"#f29bb0"],[26,"#ffe066"],[29,"#f29bb0"],[32,"#c7a6ff"]]){P(c,fx,92);P("#5fb052",fx+1,92)}
 /* ---------------- kitchen decor (inside scene) ---------------- */
 function mk(w,h,fn){const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");fn((col,a,b,ww,hh)=>{x.fillStyle=col;x.fillRect(a,b,ww,hh)});return c.toDataURL()}
 const DECO=[
@@ -215,14 +255,15 @@ function kitchenDog(t){const k=$("kdog").getContext("2d");k.clearRect(0,0,24,28)
  const lift=kJump<0?0:Math.round(Math.sin(kJump/26*Math.PI)*9);if(kJump>=0&&++kJump>26)kJump=-1;
  drawChar(k,12,26,kDir,false,lift?1:0,t,lift)}
 
-function board(s,on,t){const x=s.x;
- g.fillStyle="#7a4f2e";g.fillRect(x-14,86,3,22);g.fillRect(x+11,86,3,22);
- g.fillStyle="#6b4423";g.fillRect(x-17,70,34,22);g.fillStyle="#a86f3d";g.fillRect(x-16,71,32,20);
- g.fillStyle=on?"#fff8e7":"#e9dcc0";g.fillRect(x-13,73,26,16);
- g.fillStyle=on?"#e05a7a":"#c9a98a";g.fillRect(x-11,75,22,3);
- g.fillStyle=on?"#a08a74":"#cbbba0";for(let l=0;l<3;l++)g.fillRect(x-11,80+l*3,18-l*4,1);
- g.fillStyle="#e05a7a";g.fillRect(x-1,72,2,2);
- if(on){const by=62+Math.round(Math.sin(t/8)*1.5);g.fillStyle="#ffd34d";g.fillRect(x-1,by,2,5);g.fillRect(x-1,by+6,2,2)}}
+function board(s,on,t){const x=s.x,F=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(a,b,w,h)};
+ for(const px of[x-15,x+10]){F("#4a3022",px,99,5,9);F("#8a5a33",px+1,99,3,9);F("#b07a46",px+1,99,1,9);F("#c49b68",px-1,107,7,1)}
+ F("#4a3022",x-18,81,36,20);F("#8a5a33",x-17,82,34,18);F("#b07a46",x-17,82,34,1);F("#6b4423",x-17,99,34,1);
+ F("#7a4c2b",x-17,90,34,1);F("#9c6a3c",x-16,84,3,1);F("#9c6a3c",x+12,93,4,1);F("#9c6a3c",x+13,86,2,1);F("#9c6a3c",x-15,95,3,1);
+ F("#5c3a22",x-14,85,28,13);F(on?"#fff8e7":"#e9dcc0",x-14,84,27,13);F(on?"#f1e3c6":"#d8c8a6",x-14,96,27,1);F(on?"#e6d3ae":"#cdbb98",x+10,84,3,3);F("#5c3a22",x+10,86,1,1);
+ F(on?"#e05a7a":"#c9a98a",x-11,87,20,2);F(on?"#b5475a":"#b39577",x-11,89,20,1);
+ F(on?"#a08a74":"#cbbba0",x-11,91,17,1);F(on?"#a08a74":"#cbbba0",x-11,93,12,1);
+ F("#e05a7a",x-1,83,2,2);F("#ff9bb0",x-1,83,1,1);
+ if(on){const by=72+Math.round(Math.sin(t/8)*1.5);F("#b5872a",x-2,by,4,6);F("#ffd34d",x-1,by,2,5);F("#b5872a",x-2,by+6,4,3);F("#ffd34d",x-1,by+7,2,2);F("#fff1a8",x-1,by,1,2)}}
 const clouds=Array.from({length:Math.ceil(WW/100)},(_,k)=>[40+k*100,10+(k*7)%14,.6+(k%3)*.2]),flies=Array.from({length:Math.ceil(WW/130)},(_,k)=>[80+k*130,95+(k%2)*5,k%2?"#ffd34d":"#fff"]);
 function draw(){
  const tx=stops[i].x,moving=Math.abs(tx-x)>0.5;
@@ -230,10 +271,10 @@ function draw(){
  const t=performance.now()/16;
  if(inScene){kitchenDog(t);requestAnimationFrame(draw);return}
  cam=Math.max(0,Math.min(WW-W,Math.round(x-W/2)));
- g.fillStyle="#a9e1f5";g.fillRect(0,0,W,VH);g.fillStyle="#ffe066";g.fillRect(W-30,12,10,10);g.fillRect(W-32,14,14,6);g.fillRect(W-28,10,6,14);
+ g.fillStyle="#8fd3f0";g.fillRect(0,0,W,VH);g.fillStyle="#ffe066";g.fillRect(W-30,12,10,10);g.fillRect(W-32,14,14,6);g.fillRect(W-28,10,6,14);
  g.save();g.translate(-cam,VH-H);
  g.drawImage(bg,0,0);
- clouds.forEach((c,k)=>{const cx=((c[0]+t*.05*c[2])%(WW+40))-20,cy=c[1]-(k%2?Math.round((VH-H)*.6):0);g.fillStyle="#fff";g.fillRect(cx,cy,22,5);g.fillRect(cx+4,cy-3,12,3);g.fillRect(cx+2,cy+5,18,1)});
+ clouds.forEach((c,k)=>{const cx=((c[0]+t*.05*c[2])%(WW+40))-20,cy=c[1]-(k%2?Math.round((VH-H)*.6):0);g.fillStyle="#fff";g.fillRect(cx,cy,22,5);g.fillRect(cx+4,cy-3,12,3);g.fillRect(cx+7,cy-5,6,2);g.fillStyle="#dcecf6";g.fillRect(cx+2,cy+4,18,2);g.fillRect(cx+1,cy+3,3,1);g.fillStyle="#c6dfee";g.fillRect(cx+4,cy+6,14,1)});
  stops.forEach((s,k)=>{if(s.board)board(s,k===i&&!moving,t)});
  flies.forEach((q,k)=>{const bx=q[0]+Math.sin(t/40+k)*30,by=q[1]+Math.sin(t/13+k)*4,o=(t/4|0)%2;g.fillStyle=q[2];g.fillRect(bx-1-o,by,1,1+o);g.fillRect(bx+1+o,by,1,1+o);g.fillStyle="#3b2a20";g.fillRect(bx,by,1,2)});
  if(jumpT<0&&Math.random()<.005)jump();
@@ -246,13 +287,15 @@ function go(d){if(!inScene)i=Math.max(0,Math.min(stops.length-1,i+d))}
 function enter(){const s=stops[i];if(!s.scene)return;inScene=true;document.body.classList.add("inscene");$("scene").classList.toggle("kitchen",s.scene==="recipe");s.scene==="recipe"?recipe.start():soon(s)}
 function leave(){inScene=false;document.body.classList.remove("inscene");$("panelWrap").innerHTML="";shown=-1}
 const OUT=["🚪 Outside",()=>leave(),"out"];
+// Projects with an "explainer" page get a button that opens it in a new tab; the game stays put.
+const explain=(p,line)=>p&&p.explainer?[`${line} ${LINES.explain}`,[["📖 How it's built",()=>window.open(p.explainer,"_blank","noopener")]]]:[line,[]];
 const scene=html=>{$("panelWrap").innerHTML=`<div class="panel">${html}</div>`};
 
 /* ---------------- coming-soon room (other projects) ---------------- */
 function soon(s){const p=s.proj,links=[p.url&&`<a href="${p.url}" target="_blank" rel="noopener">🌐 Website</a>`,p.github&&`<a href="${p.github}" target="_blank" rel="noopener">💻 GitHub</a>`].filter(Boolean).join(" · ");
  scene(`<h3>${p.title}</h3><p style="margin:0 0 8px">${p.desc}</p><div class="ing">${(p.tags||[]).map(t=>`<span>${t}</span>`).join("")}</div>
   <div class="soon">🚧 Interactive demo coming soon! 🚧</div>${links?`<p style="margin:10px 0 0">${links}</p>`:""}`);
- say(LINES.soon,[OUT])}
+ const [ln,eb]=explain(p,LINES.soon);say(ln,[...eb,OUT])}
 function typeOut(el,t){let n=0;el.textContent="";const iv=setInterval(()=>{el.textContent=t.slice(0,++n);if(n>=t.length)clearInterval(iv)},14)}
 
 /* ---------------- Recipe Book AI scene ---------------- */
@@ -277,7 +320,7 @@ const SRC={
 // One step at a time: each step replaces the last, and its buttons sit in the bottom bar.
 const recipe={
  start(){this.tok={};scene(`<h3>${icon("book",3)} MyRecipeBook</h3><p style="margin:0 0 8px">Add a recipe from…</p><div class="grid">${Object.entries(SRC).map(([k,s])=>`<button class="big" onclick="recipe.add('${k}')">${icon(s.ic,5)}${s.label}</button>`).join("")}</div>`);
-  say(LINES.recipe.start,[OUT])},
+  const [ln,eb]=explain(stops[i].proj,LINES.recipe.start);say(ln,[...eb,OUT])},
  async add(k){const s=SRC[k],tok=this.tok={};
   scene(`<h3>${icon(s.ic,3)} Adding from ${s.label.toLowerCase()}</h3>${s.show}<div class="steps" id="st">${s.steps.map(x=>`<div>${x}…</div>`).join("")}</div>`);
   say(LINES.recipe[k],[OUT,["⏭ Skip",()=>this.preview()]]);const rows=$("st").children;
