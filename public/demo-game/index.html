@@ -101,18 +101,22 @@ function icon(k,s=4){if(!ICON[k])return"";if(!urlCache[k]){const c=document.crea
 const ING={tomato:"tomato",egg:"egg",onion:"onion",garlic:"garlic",rice:"rice",noodles:"noodles",banana:"banana",peas:"peas","soy sauce":"soy",butter:"butter",stock:"soup"};
 
 /* ---------------- characters ---------------- */
-// Sparky, facing right. alt = walk frame, eye = row hidden on blink, head = rows that bob when idle
+// Sparky, facing right. Legs tail to head: near back, far back, near front, far front (far legs shaded).
+// alt = walk frames, one paw lifting and reaching forward at a time; eye = row hidden on blink, head = rows that bob when idle
 const CH={
  dog:{rows:[".........K..K.....","........KOK.KPK...","........KOOKKPPK..","........KOOOOOOK..","........KOOOOEOOKK","........KOOOOOCCCN",
   "K.......KOOOOCCCK.","OK.....KRRRCCCKK..",".OKKKKBBBBBCK.....",".KOOOOBbBBBCK.....",".KOOOOBBBbBCK.....",".KOOOOOOOOCCK.....",
-  "..KOK.....KCK.....","..KOK.....KCK.....","..KCK.....KCK.....","..KK......KK......"],
-  alt:{12:"...KOK...KCK......",13:"...KOK...KCK......",14:"...KCK...KCK......",15:"...KK....KK......."},eye:4,skin:"O",head:8,
-  pal:{K:"#3b2a20",O:"#d9a05b",P:"#f3c9a6",C:"#fbe9cf",E:"#1a1416",N:"#1a1416",R:"#c0392b",B:"#2f5aa8",b:"#ffffff"}}};
+  "..KOKDK.KOKDK.....","..KOKDK.KOKDK.....","..KCKQK.KCKQK.....","..KKKK..KKKK......"],
+  alt:[{12:"...KOKK.KOKDK.....",13:"...KCKK.KOKDK.....",14:"...KKQK.KCKQK.....",15:"....KK..KKKK......"},
+   {12:"..KOKDK..KOKK.....",13:"..KOKDK..KCKK.....",14:"..KCKQK..KKQK.....",15:"..KKKK....KK......"},
+   {12:"..KOKKDKKOKDK.....",13:"..KOKKQKKOKDK.....",14:"..KCKKK.KCKQK.....",15:"..KK....KKKK......"},
+   {12:"..KOKDK.KOKKDK....",13:"..KOKDK.KOKKQK....",14:"..KCKQK.KCKKK.....",15:"..KKKK..KK........"}],eye:4,skin:"O",head:8,
+  pal:{K:"#3b2a20",O:"#d9a05b",P:"#f3c9a6",C:"#fbe9cf",E:"#1a1416",N:"#1a1416",R:"#c0392b",B:"#2f5aa8",b:"#ffffff",D:"#b07a3e",Q:"#d8c09c"}}};
 const who="dog";
 function drawChar(c,x,feet,dir,walking,step,t,lift=0){const sp=CH[who],w=sp.rows[0].length,h=sp.rows.length,
   blink=(t%240)<8,bob=walking?0:(t/30|0)%2,x0=Math.round(x)-(w>>1);
  c.fillStyle="#0002";c.fillRect(x0+1,feet,w-2,1);
- sp.rows.forEach((r,yy)=>{if(step&&sp.alt[yy])r=sp.alt[yy];if(blink&&yy===sp.eye)r=r.replaceAll("E",sp.skin);
+ sp.rows.forEach((r,yy)=>{if(step&&sp.alt[step-1][yy])r=sp.alt[step-1][yy];if(blink&&yy===sp.eye)r=r.replaceAll("E",sp.skin);
   [...r].forEach((ch,xx)=>{if(!sp.pal[ch])return;c.fillStyle=sp.pal[ch];c.fillRect(x0+(dir>0?xx:w-1-xx),feet-h+yy-lift+(yy<sp.head&&!lift?bob:0),1,1)})})}
 function drawFace(){const c=$("face").getContext("2d"),sp=CH[who];c.clearRect(0,0,20,20);
  const w=sp.rows[0].length,h=sp.rows.length,ox=(20-w)>>1,oy=(20-h)>>1;
@@ -197,7 +201,7 @@ const H=140,GROUND=116,WW=Math.max(420,stops[stops.length-1].x+30),cv=$("c"),g=c
 function fit(){const r=$("stage").getBoundingClientRect();if(!r.width||!r.height)return;
  const s=Math.min(Math.max(r.width/320,r.height*.65/H),r.height/H);W=Math.round(r.width/s);VH=Math.round(r.height/s);cv.width=W;cv.height=VH;document.body.classList.toggle("short",r.height<380)}
 let i=0,x=stops[0].x,f=0,dir=1,shown=-1,inScene=false,jumpT=-1;
-const jump=()=>{if(jumpT<0)jumpT=0};
+const JUMP_MS=450,jump=()=>{if(jumpT<0)jumpT=performance.now()};
 let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const bg=document.createElement("canvas");bg.width=WW;bg.height=H;const b=bg.getContext("2d");
 const R=(c,x,y,w,h)=>{b.fillStyle=c;b.fillRect(x|0,y|0,w,h)};
@@ -307,13 +311,16 @@ DECO.push(
   {w:28,h:18,room:"hpc",u:"--wp",css:"top:12px;left:4%",img:DECO.find(d=>d.room==="library"&&d.w===28).img})}
 $("deco").innerHTML=DECO.map(d=>`<div class="deco"${d.id?` id="${d.id}"`:""}${d.room||d.k?` data-room="${d.room||"kitchen"}"`:""} style="${d.css};width:calc(var(${d.u||"--px"})*${d.w});height:calc(var(${d.u||"--px"})*${d.h})${d.click?';pointer-events:auto;cursor:pointer':''}"${d.click?` onclick="${d.click}" title="Sparky's favorite toy"`:""}><img src="${d.img}" style="width:100%;height:100%;image-rendering:pixelated">`+
  (d.steam||[]).map((sx,k)=>`<i class="steam" style="left:calc(var(--px)*${sx});top:0;animation-delay:${k*.8}s"></i>`).join("")+(d.leds||[]).map(([lx,ly,c],k)=>`<i class="led" style="left:calc(var(--px)*${lx});top:calc(var(--px)*${ly});background:${c||"#5fe08a"};animation-delay:${(k*.37)%1.4}s"></i>`).join("")+`</div>`).join("")+
- `<canvas id="kdog" class="deco" width="24" height="28" onclick="kJump=0" style="pointer-events:auto;cursor:pointer;bottom:14px;left:50%;transform:translateX(-50%);width:calc(var(--px)*24);height:calc(var(--px)*28)"></canvas>`+
+ `<canvas id="kdog" class="deco" width="24" height="28" onclick="kHop()" style="pointer-events:auto;cursor:pointer;bottom:14px;left:50%;transform:translateX(-50%);width:calc(var(--px)*24);height:calc(var(--px)*28)"></canvas>`+
  `<div id="pbub" class="deco" style="display:none;bottom:calc(var(--px)*8 + 16px);left:calc(50% + var(--px)*8);background:#fff8e7;border:2px solid #6b4423;border-radius:6px;padding:2px 8px;font-size:13px;color:#3b2a20;white-space:nowrap">♥ Sparky's favorite toy!</div>`;
-function pandaClick(){kJump=0;const b=$("pbub");b.style.display="block";clearTimeout(b.t);b.t=setTimeout(()=>b.style.display="none",2200)}
-let kJump=-1,kDir=1;
+// Panda click: two quick hops in a row.
+function pandaClick(){kHop(2,260,7);const b=$("pbub");b.style.display="block";clearTimeout(b.t);b.t=setTimeout(()=>b.style.display="none",2200)}
+let kJump=-1,kDir=1,kDur=JUMP_MS,kH=9,kLeft=0;
+// Start n hops of the given length (ms) and height (px); a normal jump is one hop.
+function kHop(n=1,dur=JUMP_MS,h=9){kJump=performance.now();kDur=dur;kH=h;kLeft=n-1}
 function kitchenDog(t){const k=$("kdog").getContext("2d");k.clearRect(0,0,24,28);
- if(kJump<0&&Math.random()<.006){kJump=0;if(Math.random()<.4)kDir=-kDir}
- const lift=kJump<0?0:Math.round(Math.sin(kJump/26*Math.PI)*9);if(kJump>=0&&++kJump>26)kJump=-1;
+ if(kJump<0&&Math.random()<.006){kHop();if(Math.random()<.4)kDir=-kDir}
+ if(kJump>=0&&performance.now()-kJump>kDur){if(kLeft>0){kLeft--;kJump=performance.now()}else kJump=-1}const lift=kJump<0?0:Math.round(Math.sin(Math.min(1,(performance.now()-kJump)/kDur)*Math.PI)*kH);
  drawChar(k,12,26,kDir,false,lift?1:0,t,lift)}
 
 function board(s,on,t){const x=s.x,F=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(a,b,w,h)};
@@ -358,8 +365,8 @@ function draw(){
  stops.forEach((s,k)=>{if(s.board)board(s,k===i&&!moving,t)});
  flies.forEach((q,k)=>{const bx=q[0]+Math.sin(t/40+k)*30,by=q[1]+Math.sin(t/13+k)*4,o=(t/4|0)%2;g.fillStyle=q[2];g.fillRect(bx-1-o,by,1,1+o);g.fillRect(bx+1+o,by,1,1+o);g.fillStyle="#3b2a20";g.fillRect(bx,by,1,2)});
  if(jumpT<0&&Math.random()<.005)jump();
- const lift=jumpT<0?0:Math.round(Math.sin(jumpT/26*Math.PI)*9);if(jumpT>=0&&++jumpT>26)jumpT=-1;
- drawChar(g,x,GROUND,dir,moving,lift||(moving&&(f>>3)%2),t,lift);
+ if(jumpT>=0&&performance.now()-jumpT>JUMP_MS)jumpT=-1;const lift=jumpT<0?0:Math.round(Math.sin((performance.now()-jumpT)/JUMP_MS*Math.PI)*9);
+ drawChar(g,x,GROUND,dir,moving,moving?1+(performance.now()/110|0)%4:lift?1:0,t,lift);
  g.restore();requestAnimationFrame(draw)}
 function showCard(p){const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
  $("pcard").innerHTML=`<button class="x" onclick="hideCard()" aria-label="Hide card">✕</button><div class="hd"><h4>${esc(p.title)}</h4><span class="yr">${esc(p.year||"")}</span></div><p>${esc(p.desc)}</p>`;$("pcard").classList.add("on");placeCard()}
