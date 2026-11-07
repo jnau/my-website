@@ -31,7 +31,7 @@ body.inscene #jump{display:none}body.inscene .arrow{display:none}
  background:repeating-linear-gradient(#c98f5a 0 14px,#b57d4b 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#f6e3c6 0 14px,#f0d6ae 14px 28px)}
 body.inscene canvas#c{display:none}
 @media(max-width:600px){#scene{--px:2px;--wp:3px}}
-.deco{position:absolute;image-rendering:pixelated;pointer-events:none}#panelWrap{position:absolute;left:10px;right:10px;top:10px;bottom:calc(var(--px)*30 + 16px);overflow-y:auto;z-index:1}#panelWrap .panel{max-width:560px}body.short #panelWrap{bottom:10px}
+.deco{position:absolute;image-rendering:pixelated;pointer-events:none}#panelWrap{position:absolute;left:10px;right:10px;top:10px;bottom:calc(var(--px)*30 + 16px);overflow-y:auto;z-index:1}#panelWrap .panel{max-width:560px}#panelWrap{scrollbar-width:thin;scrollbar-color:var(--wood2) transparent}body.short #panelWrap{bottom:10px}
 .steam{position:absolute;width:var(--px);height:var(--px);background:#fff;opacity:0;animation:steam 2.4s linear infinite}
 @keyframes steam{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(calc(var(--px)*-12));opacity:0}}body.inscene #scene{display:block}
 .panel{background:var(--paper);color:var(--ink);border:4px solid var(--wood);border-radius:6px;box-shadow:4px 4px 0 #0003;padding:12px;max-width:600px;margin:0 auto}
@@ -45,12 +45,12 @@ body.inscene canvas#c{display:none}
 .search{background:#fff;border:3px solid #e3d6bb;border-radius:4px;padding:6px 10px;margin-bottom:8px;min-height:36px}
 .card-photo{background:#fffdf5;background-image:repeating-linear-gradient(#fffdf5 0 19px,#cfe0f2 19px 20px);padding:4px 12px;font:italic 15px/20px 'Comic Sans MS',cursive;color:#3a4a7a;transform:rotate(-1.5deg);max-width:260px;border:1px solid #e3d9bf;margin:4px auto}
 .wave{display:flex;gap:2px;align-items:center;justify-content:center;height:34px}.wave i{width:4px;background:var(--sage)}
-.out{white-space:pre-wrap;background:#f3ead6;border-radius:4px;padding:8px;min-height:70px}
+.panel .out{white-space:pre-wrap;background:#f3ead6;border-radius:4px;padding:8px;min-height:70px}
 .soon{background:#ffd34d33;border:3px dashed #e0a458;border-radius:6px;padding:16px;text-align:center;font-size:18px;margin-top:8px}.panel a{color:#2f5aa8}
 .deco[data-room]{display:none}#scene.kitchen .deco[data-room=kitchen],#scene.library .deco[data-room=library],#scene.office .deco[data-room=office],#scene.hpc .deco[data-room=hpc]{display:block}
 #scene.hpc{background:repeating-linear-gradient(#aab6c2 0 14px,#98a5b2 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#e7e3f0 0 14px,#ddd8ea 14px 28px)}#scene.hpc.running .led{animation-duration:.25s}
 .jobs{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin:6px 0}.jobs i{aspect-ratio:1;background:#e3d6bb}.jobs i.on{background:#5fb052}.jobs i.run{background:#ffd34d}
-.count{font:600 22px ui-monospace,Menlo,monospace;text-align:center}.chart{display:block;width:100%;height:130px;background:#fff;border:2px solid #e3d6bb}
+.count{font:600 22px ui-monospace,Menlo,monospace;text-align:center}.chart{display:block;width:100%;height:100px;background:#fff;border:2px solid #e3d6bb}
 #scene.library{background:repeating-linear-gradient(#b57d4b 0 14px,#a06b3c 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#e3ead6 0 14px,#d8e2c8 14px 28px)}
 #scene.office{background:repeating-linear-gradient(#aab6c2 0 14px,#98a5b2 14px 16px) bottom/100% 30% no-repeat,repeating-linear-gradient(90deg,#e1e8f0 0 14px,#d6dfea 14px 28px)}
 .deco.talk{animation-duration:.3s!important}.chat{display:flex;gap:8px;align-items:flex-start;margin:6px 0;animation:fadein .25s ease-out}.chat img{width:24px;height:28px;image-rendering:pixelated;flex:none}.chat .bub{flex:1;background:#f3ead6;padding:4px 8px}.chat b{display:block;font-size:13px}
@@ -461,7 +461,7 @@ const curator={
   scene(`<h3>🤖 Agents on ${k}</h3><div id="log"></div>`);say(LINES.curator.reading,[OUT,["⏭ Skip",()=>{this.quiet();this.claims(k)}]]);
   for(const [n,t] of talk){if(this.tok!==tok||!inScene||!$("log"))return this.quiet();this.quiet();$("bot"+n).classList.add("talk");
    const row=document.createElement("div");row.className="chat";row.innerHTML=`<img src="${BOTS[n].img||(BOTS[n].img=botImg(BOTS[n].c))}" alt=""><div class="bub"><b style="color:${BOTS[n].ink}">${BOTS[n].name}</b><span></span></div>`;
-   $("log").append(row);typeOut(row.querySelector("span"),t);const w=$("panelWrap");w.scrollTop=w.scrollHeight;await sleep(t.length*14+750)}
+   $("log").append(row);while($("log").children.length>4)$("log").firstChild.remove();typeOut(row.querySelector("span"),t);const w=$("panelWrap");w.scrollTop=w.scrollHeight;await sleep(t.length*14+750)}
   this.quiet();await sleep(400);if(this.tok===tok)this.claims(k)},
  quiet(){BOTS.forEach((b,n)=>$("bot"+n)&&$("bot"+n).classList.remove("talk"))},
  claims(k){this.tok={};scene(`<h3>📝 Draft claims · ${k}</h3>${SIGS[k].claims.map(([t,g,p,drop])=>`<div class="claim${drop?" drop":""}"><div><span class="t">${t}</span><small>${drop?"✗ Not supported by its source, dropped":"📄 Toy paper #"+p}</small></div>${drop?"":gradeTag(g)}</div>`).join("")}`);
@@ -501,7 +501,7 @@ const hdsbs={
    $("cn").textContent=Math.round((k+8)/N*50000).toLocaleString()+(k+8>=N?"+":"")+" genomes";if(k===48)rows[0].className="done";if(k===160)rows[1].className="done"}
   rows[2].className="done";$("scene").classList.remove("running");await sleep(600);if(this.tok===tok&&inScene)this.show(96,LINES.hdsbs.done)},
  show(n,line){this.tok={};$("scene").classList.remove("running");scene(`<h3>🔬 Toy signature · SBS${n}</h3><div class="chips">${[96,288,1536,4608].map(k=>`<button${k===n?' class="go"':""} onclick="hdsbs.show(${k})">SBS${k}</button>`).join("")}</div>
-   <canvas class="chart" id="hd"></canvas><p style="margin:6px 0 2px;font-size:13px;color:var(--mute)">Inside that one bar: ${n/96} channel${n>96?"s":""}</p><canvas class="chart" id="hdz" style="height:60px"></canvas><p style="margin:6px 0 0;font-size:14px">${n.toLocaleString()} channels: ${HDTXT[n]}.</p>`);
+   <canvas class="chart" id="hd"></canvas><p style="margin:6px 0 2px;font-size:13px;color:var(--mute)">Inside that one bar: ${n/96} channel${n>96?"s":""}</p><canvas class="chart" id="hdz" style="height:44px"></canvas><p style="margin:6px 0 0;font-size:14px">${n.toLocaleString()} channels: ${HDTXT[n]}.</p>`);
   drawHD($("hd"),n);say(line||LINES.hdsbs[n],n===4608?[["✔ Done",()=>this.start(),"go"],OUT]:[OUT])}};
 
 /* ---------------- ENCODE portal office ---------------- */
