@@ -1,16 +1,6 @@
 {
   "featured": [
     {
-      "title": "Recipe Book AI",
-      "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.",
-      "type": "Personal",
-      "topics": ["Engineering", "Data Science"],
-      "tags": ["Python", "LLMs", "RAG"],
-      "year": "2026",
-      "demo": "recipesearch",
-      "explainer": "/recipe-book/how-it-works.html"
-    },
-    {
       "title": "High Definition Single Base Substitution Mutational Signatures in Human Cancers",
       "desc": "Reference set from 50,000+ WGS across multiple cancer types, with interactive web dashboards for exploring the signatures.",
       "type": "Research",
@@ -33,6 +23,16 @@
       "tags": ["Python", "LLMs", "AI Agents", "Bioinformatics", "MCP"],
       "year": "2025–present",
       "demo": "pipeline"
+    },
+    {
+      "title": "Recipe Book AI",
+      "desc": "Personal recipe book with AI search. Add recipes from links, PDFs, photos of handwritten cards, or voice memos, then search by what's in your fridge or what you're craving. Any recipe can be read in Vietnamese.",
+      "type": "Personal",
+      "topics": ["Engineering", "Data Science"],
+      "tags": ["Python", "LLMs", "RAG"],
+      "year": "2026",
+      "demo": "recipesearch",
+      "explainer": "/recipe-book/how-it-works.html"
     },
     {
       "title": "ENCODEd Database",

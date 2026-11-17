@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { C } from "../tokens";
+import { C, mix, tc } from "../tokens";
 import { Reveal } from "../primitives/Reveal";
 import { SecHead } from "../primitives/SecHead";
 import { TagBadge } from "../primitives/TagBadge";
@@ -13,7 +13,7 @@ const INITIAL_COUNT = 9;
 
 /* ─── color lookups ─── */
 const TAG_COLOR_MAP = {};
-CATEGORIES.forEach((cat) => cat.tags.forEach((t) => { TAG_COLOR_MAP[t] = cat.color; }));
+CATEGORIES.forEach((cat) => cat.tags.forEach((t) => { TAG_COLOR_MAP[t] = tc(cat.color); }));
 const getTagColor = (tag) => TAG_COLOR_MAP[tag] || C.accent;
 const getCategoryForTag = (tag) => CATEGORIES.find((c) => c.tags.includes(tag)) || null;
 
@@ -49,7 +49,7 @@ function CategoryToggle({ activeCategory, onSelect, mobile }) {
       <div style={{ display: "flex", justifyContent: "center", gap: mobile ? 4 : 6, marginBottom: 0, flexWrap: "wrap" }}>
         <CatButton name="All" active={activeCategory === null} color={C.accent} onClick={() => onSelect(null)} mobile={mobile} />
         {CATEGORIES.map((cat) => (
-          <CatButton key={cat.name} name={cat.name} active={activeCategory === cat.name} color={cat.color} onClick={() => onSelect(cat.name)} mobile={mobile} />
+          <CatButton key={cat.name} name={cat.name} active={activeCategory === cat.name} color={tc(cat.color)} onClick={() => onSelect(cat.name)} mobile={mobile} />
         ))}
       </div>
     </Reveal>
@@ -96,22 +96,22 @@ function GalleryImage({ item, index, onClick, mobile, activeTag }) {
         onMouseLeave={() => setHov(false)}
         style={{
           position: "relative", borderRadius: 14, overflow: "hidden", cursor: "pointer",
-          border: `1px solid ${hov ? primaryColor + "66" : C.border}`,
+          border: `1px solid ${hov ? mix(primaryColor, 40) : C.cardBorder}`,
           transition: "all .4s ease",
           transform: hov ? "translateY(-4px)" : "none",
-          boxShadow: hov ? "0 12px 36px rgba(0,0,0,.35)" : "0 2px 8px rgba(0,0,0,.2)",
+          boxShadow: hov ? `0 12px 36px ${C.shadowStrong}` : `0 2px 8px ${C.shadow}`,
         }}
       >
         {item.src ? (
           <img src={item.src} alt={item.caption} style={{ width: "100%", height: "auto", maxHeight: maxH, objectFit: "cover", display: "block", transition: "transform .5s ease", transform: hov ? "scale(1.04)" : "scale(1)" }} />
         ) : (
-          <div style={{ width: "100%", height: placeholderH, background: `linear-gradient(135deg, ${primaryColor}12, ${primaryColor}06, ${C.surface})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: "100%", height: placeholderH, background: `linear-gradient(135deg, ${mix(primaryColor, 7)}, ${mix(primaryColor, 2)}, ${C.surface})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <WCBlob color={primaryColor} size={mobile ? 70 : 100} seed={index + 20} />
           </div>
         )}
 
         {/* overlay: caption + tags */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: mobile ? "32px 12px 10px" : "40px 16px 14px", background: "linear-gradient(transparent, rgba(8,13,24,0.92))", transition: "opacity .35s ease", opacity: hov ? 1 : 0.75 }}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: mobile ? "32px 12px 10px" : "40px 16px 14px", background: `linear-gradient(transparent, ${C.scrimMid} ${hov ? 30 : 60}%, ${C.scrim})`, transition: "opacity .35s ease", opacity: hov ? 1 : 0.8 }}>
           <p style={{ fontFamily: "'DM Sans'", fontSize: mobile ? 12 : 13, color: C.bright, lineHeight: 1.5, marginBottom: 8, opacity: hov ? 1 : 0, maxHeight: hov ? 60 : 0, transition: "all .35s ease", overflow: "hidden" }}>
             {item.caption}
           </p>
@@ -123,7 +123,7 @@ function GalleryImage({ item, index, onClick, mobile, activeTag }) {
         </div>
 
         {/* expand icon */}
-        <div style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: 8, background: "rgba(8,13,24,0.5)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", opacity: hov ? 1 : 0, transition: "opacity .3s" }}>
+        <div style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: 8, background: C.scrimSoft, backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", opacity: hov ? 1 : 0, transition: "opacity .3s" }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" stroke={C.bright} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -145,8 +145,8 @@ function ShowMoreBtn({ remaining, expanded, onClick, mobile }) {
         style={{
           fontFamily: "'DM Sans'", fontSize: mobile ? 13 : 14, fontWeight: 500,
           color: hov ? C.bright : C.muted,
-          background: hov ? "rgba(255,255,255,0.06)" : "transparent",
-          border: `1px solid ${hov ? "rgba(255,255,255,0.15)" : C.border}`,
+          background: hov ? mix(C.heading, 6) : "transparent",
+          border: `1px solid ${hov ? mix(C.heading, 15) : C.border}`,
           borderRadius: 20, padding: mobile ? "8px 20px" : "10px 24px",
           cursor: "pointer", transition: "all .3s ease",
           display: "flex", alignItems: "center", gap: 6,
@@ -190,9 +190,9 @@ function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mob
         [side]: mobile ? 8 : 20,
         width: mobile ? 44 : 40, height: mobile ? 44 : 40,
         borderRadius: "50%",
-        border: "1.5px solid rgba(255,255,255,0.15)",
+        border: `1.5px solid ${mix(C.heading, 15)}`,
         cursor: "pointer",
-        background: "rgba(255,255,255,0.10)",
+        background: mix(C.heading, 10),
         backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         zIndex: 10010, WebkitTapHighlightColor: "transparent",
@@ -209,7 +209,7 @@ function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mob
   );
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(4,6,12,0.92)", backdropFilter: "blur(20px)", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp .25s ease both" }}>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9999, background: C.lightbox, backdropFilter: "blur(20px)", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeUp .25s ease both" }}>
 
       {/* ── Close button ── positioned below header ── */}
       <button
@@ -224,9 +224,9 @@ function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mob
           right: mobile ? 16 : 28,
           width: mobile ? 48 : 40, height: mobile ? 48 : 40,
           borderRadius: "50%",
-          border: `1.5px solid rgba(255,255,255,${closeHov ? 0.35 : 0.2})`,
+          border: `1.5px solid ${mix(C.heading, closeHov ? 35 : 20)}`,
           cursor: "pointer",
-          background: closeHov ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.12)",
+          background: closeHov ? mix(C.heading, 22) : mix(C.heading, 12),
           backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
           display: "flex", alignItems: "center", justifyContent: "center",
           zIndex: 10010,
@@ -246,11 +246,11 @@ function Lightbox({ items, activeIndex, onClose, onPrev, onNext, onTagClick, mob
 
       {/* ── Content ── */}
       <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: mobile ? 12 : 0 }}>
-        <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,.5)" }}>
+        <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: `0 20px 60px ${C.shadowStrong}` }}>
           {item.src ? (
             <img src={item.src} alt={item.caption} style={imgStyle} />
           ) : (
-            <div style={{ width: mobile ? 280 : 480, height: mobile ? 240 : 360, background: `linear-gradient(135deg, ${primaryColor}15, ${primaryColor}06, ${C.surface})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: mobile ? 280 : 480, height: mobile ? 240 : 360, background: `linear-gradient(135deg, ${mix(primaryColor, 8)}, ${mix(primaryColor, 2)}, ${C.surface})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <WCBlob color={primaryColor} size={mobile ? 120 : 180} seed={activeIndex + 30} />
             </div>
           )}

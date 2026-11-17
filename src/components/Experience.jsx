@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { C } from "../tokens";
+import { C, mix } from "../tokens";
 import { SecHead } from "../primitives/SecHead";
 import EXPERIENCES from "../data/experiences.json";
 
@@ -148,7 +148,7 @@ function DockTimeline({ mobile, screenW }) {
             fontFamily: "'Cormorant Garamond'",
             fontSize: mobile ? 20 : 24,
             fontWeight: 600,
-            color: isFutureActive ? "#c9a96e" : C.accent,
+            color: isFutureActive ? C.gold : C.accent,
             letterSpacing: 1.5,
             animation: "yearFade .35s ease",
           }}
@@ -184,28 +184,28 @@ function DockTimeline({ mobile, screenW }) {
               <div key={i} style={{ position: "absolute", left: sidePad + i * (CARD_W + CARD_GAP), top: "50%", width: CARD_W, transform: `translateY(-50%) scale(${scale})`, opacity, transition: "transform .2s ease-out, opacity .25s ease-out", zIndex: isNearest ? 10 : 1 }}>
                 <div style={{
                   borderRadius: 14,
-                  border: `1px solid ${isFuture && isNearest ? "#c9a96e55" : isNearest ? C.accentMid : C.border}`,
-                  background: isFuture ? `linear-gradient(135deg, ${C.surface}, #1a1a2e)` : isNearest ? C.surfaceHov : C.bg,
+                  border: `1px solid ${isFuture && isNearest ? mix(C.gold, 33) : isNearest ? C.accentMid : C.cardBorder}`,
+                  background: isFuture ? `linear-gradient(135deg, ${C.surface}, ${C.futureBg})` : isNearest ? C.surfaceHov : C.bg,
                   overflow: "hidden",
-                  boxShadow: isNearest ? (isFuture ? "0 12px 48px rgba(201,169,110,0.12)" : `0 12px 48px rgba(109,184,159,0.15)`) : "0 2px 8px rgba(0,0,0,.3)",
+                  boxShadow: isNearest ? (isFuture ? `0 12px 48px ${mix(C.gold, 12)}` : `0 12px 48px ${C.glow}`) : `0 2px 8px ${C.shadow}`,
                   transition: "border .3s, background .3s, box-shadow .3s",
                 }}>
-                  <div style={{ height: 56, background: isFuture ? "linear-gradient(135deg,#1a1a2e,#2a1a3e)" : `linear-gradient(135deg,${C.bgAlt},${C.surface})`, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ height: 56, background: isFuture ? `linear-gradient(135deg,${C.futureBg},${C.futureBg2})` : `linear-gradient(135deg,${C.bgAlt},${C.surface})`, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {exp.img ? (
                       <img src={exp.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
-                      <span style={{ fontFamily: "'Caveat'", fontSize: isFuture ? 18 : 13, color: isFuture ? "#c9a96e" : C.border }}>{isFuture ? "✨" : "optional image"}</span>
+                      <span style={{ fontFamily: "'Caveat'", fontSize: isFuture ? 18 : 13, color: isFuture ? C.gold : C.border }}>{isFuture ? "✨" : "optional image"}</span>
                     )}
                   </div>
                   <div style={{ padding: mobile ? "14px 16px 16px" : "18px 22px 20px" }}>
-                    <span style={{ fontFamily: "'DM Sans'", fontSize: 11, fontWeight: 600, color: isFuture ? "#c9a96e" : C.accent, letterSpacing: 1, textTransform: "uppercase" }}>{exp.period}</span>
+                    <span style={{ fontFamily: "'DM Sans'", fontSize: 11, fontWeight: 600, color: isFuture ? C.gold : C.accent, letterSpacing: 1, textTransform: "uppercase" }}>{exp.period}</span>
                     <h3 style={{ fontFamily: isFuture ? "'Caveat'" : "'Cormorant Garamond'", fontSize: isFuture ? 20 : 18, fontWeight: 600, color: isNearest ? C.heading : C.bright, marginTop: 5, lineHeight: 1.25 }}>{exp.role}</h3>
-                    <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: isFuture ? "#c9a96e" : C.accent, marginTop: 2 }}>{exp.org}</div>
-                    <p style={{ fontFamily: "'DM Sans'", fontSize: 12, color: C.text, lineHeight: 1.6, marginTop: 8, fontStyle: isFuture ? "italic" : "normal" }}>{exp.desc}</p>
+                    <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: isFuture ? C.gold : C.accent, marginTop: 2 }}>{exp.org}</div>
+                    {exp.desc && <p style={{ fontFamily: "'DM Sans'", fontSize: 12, color: C.text, lineHeight: 1.6, marginTop: 8, fontStyle: isFuture ? "italic" : "normal" }}>{exp.desc}</p>}
                     {exp.tags && (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10 }}>
                         {exp.tags.map((tag) => (
-                          <span key={tag} style={{ fontFamily: "'DM Sans'", fontSize: 10, fontWeight: 500, color: isFuture ? "#c9a96e" : C.accent, background: isFuture ? "rgba(201,169,110,0.1)" : C.accentDim, borderRadius: 12, padding: "2px 7px" }}>{tag}</span>
+                          <span key={tag} style={{ fontFamily: "'DM Sans'", fontSize: 10, fontWeight: 500, color: isFuture ? C.gold : C.accent, background: isFuture ? mix(C.gold, 10) : C.accentDim, borderRadius: 12, padding: "2px 7px" }}>{tag}</span>
                         ))}
                       </div>
                     )}
@@ -230,7 +230,7 @@ function DockTimeline({ mobile, screenW }) {
           const isActive = i === activeIdx;
           const isFuture = exp.isFuture;
           const label = getDotLabel(i);
-          const accentColor = isFuture ? "#c9a96e" : C.accent;
+          const accentColor = isFuture ? C.gold : C.accent;
 
           return (
             <button
@@ -257,7 +257,7 @@ function DockTimeline({ mobile, screenW }) {
                 borderRadius: "50%",
                 background: isActive ? accentColor : C.border,
                 boxShadow: isActive
-                  ? `0 0 8px ${isFuture ? "rgba(201,169,110,0.5)" : "rgba(109,184,159,0.4)"}`
+                  ? `0 0 8px ${isFuture ? mix(C.gold, 50) : mix(C.accent, 40)}`
                   : "none",
                 transition: "all .3s ease",
               }} />

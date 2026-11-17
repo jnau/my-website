@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { C } from "../tokens";
+import { useTheme, toggleTheme } from "../theme";
 import siteData from "../data/site.json";
 
 const SECTIONS = siteData.navSections;
@@ -28,7 +29,7 @@ function NavLogo({ scrolled }) {
           transform: hov ? "scale(1.08)" : "scale(1)",
           boxShadow: hov
             ? `0 0 20px ${C.accentDim}`
-            : scrolled ? "none" : "0 4px 24px rgba(255, 255, 255, 0.3)",
+            : scrolled ? "none" : `0 4px 24px ${C.logoGlow}`,
           position: "relative",
         }}
       >
@@ -46,6 +47,39 @@ function NavLogo({ scrolled }) {
         color: hov ? C.accent : C.heading, transition: "all .45s cubic-bezier(.22,1,.36,1)",
       }}
     >JA</span>
+  );
+}
+
+/* ─── Light / dark toggle ───
+   Shows the sun in dark mode and the moon in light mode: the icon is where a click takes you. */
+function ThemeToggle() {
+  const theme = useTheme();
+  const [hov, setHov] = useState(false);
+  const toLight = theme === "dark";
+  return (
+    <button
+      onClick={toggleTheme}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      aria-label={toLight ? "Switch to light mode" : "Switch to dark mode"}
+      title={toLight ? "Light mode" : "Dark mode"}
+      style={{
+        background: "none", border: "none", cursor: "pointer", padding: 8, borderRadius: "50%",
+        color: hov ? C.accent : C.muted, display: "flex", alignItems: "center", justifyContent: "center",
+        transition: "color .3s", WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {toLight ? (
+          <>
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" />
+          </>
+        ) : (
+          <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+        )}
+      </svg>
+    </button>
   );
 }
 
@@ -73,7 +107,7 @@ export function TopNav({ active, onNav, mobile }) {
           position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: mobile ? "0 20px" : "0 48px", height: scrolled ? (mobile ? 54 : 60) : (mobile ? 80 : 96),
-          background: scrolled || menuOpen ? "rgba(8,13,24,0.92)" : "transparent",
+          background: scrolled || menuOpen ? C.navBg : "transparent",
           backdropFilter: scrolled || menuOpen ? "blur(16px) saturate(1.4)" : "none",
           WebkitBackdropFilter: scrolled || menuOpen ? "blur(16px) saturate(1.4)" : "none",
           borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
@@ -85,6 +119,8 @@ export function TopNav({ active, onNav, mobile }) {
         </button>
 
         {mobile ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 4, zIndex: 110 }}>
+          <ThemeToggle />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             style={{ background: "none", border: "none", cursor: "pointer", padding: 8, display: "flex", flexDirection: "column", gap: 5, zIndex: 110 }}
@@ -93,8 +129,9 @@ export function TopNav({ active, onNav, mobile }) {
             <span style={{ width: 22, height: 2, background: C.bright, borderRadius: 1, transition: "all .3s", opacity: menuOpen ? 0 : 1 }} />
             <span style={{ width: 22, height: 2, background: C.bright, borderRadius: 1, transition: "all .3s", transform: menuOpen ? "rotate(-45deg) translateY(-7px)" : "none" }} />
           </button>
+          </div>
         ) : (
-          <nav style={{ display: "flex", gap: 8 }}>
+          <nav style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {SECTIONS.slice(1).map((s, i) => {
               const idx = i + 1;
               const on = idx === active;
@@ -116,6 +153,7 @@ export function TopNav({ active, onNav, mobile }) {
                 </button>
               );
             })}
+            <ThemeToggle />
           </nav>
         )}
       </header>
@@ -125,7 +163,7 @@ export function TopNav({ active, onNav, mobile }) {
         <div
           style={{
             position: "fixed", inset: 0, zIndex: 99,
-            background: "rgba(8,13,24,0.95)", backdropFilter: "blur(20px)",
+            background: C.overlayBg, backdropFilter: "blur(20px)",
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8,
             opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? "auto" : "none",
             transition: "opacity .3s ease",

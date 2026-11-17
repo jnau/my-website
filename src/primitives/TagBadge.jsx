@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { C } from "../tokens";
+import { C, mix } from "../tokens";
 
 export function TagBadge({ tag, color: colorProp, size = "sm", onClick, active = true, dim = false }) {
   const [hov, setHov] = useState(false);
@@ -17,13 +17,13 @@ export function TagBadge({ tag, color: colorProp, size = "sm", onClick, active =
         fontSize: sz.fs,
         fontWeight: 500,
         color: dim ? C.muted : active ? color : C.muted,
-        background: dim ? `${C.muted}10` : active ? (hov && isBtn ? `${color}28` : `${color}18`) : `${C.muted}12`,
+        background: dim ? mix(C.muted, 6) : active ? (hov && isBtn ? mix(color, 16) : mix(color, 9)) : mix(C.muted, 7),
         borderRadius: 20,
         padding: `${sz.py}px ${sz.px}px`,
         letterSpacing: 0.3,
         cursor: isBtn ? "pointer" : "default",
         transition: "all .25s ease",
-        border: `1px solid ${dim ? "transparent" : active && hov && isBtn ? `${color}44` : "transparent"}`,
+        border: `1px solid ${dim ? "transparent" : active && hov && isBtn ? mix(color, 27) : "transparent"}`,
         whiteSpace: "nowrap",
       }}
     >

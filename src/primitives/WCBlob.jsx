@@ -17,9 +17,9 @@ export function WCBlob({ color, size = 110, seed = 0, style = {} }) {
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ filter: "blur(1.2px)", ...style }}>
       <defs>
         <radialGradient id={`wcb${seed}`} cx="38%" cy="38%">
-          <stop offset="0%" stopColor={color} stopOpacity=".75" />
-          <stop offset="55%" stopColor={color} stopOpacity=".35" />
-          <stop offset="100%" stopColor={color} stopOpacity=".08" />
+          <stop offset="0%" style={{ stopColor: color }} stopOpacity=".75" />
+          <stop offset="55%" style={{ stopColor: color }} stopOpacity=".35" />
+          <stop offset="100%" style={{ stopColor: color }} stopOpacity=".08" />
         </radialGradient>
       </defs>
       <path d={`${d} Z`} fill={`url(#wcb${seed})`} />

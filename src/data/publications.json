@@ -1,5 +1,12 @@
 {
   "items": [
+    { "title": "Prior therapy defines mutation profiles in childhood cancer at relapse",
+      "authors": "Layeghifard et al.",
+      "authorsUrl": "https://www.nature.com/articles/s41586-026-10803-1#auth-Mehdi-Layeghifard-Aff1",
+      "journal": "Nature",
+      "url": "https://doi.org/10.1038/s41586-026-10803-1",
+      "summary": "We used mutational signatures in whole-genome-sequenced relapsed childhood tumors, with uniformly recorded therapy doses and dates, to measure how much DNA damage chemotherapy and radiotherapy leave behind. Treated tumors carried about twice the mutation burden and nearly three times the private signatures of treatment-naive ones. Platinum drugs caused the most mutations, and more than a third of platinum-treated tumors showed a detectable platinum signature within a year, pointing to opportunities for treatment de-escalation.",
+      "year": "2026" },
     { "title": "The Impact of Variant Calling on Substitution Mutational Signature Inference", 
       "authors": "Zichen Jiang & Jessica N Au et al.", 
       "journal": "Biorxiv", 

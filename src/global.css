@@ -12,23 +12,23 @@ html {
 }
 
 body {
-  background: #080d18;
+  background: var(--c-bg);
   overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(109, 184, 159, 0.3);
-  color: #e0e7f3;
+  background: color-mix(in srgb, var(--c-accent) 30%, transparent);
+  color: var(--c-heading);
 }
 
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080d18;
+  background: var(--c-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1a2744;
+  background: var(--c-border);
   border-radius: 3px;
 }
 

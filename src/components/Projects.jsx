@@ -1,6 +1,7 @@
 import { Fragment, useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { C } from "../tokens";
+import { C, mix } from "../tokens";
+import { useTheme, themeHex } from "../theme";
 import { SecHead } from "../primitives/SecHead";
 import { useReveal } from "../hooks/useReveal";
 import projectsData from "../data/projects.json";
@@ -13,22 +14,22 @@ const ALL_PROJECTS = [...PROJECTS, ...ARCHIVE].sort((a, b) => (b.year || "0").lo
 
 /* ─── Type colors ─── */
 const TYPE_COLORS = {
-  Research: "#78aec8",
-  Professional: "#6db89f",
-  Personal: "#c9a96e",
+  Research: C.wc[4],
+  Professional: C.accent,
+  Personal: C.wc[0],
 };
 const getTypeColor = (type) => TYPE_COLORS[type] || C.accent;
 
 /* ─── Topic colors ─── */
 const TOPIC_COLORS = {
-  "Computational Biology": "#6db89f",
-  Engineering: "#78aec8",
-  Mathematics: "#c9a96e",
-  "Data Science": "#a990c0",
-  Bioinformatics: "#78c8b4",
-  Biophysics: "#c98e8e",
-  Physics: "#d4a574",
-  Design: "#c98e8e",
+  "Computational Biology": C.accent,
+  Engineering: C.wc[4],
+  Mathematics: C.wc[0],
+  "Data Science": C.wc[2],
+  Bioinformatics: C.teal,
+  Biophysics: C.wc[3],
+  Physics: C.tan,
+  Design: C.wc[3],
 };
 const getTopicColor = (topic) => TOPIC_COLORS[topic] || C.accent;
 
@@ -36,7 +37,6 @@ const getTopicColor = (topic) => TOPIC_COLORS[topic] || C.accent;
 // A reading window steps along a sequence, mutates the centre base and spells out its trinucleotide
 // context (e.g. A[C>T]G), which lands in a 96-channel spectrum grouped into the six SBS classes.
 const SBS_CLASSES = ["C>A", "C>G", "C>T", "T>A", "T>C", "T>G"];
-const SBS_COLORS = ["#78aec8", "#cad5e8", "#c98e8e", "#8a9ab5", "#88b89a", "#d4a5b8"];
 const SBS_WEIGHTS = [0.13, 0.08, 0.38, 0.09, 0.2, 0.12]; // roughly SBS-like: C>T heavy
 const BASES = "ACGT";
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
@@ -44,7 +44,9 @@ const easeInOut = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2)
 const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 const pickSbsClass = () => { let r = Math.random(); for (let i = 0; i < 5; i++) { r -= SBS_WEIGHTS[i]; if (r <= 0) return i; } return 5; };
 
-function makeSbsContextScene() {
+// Scenes draw on a canvas, which can't read CSS variables, so they take the raw hex palette `P`.
+function makeSbsContextScene(P) {
+  const SBS_COLORS = P.sbs;
   const S = 11, STEP = 1.1, seq = [], parts = [];
   const get = (i) => { while (seq.length <= i) seq.push({ b: BASES[(Math.random() * 4) | 0] }); return seq[i]; };
   // Counts ease toward their target and halve when they get big, so the loop never overflows.
@@ -62,12 +64,12 @@ function makeSbsContextScene() {
       label = { c, text: `${five}[${ref}>${alt}]${three}` };
       parts.push({ c, bin: c * 16 + BASES.indexOf(five) * 4 + BASES.indexOf(three), t0: t + 0.2 });
     }
-    ctx.strokeStyle = rgba(C.accent, 0.7); ctx.lineWidth = 1;
+    ctx.strokeStyle = rgba(P.accent, 0.7); ctx.lineWidth = 1;
     ctx.strokeRect(cx - S * 1.5, ly - 9, S * 3, 18);
     ctx.font = "11px ui-monospace, Menlo, monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (let i = Math.max(0, Math.floor(p - w / 2 / S) - 1); i < p + w / 2 / S + 1; i++) {
       const o = get(i), x = cx + (i - p) * S, fade = clamp01(Math.min(x, w - x) / 30);
-      ctx.fillStyle = o.mut ? rgba(SBS_COLORS[o.mut.c], fade) : rgba(C.text, fade * (Math.abs(x - cx) < S * 1.6 ? 1 : 0.6));
+      ctx.fillStyle = o.mut ? rgba(SBS_COLORS[o.mut.c], fade) : rgba(P.text, fade * (Math.abs(x - cx) < S * 1.6 ? 1 : 0.6));
       ctx.fillText(o.mut && !(i === n && u < 0.45) ? o.mut.alt : o.b, x, ly);
     }
     if (label) {
@@ -97,20 +99,20 @@ function makeSbsContextScene() {
     SBS_CLASSES.forEach((cls, c) => {
       const x0 = binX(c * 16), x1 = binX(c * 16 + 15) + bw;
       ctx.fillStyle = SBS_COLORS[c]; ctx.fillRect(x0, base + 2, x1 - x0, 2);
-      ctx.fillStyle = C.text; ctx.fillText(cls, (x0 + x1) / 2, h - 1);
+      ctx.fillStyle = P.text; ctx.fillText(cls, (x0 + x1) / 2, h - 1);
     });
   };
 }
 
 // Submitted files slide into a schema check; valid ones drop into the portal's file table and go
 // from "in progress" to "released", invalid ones are bounced. Counters tally both.
-const INGEST_FORMATS = [["fastq", C.wc[4]], ["bam", C.wc[2]], ["bigWig", C.wc[0]], ["bed", C.wc[5]]];
-const REJECT = C.wc[3];
 // Human cell lines and mouse tissues as sample labels; no accessions, so it stays a toy table.
 const SAMPLES = ["HepG2", "K562", "WTC11", "GM12878", "HCT116", "A549", "MCF-7", "IMR-90", "mouse_liver", "mouse_heart", "mouse_brain", "mouse_lung"];
 const randSample = () => SAMPLES[(Math.random() * SAMPLES.length) | 0];
 
-function makeIngestScene() {
+function makeIngestScene(P) {
+  const INGEST_FORMATS = [["fastq", P.wc[4]], ["bam", P.wc[2]], ["bigWig", P.wc[0]], ["bed", P.wc[5]]];
+  const REJECT = P.wc[3];
   const SPAWN = 1.4, RH = 12, laneY = 11, headY = 36, rowY0 = 49, chips = [], rows = [];
   for (let i = 0; i < 4; i++) { const [fmt, col] = INGEST_FORMATS[i % 4]; rows.push({ name: randSample(), fmt, col, t0: -10, rel: true }); }
   let nextSpawn = 0.2, n = 0, released = 0, rejected = 0, check = null;
@@ -126,11 +128,11 @@ function makeIngestScene() {
     if (t >= nextSpawn) { nextSpawn += SPAWN; const [fmt, col] = INGEST_FORMATS[(Math.random() * 4) | 0]; chips.push({ fmt, col, t0: t, ok: ++n % 5 !== 0 }); }
 
     // Gate: braces around the lane, coloured by the latest verdict.
-    const flash = check && t - check.t < 0.5 ? (check.ok ? C.accent : REJECT) : null;
+    const flash = check && t - check.t < 0.5 ? (check.ok ? P.accent : REJECT) : null;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.font = "17px ui-monospace, Menlo, monospace"; ctx.fillStyle = flash || C.muted;
+    ctx.font = "17px ui-monospace, Menlo, monospace"; ctx.fillStyle = flash || P.muted;
     ctx.fillText("{", gx - 28, laneY); ctx.fillText("}", gx + 28, laneY);
-    ctx.font = "8px 'DM Sans', sans-serif"; ctx.fillStyle = flash || C.muted;
+    ctx.font = "8px 'DM Sans', sans-serif"; ctx.fillStyle = flash || P.muted;
     ctx.fillText(flash ? (check.ok ? "schema ✓" : "schema ✗") : "schema", gx, laneY + 15);
 
     ctx.font = "9px ui-monospace, Menlo, monospace";
@@ -139,12 +141,12 @@ function makeIngestScene() {
       if (u < 0.8) { const x = -20 + (gx + 20) * easeInOut(u / 0.8); chip(ctx, x, laneY, c.fmt, c.col, clamp01(x / 30)); continue; }
       if (u < 1.1) {
         if (u >= 0.95 && !c.checked) { c.checked = true; check = { t, ok: c.ok }; }
-        chip(ctx, gx, laneY, c.fmt, c.col, 1, c.checked ? (c.ok ? C.accent : REJECT) : null); continue;
+        chip(ctx, gx, laneY, c.fmt, c.col, 1, c.checked ? (c.ok ? P.accent : REJECT) : null); continue;
       }
       const k = clamp01((u - 1.1) / 0.5), e = easeInOut(k);
       if (c.ok) {
         if (k >= 1) { chips.splice(j, 1); rows.unshift({ name: randSample(), fmt: c.fmt, col: c.col, t0: t }); if (rows.length > 5) rows.pop(); continue; }
-        chip(ctx, gx, laneY + (rowY0 - laneY) * e, c.fmt, c.col, 1 - 0.8 * e, C.accent);
+        chip(ctx, gx, laneY + (rowY0 - laneY) * e, c.fmt, c.col, 1 - 0.8 * e, P.accent);
       } else {
         if (k >= 1) { chips.splice(j, 1); rejected++; continue; }
         chip(ctx, gx + Math.sin(u * 40) * 3 * (1 - k), laneY + 8 * e, c.fmt, REJECT, 1 - k);
@@ -152,11 +154,11 @@ function makeIngestScene() {
     }
 
     // File table: header, then rows that slide down as each new one lands on top.
-    ctx.font = "7.5px 'DM Sans', sans-serif"; ctx.fillStyle = C.muted;
+    ctx.font = "7.5px 'DM Sans', sans-serif"; ctx.fillStyle = P.muted;
     ctx.textAlign = "left"; ctx.fillText("SAMPLE", 0, headY);
     ctx.textAlign = "center"; ctx.fillText("FORMAT", gx, headY);
     ctx.textAlign = "right"; ctx.fillText("STATUS", w, headY);
-    ctx.fillStyle = C.border; ctx.fillRect(0, headY + 5, w, 1);
+    ctx.fillStyle = P.border; ctx.fillRect(0, headY + 5, w, 1);
     ctx.save(); ctx.beginPath(); ctx.rect(0, headY + 6, w, rowY0 + 3.5 * RH - headY - 6); ctx.clip();
     const slide = easeInOut(clamp01((t - rows[0].t0) / 0.35));
     rows.forEach((r, i) => {
@@ -164,25 +166,27 @@ function makeIngestScene() {
       if (!r.rel && t - r.t0 > 0.8) { r.rel = true; released++; }
       ctx.globalAlpha = (i === 0 ? slide : 1) * clamp01((rowY0 + 3.5 * RH - y) / RH);
       ctx.font = "9px ui-monospace, Menlo, monospace";
-      ctx.textAlign = "left"; ctx.fillStyle = C.bright; ctx.fillText(r.name, 0, y);
+      ctx.textAlign = "left"; ctx.fillStyle = P.bright; ctx.fillText(r.name, 0, y);
       ctx.textAlign = "center"; ctx.fillStyle = r.col; ctx.fillText(r.fmt, gx, y);
-      const col = r.rel ? C.accent : C.wc[0], label = r.rel ? "released" : "in progress";
+      const col = r.rel ? P.accent : P.wc[0], label = r.rel ? "released" : "in progress";
       ctx.font = "8.5px 'DM Sans', sans-serif"; ctx.textAlign = "right"; ctx.fillStyle = col; ctx.fillText(label, w, y);
       ctx.beginPath(); ctx.arc(w - ctx.measureText(label).width - 5, y, 2, 0, 7); ctx.fill();
     });
     ctx.restore(); ctx.globalAlpha = 1;
 
     ctx.font = "8px 'DM Sans', sans-serif"; ctx.textBaseline = "alphabetic";
-    ctx.textAlign = "left"; ctx.fillStyle = C.accent; ctx.fillText(`✓ ${released} released`, 0, h - 1);
-    ctx.textAlign = "right"; ctx.fillStyle = rejected ? REJECT : C.muted; ctx.fillText(`✗ ${rejected} rejected`, w, h - 1);
+    ctx.textAlign = "left"; ctx.fillStyle = P.accent; ctx.fillText(`✓ ${released} released`, 0, h - 1);
+    ctx.textAlign = "right"; ctx.fillStyle = rejected ? REJECT : P.muted; ctx.fillText(`✗ ${rejected} rejected`, w, h - 1);
   };
 }
 
 function CanvasDemo({ makeScene, label }) {
   const ref = useRef(null);
+  const theme = useTheme(); // restart the scene in the new colors when the theme flips
   useEffect(() => {
     const cv = ref.current, ctx = cv.getContext("2d"), H = 104;
-    let draw = makeScene(), w = 0, t = 0, last = performance.now(), raf = 0;
+    const P = themeHex(theme);
+    let draw = makeScene(P), w = 0, t = 0, last = performance.now(), raf = 0;
     const size = () => {
       const dpr = window.devicePixelRatio || 1;
       w = cv.clientWidth; cv.width = w * dpr; cv.height = H * dpr;
@@ -190,7 +194,7 @@ function CanvasDemo({ makeScene, label }) {
     };
     const render = (dt) => { t += dt; ctx.clearRect(0, 0, w, H); draw(ctx, w, H, t, dt); };
     size();
-    const ro = new ResizeObserver(() => { size(); draw = makeScene(); t = 0; });
+    const ro = new ResizeObserver(() => { size(); draw = makeScene(P); t = 0; });
     ro.observe(cv);
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       // Run the scene forward off screen and leave a filled-in still frame.
@@ -200,7 +204,7 @@ function CanvasDemo({ makeScene, label }) {
       raf = requestAnimationFrame(frame);
     }
     return () => { cancelAnimationFrame(raf); ro.disconnect(); };
-  }, [makeScene]);
+  }, [makeScene, theme]);
   return <canvas ref={ref} role="img" aria-label={label} style={{ display: "block", width: "100%", height: 104 }} />;
 }
 
@@ -234,12 +238,12 @@ function PipelineDemo() {
   );
 }
 
-// Types "eggs" into a toy search box, then shows matches scored by meaning and by words. Click opens Sparky's kitchen.
+// Types "eggs" into a toy search box, then shows matches scored by meaning and by words.
 const RECIPE_HITS = [
-  { title: "Egg fried rice", meaning: 0.9, words: 0.85, color: "#c9a96e" },
-  { title: "Tomato & egg stir-fry", meaning: 0.75, words: 0.6, color: "#c98e8e" },
+  { title: "Egg fried rice", meaning: 0.9, words: 0.85, color: C.wc[0] },
+  { title: "Tomato & egg stir-fry", meaning: 0.75, words: 0.6, color: C.wc[3] },
 ];
-function RecipeSearchDemo({ onPlay }) {
+function RecipeSearchDemo() {
   const query = "eggs";
   const [step, setStep] = useState(0); // 0..4 typing, 5 results, 6 hold
   useEffect(() => {
@@ -251,7 +255,7 @@ function RecipeSearchDemo({ onPlay }) {
   const typed = query.slice(0, Math.min(step, 4));
   const shown = step >= 5;
   return (
-    <button onClick={onPlay} aria-label="Try the recipe book demo in Sparky's kitchen" style={{ all: "unset", cursor: "pointer", display: "block", width: "100%", fontFamily: "'DM Sans'" }}>
+    <div style={{ fontFamily: "'DM Sans'" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", fontSize: 11, color: C.bright }}>
         <span style={{ color: C.muted }}>⌕</span>
         <span>{typed || <span style={{ color: C.muted }}>What are you craving?</span>}</span>
@@ -263,18 +267,15 @@ function RecipeSearchDemo({ onPlay }) {
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.color, opacity: 0.8, flex: "none" }} />
             <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.title}</span>
             {[["meaning", r.meaning], ["words", r.words]].map(([k, v]) => (
-              <div key={k} title={k} style={{ width: 34, height: 5, borderRadius: 3, background: `${C.accent}33`, overflow: "hidden", flex: "none" }}>
+              <div key={k} title={k} style={{ width: 34, height: 5, borderRadius: 3, background: mix(C.accent, 20), overflow: "hidden", flex: "none" }}>
                 <div style={{ height: "100%", width: shown ? `${v * 100}%` : 0, borderRadius: 3, background: C.accent, opacity: 0.75, transition: `width .6s ease ${0.2 + i * 0.15}s` }} />
               </div>
             ))}
           </div>
         ))}
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7, fontSize: 10, color: C.muted }}>
-        <span>meaning · words</span>
-        <span style={{ color: C.accent }}>▶ Try it in Sparky's kitchen</span>
-      </div>
-    </button>
+      <div style={{ marginTop: 7, fontSize: 10, color: C.muted }}>meaning · words</div>
+    </div>
   );
 }
 
@@ -342,8 +343,8 @@ function FilterPill({ label, color, active, onClick, mobile }) {
         fontSize: mobile ? 10 : 11,
         fontWeight: 500,
         color: active ? color : hov ? C.bright : C.muted,
-        background: active ? `${color}18` : "transparent",
-        border: `1px solid ${active ? `${color}44` : hov ? C.border : "transparent"}`,
+        background: active ? mix(color, 9) : "transparent",
+        border: `1px solid ${active ? mix(color, 27) : hov ? C.border : "transparent"}`,
         borderRadius: 14,
         padding: mobile ? "3px 9px" : "4px 11px",
         cursor: "pointer",
@@ -357,7 +358,7 @@ function FilterPill({ label, color, active, onClick, mobile }) {
 }
 
 /* ─── Project Card ─── */
-function ProjectCard({ proj, index, mobile, onPlayGame }) {
+function ProjectCard({ proj, index, mobile }) {
   const [ref, vis] = useReveal(0.1);
   const [open, setOpen] = useState(false);
   const w = mobile ? 280 : 340;
@@ -368,7 +369,7 @@ function ProjectCard({ proj, index, mobile, onPlayGame }) {
     <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? "none" : "translateY(24px)", transition: `opacity .6s ease ${index * 0.06}s, transform .6s ease ${index * 0.06}s` }}>
       <div
         style={{
-          width: w, borderRadius: 14, border: `1px solid ${C.border}`,
+          width: w, borderRadius: 14, border: `1px solid ${C.cardBorder}`,
           background: C.surface,
           padding: mobile ? 20 : 24, display: "flex", flexDirection: "column",
           position: "relative", overflow: "hidden", minHeight: mobile ? 180 : 220,
@@ -380,8 +381,8 @@ function ProjectCard({ proj, index, mobile, onPlayGame }) {
         </div>
         <p style={{ fontFamily: "'DM Sans'", fontSize: 13, color: C.text, lineHeight: 1.7, marginTop: 8, flex: 1 }}>{proj.desc}</p>
         {DemoComp && (
-          <div style={{ marginTop: 12, borderRadius: 8, background: C.bg, border: `1px solid ${C.border}`, padding: 12 }}>
-            <DemoComp onPlay={onPlayGame} />
+          <div style={{ marginTop: 12, borderRadius: 8, background: C.bg, border: `1px solid ${C.cardBorder}`, padding: 12 }}>
+            <DemoComp />
           </div>
         )}
         {hasLinks && (
@@ -505,8 +506,8 @@ function ArchiveTable({ mobile }) {
                     <span style={{
                       fontSize: 10, fontWeight: 600,
                       color: getTypeColor(p.type),
-                      background: `${getTypeColor(p.type)}15`,
-                      border: `1px solid ${getTypeColor(p.type)}30`,
+                      background: mix(getTypeColor(p.type), 8),
+                      border: `1px solid ${mix(getTypeColor(p.type), 19)}`,
                       borderRadius: 10, padding: "2px 8px",
                       whiteSpace: "nowrap",
                     }}>{p.type}</span>
@@ -520,7 +521,7 @@ function ArchiveTable({ mobile }) {
                       <span key={t} style={{
                         fontSize: 10,
                         color: getTopicColor(t),
-                        background: `${getTopicColor(t)}15`,
+                        background: mix(getTopicColor(t), 8),
                         borderRadius: 10, padding: "2px 7px",
                         whiteSpace: "nowrap",
                       }}>{t}</span>
@@ -659,7 +660,7 @@ export function Projects({ mobile, pad }) {
       >
         <div style={{ display: "flex", gap: mobile ? 12 : 16, paddingLeft: sidePad, paddingRight: sidePad, width: "max-content" }}>
           {PROJECTS.map((proj, i) => (
-            <ProjectCard key={i} proj={proj} index={i} mobile={mobile} onPlayGame={() => setGameSrc("/demo-game/index.html?open=recipe")} />
+            <ProjectCard key={i} proj={proj} index={i} mobile={mobile} />
           ))}
         </div>
       </div>
@@ -684,7 +685,7 @@ export function Projects({ mobile, pad }) {
                 height: isActive ? 10 : 6,
                 borderRadius: "50%",
                 background: isActive ? C.accent : C.border,
-                boxShadow: isActive ? `0 0 8px rgba(109,184,159,0.4)` : "none",
+                boxShadow: isActive ? `0 0 8px ${C.accentMid}` : "none",
                 border: "none",
                 padding: 0,
                 cursor: "pointer",

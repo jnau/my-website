@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { C } from "../tokens";
+import { C, mix } from "../tokens";
 import { Reveal } from "../primitives/Reveal";
 import { SecHead } from "../primitives/SecHead";
 import pubsData from "../data/publications.json";
@@ -19,12 +19,25 @@ function PubItem({ pub, delay = 0, active, onClick }) {
         style={{
           padding: "14px 16px", borderRadius: 10,
           borderLeft: `2px solid ${active ? C.accent : highlight ? C.accent : C.border}`,
-          background: active ? `${C.accent}12` : highlight ? C.accentDim : "transparent",
+          background: active ? C.accentSoft : highlight ? C.accentDim : "transparent",
           transition: "all .3s", cursor: "pointer", marginBottom: 8,
         }}
       >
         <div style={{ fontFamily: "'DM Sans'", fontSize: 15, fontWeight: 500, color: highlight ? C.heading : C.bright }}>{pub.title}</div>
-        <div style={{ fontFamily: "'DM Sans'", fontSize: 13, color: C.text, marginTop: 4 }}>{pub.authors}</div>
+        <div style={{ fontFamily: "'DM Sans'", fontSize: 13, color: C.text, marginTop: 4 }}>
+          {pub.authorsUrl ? (
+            <a
+              href={pub.authorsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title="See the full author list"
+              style={{ color: "inherit", textDecoration: "underline", textDecorationColor: C.accentMid, textUnderlineOffset: 3 }}
+            >
+              {pub.authors}
+            </a>
+          ) : pub.authors}
+        </div>
         <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: C.muted, marginTop: 3 }}>
           <span style={{ fontStyle: "italic" }}>{pub.journal}</span> · {pub.year}
         </div>
